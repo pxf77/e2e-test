@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "healing-events.schema.json",
+  "title": "HealingEvents",
+  "description": "exec_agent 产出 — 建议式自愈事件列表（MVP 仅建议，不自动修改）",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["event_id", "case_id", "failure_category", "suggestion"],
+    "additionalProperties": false,
+    "properties": {
+      "event_id": { "type": "string" },
+      "case_id": { "type": "string" },
+      "run_id": { "type": "string" },
+      "failure_category": {
+        "type": "string",
+        "enum": ["env_issue", "test_data", "product_bug", "script_bug", "flaky"]
+      },
+      "error_message": { "type": "string" },
+      "suggestion": {
+        "type": "object",
+        "required": ["action", "description"],
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "update_selector",
+              "update_test_data",
+              "add_wait",
+              "skip_case",
+              "report_bug",
+              "manual_review"
+            ]
+          },
+          "description": { "type": "string" },
+          "code_diff": {
+            "type": ["string", "null"],
+            "description": "建议的代码修改（diff 格式）"
+          }
+        }
+      },
+      "applied": {
+        "type": "boolean",
+        "default": false,
+        "description": "MVP 阶段始终为 false（建议式，不自动应用）"
+      },
+      "applied_by": { "type": "string" },
+      "applied_at": { "type": "string", "format": "date-time" },
+      "evidence_file": { "type": "string" },
+      "patch_path": { "type": "string" },
+      "audit_path": { "type": "string" },
+      "verified_effective": { "type": "boolean" },
+      "timestamp": {
+        "type": "string",
+        "format": "date-time"
+      }
+    }
+  }
+}

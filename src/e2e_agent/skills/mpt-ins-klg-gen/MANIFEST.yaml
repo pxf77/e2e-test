@@ -1,0 +1,8 @@
+name: mpt-ins-klg-gen
+version: "1.0"
+description: "Insurance product knowledge-base generator for materials-first regression case refinement."
+entry_script: scripts/run_klg_gen.py
+knowledge_files:
+input_schema: klg-gen-entry-input.schema.json
+output_schema: klg-gen-entry-output.schema.json
+requires_node: false

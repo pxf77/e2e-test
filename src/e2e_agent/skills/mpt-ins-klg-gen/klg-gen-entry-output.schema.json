@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "mpt-ins-klg-gen entry output",
+  "type": "object",
+  "required": [
+    "product_id",
+    "knowledge_root",
+    "knowledge_base",
+    "ui_ontology",
+    "field_catalog",
+    "workflow_cases",
+    "page_probe",
+    "artifacts",
+    "warnings",
+    "exploration"
+  ],
+  "properties": {
+    "product_id": { "type": "string" },
+    "product_name": { "type": "string" },
+    "knowledge_root": { "type": "string" },
+    "knowledge_base": { "type": "object" },
+    "ui_ontology": { "type": "object" },
+    "field_catalog": { "type": "object" },
+    "page_probe": { "type": "object" },
+    "workflow_cases": {
+      "type": "object",
+      "required": ["cases"],
+      "properties": {
+        "cases": {
+          "type": "array",
+          "items": { "type": "object" }
+        }
+      },
+      "additionalProperties": true
+    },
+    "artifacts": { "type": "object" },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "exploration": { "type": "object" }
+  },
+  "additionalProperties": false
+}

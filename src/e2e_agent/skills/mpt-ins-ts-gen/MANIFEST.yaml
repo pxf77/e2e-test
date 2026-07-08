@@ -1,0 +1,10 @@
+name: mpt-ins-ts-gen
+version: "1.1"
+description: "测试脚本生成（阶段二+三）— 由 skill 负责页面函数、场景脚本和断言计划装配。"
+entry_script: scripts/run_ts_gen.py
+knowledge_files:
+  - references/rules/a3-iron-rules.md
+  - references/rules/rule-reg-10-model-agnostic.md
+input_schema: scenario-generation-input.schema.json
+output_schema: scenario-bundle.schema.json
+requires_node: false

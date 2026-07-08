@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "test-data-profiles.schema.json",
+  "title": "TestDataProfiles",
+  "description": "mpt-ins-tc-gen 产出 — 测试数据档案（由 mock_user.cjs 生成，禁止手工填写）",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["profile_id", "generated_by", "insured"],
+    "additionalProperties": true,
+    "properties": {
+      "profile_id": { "type": "string" },
+      "generated_by": {
+        "type": "string",
+        "const": "mock_user",
+        "description": "RULE-REG-14a: 必须为 mock_user，禁止手工伪造"
+      },
+      "insured": {
+        "type": "object",
+        "description": "投保人/被保人信息（mock_user.cjs 输出格式，不可截取/转换）",
+        "additionalProperties": true
+      }
+    }
+  }
+}

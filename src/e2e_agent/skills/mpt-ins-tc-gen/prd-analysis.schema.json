@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "mpt-ins-tc-gen entry input",
+  "type": "object",
+  "required": ["product_id", "features", "application_flow", "traceability_matrix"],
+  "properties": {
+    "product_id": {
+      "type": "string"
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "application_flow": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "traceability_matrix": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "additionalProperties": true
+}

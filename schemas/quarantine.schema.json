@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "quarantine.schema.json",
+  "title": "QuarantineReport",
+  "description": "Agent4 failed execution quarantine report for triage and release gating.",
+  "type": "object",
+  "required": ["version", "product_id", "run_id", "generated_at", "summary", "items"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "string" },
+    "product_id": { "type": "string" },
+    "run_id": { "type": "string" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "summary": {
+      "type": "object",
+      "required": ["total", "blocking", "by_category", "by_status"],
+      "additionalProperties": false,
+      "properties": {
+        "total": { "type": "integer", "minimum": 0 },
+        "blocking": { "type": "integer", "minimum": 0 },
+        "by_category": {
+          "type": "object",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        },
+        "by_status": {
+          "type": "object",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "quarantine_id",
+          "product_id",
+          "run_id",
+          "case_id",
+          "path_id",
+          "status",
+          "execution_status",
+          "failure_category",
+          "release_blocker",
+          "created_at",
+          "updated_at",
+          "evidence",
+          "history"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "quarantine_id": { "type": "string" },
+          "product_id": { "type": "string" },
+          "run_id": { "type": "string" },
+          "case_id": { "type": "string" },
+          "path_id": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["new", "observing", "assigned", "fixed_waiting_verify", "closed"]
+          },
+          "execution_status": { "type": "string" },
+          "failure_category": { "type": "string" },
+          "release_blocker": { "type": "boolean" },
+          "owner": { "type": ["string", "null"] },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" },
+          "evidence": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["from_status", "to_status", "actor", "note", "timestamp"],
+              "additionalProperties": false,
+              "properties": {
+                "from_status": { "type": "string" },
+                "to_status": { "type": "string" },
+                "actor": { "type": "string" },
+                "note": { "type": "string" },
+                "timestamp": { "type": "string", "format": "date-time" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

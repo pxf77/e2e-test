@@ -1,0 +1,10 @@
+name: mpt-reg-path-extract
+version: "1.1"
+description: "路径提取 — 流程树剪枝 + 路径枚举 + page-key 治理（全新 Skill）"
+entry_script: scripts/run_path_extract.py
+knowledge_files:
+  - references/knowledge/flow-tree-pruning.md
+  - references/knowledge/page-key-governance.md
+input_schema: merged-cases.schema.json
+output_schema: path-extract-entry-output.schema.json
+requires_node: false

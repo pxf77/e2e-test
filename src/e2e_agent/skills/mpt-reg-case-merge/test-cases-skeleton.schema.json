@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "mpt-reg-case-merge input",
+  "type": "object",
+  "required": ["product_id"],
+  "properties": {
+    "product_id": {
+      "type": "string"
+    },
+    "prd_path": {
+      "type": "string"
+    },
+    "manual_cases_path": {
+      "type": ["string", "null"]
+    },
+    "prd_analysis": {
+      "type": ["object", "null"]
+    },
+    "skeleton_cases": {
+      "type": ["array", "null"],
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "anyOf": [
+    {
+      "required": ["skeleton_cases"]
+    },
+    {
+      "required": ["prd_analysis"]
+    },
+    {
+      "required": ["prd_path"]
+    }
+  ],
+  "additionalProperties": true
+}

@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "merged-cases.schema.json",
+  "title": "MergedCases",
+  "description": "tc_merge_agent 产出 — 合并后的测试用例列表",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["case_id", "title", "source", "steps", "assertions"],
+    "additionalProperties": false,
+    "properties": {
+      "case_id": {
+        "type": "string",
+        "description": "唯一用例 ID，格式 TC-{product}-{seq}"
+      },
+      "title": { "type": "string" },
+      "source": {
+        "type": "string",
+        "enum": ["manual", "ac", "merged"],
+        "description": "来源：人工/AC推导/合并"
+      },
+      "priority": {
+        "type": "string",
+        "enum": ["P0", "P1", "P2"],
+        "default": "P0"
+      },
+      "steps": {
+        "type": "array",
+        "items": { "type": "string" },
+        "minItems": 1
+      },
+      "assertions": {
+        "type": "array",
+        "items": { "type": "string" },
+        "minItems": 1
+      },
+      "preconditions": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "scenario_type": {
+        "type": "string",
+        "description": "业务场景类型，例如 main_flow/core_branch/important_branch"
+      },
+      "business_intent": {
+        "type": "string",
+        "description": "业务意图分类，例如 main_flow/health_notice/tax_identity"
+      },
+      "business_goal": {
+        "type": "string",
+        "description": "该核心回归场景验证的业务目标"
+      },
+      "rules": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["rule_id", "text", "source_case_id"],
+          "additionalProperties": true,
+          "properties": {
+            "rule_id": { "type": "string" },
+            "feature": { "type": "string" },
+            "text": { "type": "string" },
+            "source_case_id": { "type": "string" }
+          }
+        }
+      },
+      "coverage_refs": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["source", "case_id", "title"],
+          "additionalProperties": true,
+          "properties": {
+            "source": { "type": "string" },
+            "case_id": { "type": "string" },
+            "title": { "type": "string" },
+            "priority": { "type": "string" }
+          }
+        }
+      },
+      "data_variants": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["type", "value", "source_case_id"],
+          "additionalProperties": true,
+          "properties": {
+            "type": { "type": "string" },
+            "value": { "type": "string" },
+            "source_case_id": { "type": "string" },
+            "manual_path": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        }
+      },
+      "manual_case_refs": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "selection_reason": { "type": "string" },
+      "selection_score": { "type": "number" },
+      "conflict_ref": {
+        "type": ["string", "null"],
+        "description": "关联的 conflict ID，null 表示无冲突"
+      },
+      "tags": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  }
+}

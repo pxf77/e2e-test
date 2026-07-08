@@ -1,0 +1,62 @@
+# 门禁运营配置 — 4 个人审网关 (R1-R4) 的 owner 和 SLA
+version: "1.0"
+
+gates:
+  R1:
+    name: "用例合并确认"
+    description: "确认 merged-cases.json 合并结果，解决 conflicts.json 中的冲突"
+    owner: "高级测试"
+    sla_minutes: 30
+    blocking: true
+    checkpoint_pattern: "reg/.artifacts/gate-checkpoints/{run_id}.json"
+    approve_command: "python -m e2e_agent.cli gate approve {run_id} --gate r1 --operator <name> --note <reason>"
+    reject_command: "python -m e2e_agent.cli gate reject {run_id} --gate r1 --operator <name> --note <reason>"
+    resume_command: "python -m e2e_agent.cli gate resume {run_id}"
+    approval_modes:
+      - cli
+      - comment  # 在 conflicts.json 旁添加 R1_APPROVED 文件
+
+  R2:
+    name: "回归路径确认"
+    description: "确认 regression-paths.json 路径枚举完整，无遗漏关键路径"
+    owner: "高级测试"
+    sla_minutes: 20
+    blocking: true
+    checkpoint_pattern: "reg/.artifacts/gate-checkpoints/{run_id}.json"
+    approve_command: "python -m e2e_agent.cli gate approve {run_id} --gate r2 --operator <name> --note <reason>"
+    reject_command: "python -m e2e_agent.cli gate reject {run_id} --gate r2 --operator <name> --note <reason>"
+    resume_command: "python -m e2e_agent.cli gate resume {run_id}"
+    approval_modes:
+      - cli
+      - comment
+
+  R3:
+    name: "覆盖率审核"
+    description: "确认 explore_agent 产出的 exploration-contract.json、path-exploration-results.json、page-elements.json、action-trace.json 可支撑 Agent4 执行"
+    owner: "AI 测试"
+    sla_minutes: 15
+    blocking: true
+    checkpoint_pattern: "reg/.artifacts/gate-checkpoints/{run_id}.json"
+    approve_command: "python -m e2e_agent.cli gate approve {run_id} --gate r3 --operator <name> --note <reason>"
+    reject_command: "python -m e2e_agent.cli gate reject {run_id} --gate r3 --operator <name> --note <reason>"
+    resume_command: "python -m e2e_agent.cli gate resume {run_id}"
+    approval_modes:
+      - cli
+      - comment
+
+  R4:
+    name: "执行报告汇报"
+    description: "exec_agent 完成后汇报，不阻塞流程（打印提醒即可）"
+    owner: "auto"
+    sla_minutes: 0
+    blocking: false
+    checkpoint_pattern: "reg/.artifacts/gate-checkpoints/{run_id}.json"
+    approve_command: "python -m e2e_agent.cli gate approve {run_id} --gate r4 --operator auto --note report-only"
+    resume_command: "python -m e2e_agent.cli gate resume {run_id}"
+    approval_modes:
+      - auto    # 自动通过，仅汇报
+
+# 超时后的行为
+timeout_policy:
+  default: "pause"    # pause | auto-approve | reject
+  R4: "auto-approve"  # R4 超时自动通过

@@ -1,0 +1,46 @@
+# RULE-REG-9: 所有 LLM 调用必须通过此配置路由，业务代码禁止直接 import 模型 SDK
+version: "1.0"
+
+agents:
+  tc_merge:
+    primary: gpt-5.5
+    reasoning_effort: high
+    fallback:
+      - gemini/gemini-3.1-pro
+    # 用途：合并人工用例 + AC 补充，处理冲突
+    # 选型理由：统一使用 OpenAI reasoning 主路由，Gemini 作为跨厂商 fallback 路由
+
+  path_extract:
+    primary: gpt-5.5
+    reasoning_effort: high
+    fallback:
+      - gemini/gemini-3.1-pro
+    # 用途：从合并用例中提取回归测试路径
+    # 选型理由：结构化提取统一走 high reasoning 主路由，fallback 保持跨厂商可用
+
+  explore:
+    primary: gpt-5.5
+    reasoning_effort: high
+    fallback:
+      - gemini/gemini-3.1-pro
+    # 用途：Playwright 浏览器探索 + 测试脚本生成
+    # 选型理由：需要较强推理和代码生成能力，Gemini 用于独立验收与降级
+
+  exec_healing:
+    primary: gpt-5.5
+    reasoning_effort: high
+    fallback:
+      - gemini/gemini-3.1-pro
+    # 用途：执行失败分析 + 建议式自愈
+    # 选型理由：失败归因和自愈建议统一走 high reasoning 主路由，fallback 保持单一跨厂商路径
+
+# 全局 LiteLLM 配置
+litellm:
+  request_timeout: 120
+  num_retries: 2
+  # 主路由的 reasoning_effort 对 fallback provider 不一定适用，启用 drop_params 让 LiteLLM 丢弃不兼容参数。
+  drop_params: true
+  # 成本上限（每次 run，5 场景）
+  max_budget:
+    openai_reasoning: 5.00  # USD
+    gemini: 3.00            # USD

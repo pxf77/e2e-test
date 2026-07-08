@@ -1,0 +1,44 @@
+[project]
+name = "e2e-agent"
+version = "0.1.0"
+description = "星火计划 — AI 驱动 P0 回归测试自动化系统 (v4)"
+requires-python = ">=3.12"
+dependencies = [
+    "langgraph==1.1.9",
+    "langgraph-checkpoint-sqlite>=1.0",
+    "litellm>=1.83.11",
+    "playwright>=1.50",
+    "pydantic>=2.0",
+    "pyyaml>=6.0",
+    "jsonschema>=4.20",
+    "click>=8.0",
+    "aiofiles>=23.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=4.0",
+]
+
+[project.scripts]
+e2e-agent = "e2e_agent.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/e2e_agent"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=4.0",
+]

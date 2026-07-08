@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "mpt-reg-path-extract entry output",
+  "type": "object",
+  "required": ["regression_flow", "regression_paths", "governance_summary", "warnings"],
+  "properties": {
+    "regression_flow": {
+      "type": "object"
+    },
+    "regression_paths": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "governance_summary": {
+      "type": "object"
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

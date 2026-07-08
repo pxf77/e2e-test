@@ -1,0 +1,10 @@
+name: mpt-reg-exec
+version: "1.1"
+description: "回归测试执行 — 运行场景 + 5 类失败分类 + 建议式自愈（原 mpt-ins-tc-exec 改版）"
+entry_script: scripts/run_exec.py
+knowledge_files:
+  - references/knowledge/report-interpretation.md
+  - references/knowledge/failure-classification.md
+input_schema: scenario-definitions.schema.json
+output_schema: exec-entry-output.schema.json
+requires_node: false

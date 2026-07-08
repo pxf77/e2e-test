@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "test-cases-skeleton.schema.json",
+  "title": "TestCasesSkeleton",
+  "description": "mpt-ins-tc-gen 产出 — 测试用例骨架（阶段一输出）",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "feature_id", "title", "steps"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string" },
+      "feature_id": { "type": "string" },
+      "title": { "type": "string" },
+      "type": {
+        "type": "string",
+        "enum": ["happy_path", "boundary", "negative", "edge_case"]
+      },
+      "priority": {
+        "type": "string",
+        "enum": ["P0", "P1", "P2"],
+        "default": "P0"
+      },
+      "steps": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["step", "action"],
+          "properties": {
+            "step": { "type": "integer" },
+            "action": { "type": "string" },
+            "expected": { "type": "string" }
+          }
+        }
+      },
+      "preconditions": {
+        "type": "array",
+        "items": { "type": "string" }
+      },
+      "test_data_hints": {
+        "type": "object",
+        "description": "数据占位提示（后续由 mock_user 物化）",
+        "additionalProperties": true
+      }
+    }
+  }
+}

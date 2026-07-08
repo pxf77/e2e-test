@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "prd-analysis.schema.json",
+  "title": "PrdAnalysis",
+  "description": "mpt-ins-prd-ana 产出 — PRD 分析结果（features + flow + dependency + traceability）",
+  "type": "object",
+  "required": ["product_id", "features", "application_flow", "traceability_matrix"],
+  "additionalProperties": false,
+  "properties": {
+    "product_id": { "type": "string" },
+    "analysis_version": { "type": "string" },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["feature_id", "name", "acceptance_criteria"],
+        "properties": {
+          "feature_id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "acceptance_criteria": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["P0", "P1", "P2"]
+          }
+        }
+      }
+    },
+    "application_flow": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["step", "page", "action"],
+        "properties": {
+          "step": { "type": "integer" },
+          "page": { "type": "string" },
+          "action": { "type": "string" },
+          "branching": { "type": "boolean", "default": false }
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "type": { "type": "string" }
+        }
+      }
+    },
+    "traceability_matrix": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["feature_id", "requirement_ref", "acceptance_criterion"],
+        "properties": {
+          "feature_id": { "type": "string" },
+          "requirement_ref": { "type": "string" },
+          "source": { "type": "string" },
+          "acceptance_criterion": { "type": "string" },
+          "downstream_hint": {
+            "type": "object",
+            "properties": {
+              "case_seed": { "type": "string" },
+              "priority": { "type": "string" }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}

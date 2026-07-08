@@ -1,0 +1,8 @@
+name: mpt-ins-tc-gen
+version: "5.1"
+description: "测试用例生成（阶段一）— 仅产出 test-cases-skeleton JSON 与 Markdown。"
+entry_script: scripts/run_tc_gen.py
+knowledge_files: []
+input_schema: prd-analysis.schema.json
+output_schema: tc-gen-entry-output.schema.json
+requires_node: false

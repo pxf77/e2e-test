@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "mpt-reg-exec input",
+  "type": "object",
+  "required": ["product_id", "run_id", "scenarios"],
+  "properties": {
+    "product_id": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "assertion_results": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "assertion_template_source": {
+      "type": "string"
+    },
+    "root_dir": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

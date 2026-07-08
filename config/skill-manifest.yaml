@@ -1,0 +1,39 @@
+# Skill 目录清单 — 所有已注册 Skill Package 的索引
+version: "1.0"
+
+skills:
+  mpt-ins-prd-ana:
+    path: src/e2e_agent/skills/mpt-ins-prd-ana
+    version: "1.0"
+    origin: copy          # copy | copy+patch | rename+patch | new
+    enabled: true
+
+  mpt-ins-tc-gen:
+    path: src/e2e_agent/skills/mpt-ins-tc-gen
+    version: "5.0"
+    origin: copy+trim     # 裁掉阶段二（阶段二移至 mpt-ins-ts-gen）
+    enabled: true
+
+  mpt-ins-ts-gen:
+    path: src/e2e_agent/skills/mpt-ins-ts-gen
+    version: "1.0"
+    origin: copy+patch    # 铁律重编号 A3-R1~R10
+    enabled: true
+
+  mpt-reg-exec:
+    path: src/e2e_agent/skills/mpt-reg-exec
+    version: "1.0"
+    origin: rename+patch  # 原 mpt-ins-tc-exec，增加失败分类+建议式自愈
+    enabled: true
+
+  mpt-reg-case-merge:
+    path: src/e2e_agent/skills/mpt-reg-case-merge
+    version: "1.0"
+    origin: new           # 全新编写：多格式解析 + AC 合并
+    enabled: true
+
+  mpt-reg-path-extract:
+    path: src/e2e_agent/skills/mpt-reg-path-extract
+    version: "1.0"
+    origin: new           # 全新编写：流程树剪枝 + 路径枚举
+    enabled: true

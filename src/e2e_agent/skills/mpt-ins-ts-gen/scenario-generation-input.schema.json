@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "mpt-ins-ts-gen input",
+  "type": "object",
+  "required": ["product_id", "regression_flow", "regression_paths"],
+  "properties": {
+    "product_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entry_url": {
+      "type": ["string", "null"]
+    },
+    "regression_flow": {
+      "type": "object"
+    },
+    "regression_paths": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "materialise": {
+      "type": "boolean"
+    },
+    "generated_by": {
+      "type": "string"
+    },
+    "root_dir": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true
+}

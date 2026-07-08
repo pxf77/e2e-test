@@ -1,0 +1,10 @@
+name: mpt-reg-case-merge
+version: "1.1"
+description: "用例合并 — 多格式（.km/Markdown/Excel）解析 + AC 合并 + 5 种冲突策略（全新 Skill）"
+entry_script: scripts/run_merge.py
+knowledge_files:
+  - references/knowledge/merge-strategies.md
+  - references/knowledge/conflict-resolution-policies.md
+input_schema: test-cases-skeleton.schema.json
+output_schema: case-merge-entry-output.schema.json
+requires_node: false

@@ -1,0 +1,33 @@
+# Playwright Python 集成层配置
+version: "1.0"
+
+browser:
+  type: chromium          # chromium | firefox | webkit
+  headless: true          # false for debugging
+  slow_mo: 0              # 毫秒，调试时可设为 100-500
+
+viewport:
+  h5:
+    width: 390
+    height: 844
+  pc:
+    width: 1280
+    height: 720
+
+timeouts:
+  navigation: 30000       # 页面导航超时（ms）
+  action: 15000           # 元素操作超时（ms）
+  assertion: 10000        # 断言等待超时（ms）
+
+# subprocess 兼容模式（复用原仓 .spec.ts）
+ts_compat:
+  enabled: true
+  source_repo: "D:\\huizecode\\e2e-test"
+  node_executable: "node"
+  timeout_seconds: 300
+
+# 截图/录像
+artifacts:
+  screenshots: true
+  video: false            # 仅失败时录制（设为 "on-first-retry" 启用）
+  trace: false

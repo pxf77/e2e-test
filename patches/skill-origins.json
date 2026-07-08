@@ -1,0 +1,43 @@
+{
+  "version": "1.0",
+  "description": "Tracks origin of each Skill Package relative to D:\\huizecode\\e2e-test",
+  "updated": "2026-04-22",
+  "skills": {
+    "mpt-ins-prd-ana": {
+      "origin": "D:\\huizecode\\e2e-test\\.agents\\skills\\mpt-ins-prd-ana",
+      "action": "copy",
+      "patches": [],
+      "notes": "原样复制，无需修改。知识库与新系统完全兼容。"
+    },
+    "mpt-ins-tc-gen": {
+      "origin": "D:\\huizecode\\e2e-test\\.agents\\skills\\mpt-ins-tc-gen",
+      "action": "copy+trim",
+      "patches": ["strip-phase2"],
+      "notes": "裁掉阶段二（阶段二迁移至 mpt-ins-ts-gen）。仅保留阶段一（测试骨架生成）。"
+    },
+    "mpt-ins-ts-gen": {
+      "origin": "D:\\huizecode\\e2e-test\\.agents\\skills\\mpt-ins-ts-gen",
+      "action": "copy+patch",
+      "patches": ["strip-phase1", "rule-remap-A3"],
+      "notes": "裁掉阶段一（移至 explore_agent 的 Playwright Python 实现）。铁律编号重映射 R1-R17 → A3-R1~R10。"
+    },
+    "mpt-reg-exec": {
+      "origin": "D:\\huizecode\\e2e-test\\.agents\\skills\\mpt-ins-tc-exec",
+      "action": "rename+patch",
+      "patches": ["add-failure-classification", "add-healing-suggestion"],
+      "notes": "原 mpt-ins-tc-exec 改名为 mpt-reg-exec。新增：5 类失败分类 + 建议式自愈逻辑。"
+    },
+    "mpt-reg-case-merge": {
+      "origin": null,
+      "action": "new",
+      "patches": [],
+      "notes": "全新编写。功能：多格式（.km/Markdown/Excel）解析 + AC 合并 + 5 种冲突策略。"
+    },
+    "mpt-reg-path-extract": {
+      "origin": null,
+      "action": "new",
+      "patches": [],
+      "notes": "全新编写。功能：从合并用例构建流程树 + 剪枝 + 路径枚举 + page-key 治理。"
+    }
+  }
+}

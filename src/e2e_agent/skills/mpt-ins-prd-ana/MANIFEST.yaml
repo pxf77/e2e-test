@@ -1,0 +1,8 @@
+name: mpt-ins-prd-ana
+version: "1.1"
+description: "PRD 解析 — 产出结构化分析 JSON，并同步物化 Markdown 摘要。"
+entry_script: scripts/run_prd_ana.py
+knowledge_files: []
+input_schema: null
+output_schema: prd-analysis.schema.json
+requires_node: false

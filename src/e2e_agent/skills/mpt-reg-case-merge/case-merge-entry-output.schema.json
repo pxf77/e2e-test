@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "mpt-reg-case-merge entry output",
+  "type": "object",
+  "required": ["candidate_cases", "merged_cases", "excluded_cases", "conflicts", "selection_trace", "parse_trace", "warnings"],
+  "properties": {
+    "candidate_cases": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "merged_cases": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "excluded_cases": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "parse_trace": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "selection_trace": {
+      "type": "object"
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

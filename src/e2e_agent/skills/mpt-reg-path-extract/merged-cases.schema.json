@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "mpt-reg-path-extract input",
+  "type": "object",
+  "required": ["product_id", "merged_cases"],
+  "properties": {
+    "product_id": {
+      "type": "string"
+    },
+    "entry_url": {
+      "type": ["string", "null"]
+    },
+    "merged_cases": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "additionalProperties": true
+}
