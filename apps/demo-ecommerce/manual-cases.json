@@ -1,0 +1,11 @@
+{
+  "cases": [
+    {
+      "id": "ECOM-001",
+      "title": "Add item to cart and verify total",
+      "priority": "P0",
+      "steps": ["Open product detail", "Add product to cart", "Open cart"],
+      "assertions": ["Cart total matches expected item total"]
+    }
+  ]
+}
