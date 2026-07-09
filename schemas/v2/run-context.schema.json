@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pxf77.github.io/e2e-test/schemas/v2/run-context.schema.json",
+  "title": "Run Context v2",
+  "description": "通用运行上下文契约，用 artifact map 替代固定领域字段状态。",
+  "type": "object",
+  "required": ["run_id", "app_id", "domain_id", "workflow_id", "env", "artifacts"],
+  "additionalProperties": true,
+  "properties": {
+    "run_id": {"type": "string", "minLength": 1},
+    "app_id": {"type": "string", "minLength": 1},
+    "domain_id": {"type": "string", "minLength": 1},
+    "workflow_id": {"type": "string", "minLength": 1},
+    "env": {"type": "string", "minLength": 1},
+    "inputs": {"type": "object", "additionalProperties": true},
+    "artifacts": {"type": "object", "additionalProperties": true},
+    "gates": {"type": "object", "additionalProperties": true},
+    "metadata": {"type": "object", "additionalProperties": true},
+    "errors": {"type": "array", "items": {"type": "object", "additionalProperties": true}}
+  }
+}
