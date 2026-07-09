@@ -1,4 +1,4 @@
-.PHONY: install install-uv test validate-schemas ci-check clean
+.PHONY: install install-uv test validate-schemas validate-domains validate-workflows boundary-check ci-check clean
 
 PYTHON ?= python
 
@@ -14,8 +14,18 @@ test:
 validate-schemas:
 	$(PYTHON) tools/validate_schemas.py
 
+validate-domains:
+	$(PYTHON) tools/validate_domains.py
+
+validate-workflows:
+	$(PYTHON) tools/validate_workflows.py
+
+boundary-check:
+	$(PYTHON) tools/check_domain_boundaries.py
+
 ci-check:
 	$(PYTHON) tools/ci_rule_check.py
+	$(PYTHON) tools/check_domain_boundaries.py
 
 install-playwright:
 	$(PYTHON) -m playwright install chromium
@@ -24,6 +34,7 @@ smoke:
 	$(PYTHON) -c "from e2e_agent.graph.graph import build_graph; g = build_graph(':memory:'); print('graph OK')"
 	$(PYTHON) -c "from e2e_agent.skills.loader import SkillPackageLoader; print('skills:', SkillPackageLoader().list_skills())"
 	$(PYTHON) -c "from e2e_agent.llm.wrapper import LLMWrapper; LLMWrapper(); print('llm wrapper OK')"
+	$(PYTHON) -c "from e2e_agent.domains import DomainPackLoader; print('domains:', DomainPackLoader().list_domain_ids())"
 
 clean:
 	find . -name "*.pyc" -delete
