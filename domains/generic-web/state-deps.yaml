@@ -1,0 +1,29 @@
+version: "1.0.0"
+
+whitelist:
+  "/*":
+    - locale
+    - viewport
+  "/form*":
+    - userType
+    - formVariant
+  "/checkout*":
+    - cartId
+    - paymentMethod
+  "/result*":
+    - requestId
+    - resultStatus
+
+normalization:
+  strip_timestamp: true
+  lowercase_values: false
+
+hot_values:
+  locale: [zh-CN, en-US]
+  viewport: [mobile, desktop]
+  userType: [guest, registered]
+  resultStatus: [success, failed, pending]
+
+cardinality:
+  max_combinations: 40
+  warn_threshold: 20
