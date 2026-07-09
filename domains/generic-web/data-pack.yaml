@@ -1,0 +1,14 @@
+id: generic-web-data
+version: "1.0.0"
+
+profiles:
+  guest_user:
+    provider: static_json
+    file: data/guest-user.json
+  random_user:
+    provider: faker
+    locale: zh_CN
+    fields:
+      name: person.name
+      email: internet.email
+      phone: phone_number
