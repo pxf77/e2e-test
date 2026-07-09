@@ -1,0 +1,87 @@
+id: insurance-regression
+version: "1.1"
+description: "保险 P0 回归断言包，覆盖保费、核保与订单/保单状态。"
+
+operators:
+  - exists
+  - visible
+  - number_equals
+  - number_between
+  - status_in
+  - transition_allowed
+  - business_rule
+
+templates:
+  price_premium:
+    name: "price and premium assertion"
+    category: premium
+    description: "Validate displayed premium and payable amount against plan, age, period, and discount rules."
+    required: true
+    match:
+      page_types: [product_detail, premium_calculation, insure_form]
+      route_keywords: [product, premium, quote, plan, price]
+      assertion_keywords: [premium, price, amount, payable, fee, 保费, 价格, 金额]
+      condition_keys: [productCode, planCode, ageBand, period]
+    variables:
+      required: [productCode, planCode]
+      optional: [ageBand, period, paymentFrequency, discountCode]
+    checks:
+      - operator: exists
+        actual: "${page.premium}"
+        expected: true
+      - operator: number_between
+        actual: "${business.actual_premium}"
+        expected:
+          min: 0
+      - operator: business_rule
+        actual: "${business.actual_premium}"
+        expected: "expected_premium(productCode, planCode, ageBand, period)"
+        message: "保费必须匹配产品费率规则。"
+
+  underwriting_result:
+    name: "underwriting result assertion"
+    category: underwriting
+    description: "Validate underwriting outcome and payment eligibility for standard, extra-premium, exclusion, and rejection branches."
+    required: true
+    match:
+      page_types: [health_notice, underwriting, risk_control, policy_result]
+      route_keywords: [underwriting, health, auth, result]
+      assertion_keywords: [underwriting, approve, reject, exclusion, extra premium, canPay, 核保, 承保, 拒保, 除外, 加费]
+      condition_keys: [healthNoticeResult, underwritingResult, canPay]
+    variables:
+      required: [underwritingResult]
+      optional: [healthNoticeResult, canPay, taskType, reasonCode]
+    checks:
+      - operator: status_in
+        actual: "${business.underwriting_result}"
+        expected: [standard, extra_premium, exclusion, rejected]
+      - operator: business_rule
+        actual: "${business.can_pay}"
+        expected: "expected_can_pay(underwritingResult)"
+        message: "支付资格必须与核保结论一致。"
+
+  order_status:
+    name: "order status assertion"
+    category: order
+    description: "Validate insurance order and policy lifecycle transitions after submit, underwriting, payment, and issue steps."
+    required: true
+    match:
+      page_types: [payment, policy_result]
+      route_keywords: [payment, order, pay, policy, result]
+      assertion_keywords: [order, payment, policy, issue, status, 订单, 支付, 出单, 保单]
+      condition_keys: [orderStatus, paymentStatus, policyNo, orderId]
+    variables:
+      required: [orderId, orderStatus]
+      optional: [paymentStatus, policyNo, underwritingResult]
+    checks:
+      - operator: status_in
+        actual: "${business.order_status}"
+        expected: [applying, underwriting, pending_payment, paid, issued, rejected, failed, cancelled]
+      - operator: transition_allowed
+        actual: "${business.order_status}"
+        expected: "${business.previous_order_status}"
+        message: "订单状态流转必须符合保险订单生命周期。"
+      - operator: business_rule
+        actual: "${business.policy_no}"
+        expected: "required_when(orderStatus == 'issued')"
+        message: "已出单状态必须存在保单号。"
