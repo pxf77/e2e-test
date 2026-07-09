@@ -1,0 +1,33 @@
+id: smoke-static-web
+version: "1.0.0"
+description: "最小静态 Web 冒烟工作流，用于验证 App/Domain/Runner 接入。"
+
+inputs:
+  app: required
+  domain: generic-web
+
+nodes:
+  - id: explore
+    type: agent
+    implementation: builtin.explore_static
+    outputs: [page_registry]
+
+  - id: execute
+    type: runner
+    implementation: runner.playwright
+    inputs: [page_registry]
+    outputs: [execution_result]
+
+  - id: report
+    type: report
+    implementation: builtin.report
+    inputs: [execution_result]
+    outputs: [test_report]
+
+edges:
+  - from: explore
+    to: execute
+  - from: execute
+    to: report
+  - from: report
+    to: END
