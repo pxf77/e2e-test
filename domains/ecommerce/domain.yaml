@@ -1,0 +1,29 @@
+id: ecommerce
+name: Ecommerce E2E Regression Domain
+version: "1.0.0"
+description: "电商商品浏览、购物车、结算、支付与订单结果链路领域包。"
+
+extends:
+  - generic-web
+
+ontology: ontology.yaml
+state_deps: state-deps.yaml
+assertion_pack: assertion-pack.yaml
+data_pack: data-pack.yaml
+
+supported_workflows:
+  - p0-web-regression
+
+page_types:
+  - product_listing
+  - product_detail
+  - cart
+  - checkout
+  - payment
+  - order_result
+
+business_terms:
+  cart: 购物车
+  checkout: 结算
+  order: 订单
+  sku: SKU
