@@ -1,0 +1,112 @@
+# Page-key state dependency governance for insurance domain.
+version: "1.1"
+
+whitelist:
+  "/product/*":
+    - productCode
+    - planCode
+    - channelCode
+  "/product/insure":
+    - productCode
+    - planCode
+    - ageBand
+    - occupationCategory
+    - healthNoticeResult
+    - underwritingResult
+  "/insure/*":
+    - productCode
+    - planCode
+    - ageBand
+    - occupationCategory
+    - healthNoticeResult
+    - underwritingResult
+  "/health-notice*":
+    - productCode
+    - planCode
+    - healthNoticeResult
+  "/underwriting*":
+    - productCode
+    - planCode
+    - underwritingResult
+    - canPay
+  "/payment*":
+    - orderId
+    - orderStatus
+    - paymentStatus
+    - policyNo
+  "/result*":
+    - orderId
+    - orderStatus
+    - policyNo
+    - underwritingResult
+  "/apps/cps/*/product/*":
+    - productCode
+    - planCode
+    - channelCode
+  "/apps/cps/*/product/insure*":
+    - productCode
+    - planCode
+    - ageBand
+    - occupationCategory
+    - healthNoticeResult
+    - underwritingResult
+  "/apps/cps/*/insure/*":
+    - productCode
+    - planCode
+    - ageBand
+    - occupationCategory
+    - healthNoticeResult
+    - underwritingResult
+  "/apps/cps/*/authentication/*":
+    - productCode
+    - planCode
+    - underwritingResult
+    - canPay
+  "/apps/cps/*/payment*":
+    - orderId
+    - orderStatus
+    - paymentStatus
+    - policyNo
+  "/apps/cps/*/result*":
+    - orderId
+    - orderStatus
+    - policyNo
+    - underwritingResult
+
+normalization:
+  strip_timestamp: true
+  lowercase_values: false
+
+hot_values:
+  productCode:
+    - test-product
+  planCode:
+    - basic
+    - classic
+    - premium
+  ageBand:
+    - child
+    - adult
+    - senior
+  occupationCategory:
+    - office
+    - light_manual
+  healthNoticeResult:
+    - pass
+    - manual_review
+  underwritingResult:
+    - standard
+    - extra_premium
+    - exclusion
+    - rejected
+  orderStatus:
+    - applying
+    - underwriting
+    - pending_payment
+    - paid
+    - issued
+    - rejected
+
+cardinality:
+  max_combinations: 80
+  warn_threshold: 40
