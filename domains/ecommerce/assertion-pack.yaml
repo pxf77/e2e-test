@@ -1,0 +1,44 @@
+id: ecommerce-basic
+version: "1.0.0"
+description: "电商 E2E 回归断言包，覆盖商品、购物车、结算与订单结果。"
+
+operators:
+  - exists
+  - visible
+  - number_equals
+  - number_between
+  - status_in
+  - business_rule
+
+templates:
+  cart_total:
+    name: "cart total assertion"
+    category: price
+    required: true
+    match:
+      page_types: [cart, checkout]
+      keywords: [cart, total, subtotal, amount, 购物车, 总价, 金额]
+    variables:
+      required: [cart_items, expected_total]
+    checks:
+      - operator: number_equals
+        actual: "${page.cart.total}"
+        expected: "${business.cart.expected_total}"
+        message: "购物车总价必须等于商品小计、优惠和运费的计算结果。"
+
+  order_created:
+    name: "order created assertion"
+    category: order
+    required: true
+    match:
+      page_types: [order_result]
+      keywords: [order, success, confirmation, 订单, 成功]
+    variables:
+      required: [orderId, orderStatus]
+    checks:
+      - operator: exists
+        actual: "${business.order_id}"
+        expected: true
+      - operator: status_in
+        actual: "${business.order_status}"
+        expected: [created, paid, shipped, cancelled]
