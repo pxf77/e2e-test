@@ -1,0 +1,100 @@
+id: p0-insurance-regression
+version: "1.0.0"
+description: "复刻当前保险 P0 回归四 Agent + 四 Gate 流水线的 v2 Workflow DSL。"
+
+inputs:
+  app: required
+  domain: insurance
+  env: optional
+
+nodes:
+  - id: tc_merge
+    type: agent
+    implementation: legacy.agent1_tc_merge
+    outputs: [merged_cases, conflicts]
+
+  - id: r1_gate
+    type: gate
+    implementation: legacy.r1_gate
+    policy: human_required
+    inputs: [merged_cases, conflicts]
+
+  - id: path_extract
+    type: agent
+    implementation: legacy.agent2_path_extract
+    uses: [domain.ontology, domain.state_deps]
+    inputs: [merged_cases]
+    outputs: [regression_paths]
+
+  - id: r2_gate
+    type: gate
+    implementation: legacy.r2_gate
+    policy: human_required
+    inputs: [regression_paths]
+
+  - id: explore
+    type: agent
+    implementation: legacy.agent3_explore
+    inputs: [regression_paths]
+    outputs: [page_registry, scenarios]
+
+  - id: r3_gate
+    type: gate
+    implementation: legacy.r3_gate
+    policy: human_required
+    inputs: [page_registry, scenarios]
+
+  - id: exec_healing
+    type: agent
+    implementation: legacy.agent4_exec
+    inputs: [scenarios, page_registry]
+    outputs: [reports, healing_events]
+
+  - id: r4_gate
+    type: gate
+    implementation: legacy.r4_gate
+    policy: report_only
+    inputs: [reports, healing_events]
+
+edges:
+  - from: tc_merge
+    to: r1_gate
+  - from: r1_gate
+    on: approved
+    to: path_extract
+  - from: r1_gate
+    on: rejected
+    to: tc_merge
+  - from: r1_gate
+    on: pending
+    to: END
+  - from: path_extract
+    to: r2_gate
+  - from: r2_gate
+    on: approved
+    to: explore
+  - from: r2_gate
+    on: rejected
+    to: path_extract
+  - from: r2_gate
+    on: pending
+    to: END
+  - from: explore
+    to: r3_gate
+  - from: r3_gate
+    on: approved
+    to: exec_healing
+  - from: r3_gate
+    on: rejected
+    to: explore
+  - from: r3_gate
+    on: pending
+    to: END
+  - from: exec_healing
+    to: r4_gate
+  - from: r4_gate
+    on: approved
+    to: END
+  - from: r4_gate
+    on: pending
+    to: END
