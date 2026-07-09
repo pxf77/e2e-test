@@ -1,0 +1,11 @@
+{
+  "cases": [
+    {
+      "id": "INS-001",
+      "title": "Quote, submit and verify policy result",
+      "priority": "P0",
+      "steps": ["Open product detail", "Calculate premium", "Submit application", "Pay order"],
+      "assertions": ["Premium is visible", "Underwriting result allows payment", "Policy result is successful"]
+    }
+  ]
+}
