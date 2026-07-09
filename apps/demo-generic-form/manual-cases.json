@@ -1,0 +1,11 @@
+{
+  "cases": [
+    {
+      "id": "GEN-001",
+      "title": "Open landing page",
+      "priority": "P0",
+      "steps": ["Open the start URL"],
+      "assertions": ["The landing page is visible"]
+    }
+  ]
+}
