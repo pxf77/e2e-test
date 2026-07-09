@@ -40,14 +40,16 @@ class PlaywrightRunner:
                 metrics={"reason": "no spec_path supplied"},
             )
         runner = PlaywrightTSRunner(repo_root=self.repo_root)
-        result = await runner.run_spec(Path(spec_path))
-        failed = 0 if result.get("ok") else 1
+        result = runner.run_spec(str(spec_path))
+        failed = int(result.get("failed") or 0)
+        passed = int(result.get("passed") or 0)
+        ok = int(result.get("returncode") or 0) == 0 and failed == 0
         return ExecutionResult(
             run_id=plan.id,
             runner=self.name,
-            status="passed" if result.get("ok") else "failed",
-            summary={"passed": 1 - failed, "failed": failed, "skipped": 0},
-            failures=[] if result.get("ok") else [{"id": "playwright", "category": "runner_error", "message": str(result)}],
+            status="passed" if ok else "failed",
+            summary={"passed": passed, "failed": failed or (0 if ok else 1), "skipped": 0},
+            failures=[] if ok else [{"id": "playwright", "category": "runner_error", "message": str(result)}],
             artifacts=[],
             metrics=result,
         )
