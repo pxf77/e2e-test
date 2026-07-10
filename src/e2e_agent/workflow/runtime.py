@@ -139,6 +139,7 @@ class WorkflowRuntime:
                 "manifest": domain.manifest,
                 "root": str(domain.root),
                 "ontology": domain.ontology,
+                "state_machine": domain.state_machine,
                 "state_deps": domain.state_deps,
                 "assertion_pack": domain.assertion_pack,
                 "data_pack": domain.data_pack,
