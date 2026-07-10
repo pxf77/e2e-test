@@ -8,6 +8,9 @@ from typing import Any
 from .state import WorkflowRuntimeState
 
 
+VALID_GATE_STATUSES = {"pending", "approved", "rejected"}
+
+
 def _utc_now() -> str:
     return datetime.now(UTC).isoformat()
 
@@ -28,7 +31,7 @@ def evaluate_gate(state: WorkflowRuntimeState, node_spec: dict[str, Any]) -> dic
     gates = state.get("gates") or {}
     existing = gates.get(gate_id) or {}
     existing_status = str(existing.get("status") or "")
-    if existing_status in {"approved", "rejected", "pending"}:
+    if existing_status in VALID_GATE_STATUSES:
         return dict(existing)
 
     policy = str(node_spec.get("policy") or "human_required")
@@ -51,6 +54,10 @@ def evaluate_gate(state: WorkflowRuntimeState, node_spec: dict[str, Any]) -> dic
     }
 
 
+def gate_checkpoint_path(run_id: str, checkpoint_dir: str | Path) -> Path:
+    return Path(checkpoint_dir) / f"{run_id}.v2.json"
+
+
 def persist_pending_gate(state: WorkflowRuntimeState, gate_id: str) -> Path | None:
     gate = (state.get("gates") or {}).get(gate_id) or {}
     if gate.get("status") != "pending":
@@ -61,23 +68,86 @@ def persist_pending_gate(state: WorkflowRuntimeState, gate_id: str) -> Path | No
         return None
     target_dir = Path(str(checkpoint_dir))
     target_dir.mkdir(parents=True, exist_ok=True)
-    path = target_dir / f"{state.get('run_id', 'run')}.v2.json"
-    path.write_text(
-        json.dumps(
-            {
-                "run_id": state.get("run_id"),
-                "workflow_id": state.get("workflow_id"),
-                "pending_gate": gate_id,
-                "updated_at": _utc_now(),
-                "state": state,
-            },
-            ensure_ascii=False,
-            indent=2,
-            default=str,
-        ),
-        encoding="utf-8",
-    )
+    path = gate_checkpoint_path(str(state.get("run_id") or "run"), target_dir)
+    payload = {
+        "run_id": state.get("run_id"),
+        "app_id": state.get("app_id"),
+        "workflow_id": state.get("workflow_id"),
+        "pending_gate": gate_id,
+        "decision": None,
+        "status": "pending",
+        "updated_at": _utc_now(),
+        "state": state,
+    }
+    _write_checkpoint(path, payload)
     return path
+
+
+def load_gate_checkpoint(run_id: str, checkpoint_dir: str | Path) -> tuple[Path, dict[str, Any]]:
+    path = gate_checkpoint_path(run_id, checkpoint_dir)
+    if not path.exists():
+        raise FileNotFoundError(f"v2 gate checkpoint not found: {path}")
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict) or not isinstance(payload.get("state"), dict):
+        raise ValueError(f"Invalid v2 gate checkpoint: {path}")
+    return path, payload
+
+
+def decide_gate(
+    run_id: str,
+    checkpoint_dir: str | Path,
+    *,
+    status: str,
+    operator: str,
+    note: str,
+) -> dict[str, Any]:
+    if status not in {"approved", "rejected"}:
+        raise ValueError(f"Gate decision must be approved or rejected, got: {status}")
+    path, payload = load_gate_checkpoint(run_id, checkpoint_dir)
+    gate_id = str(payload.get("pending_gate") or "")
+    if not gate_id:
+        raise ValueError(f"Checkpoint has no pending gate: {path}")
+    state = dict(payload["state"])
+    gates = dict(state.get("gates") or {})
+    existing = dict(gates.get(gate_id) or {})
+    if str(existing.get("status") or "pending") not in VALID_GATE_STATUSES:
+        raise ValueError(f"Invalid current gate status for {gate_id}: {existing}")
+    decision = {
+        **existing,
+        "status": status,
+        "operator": operator,
+        "timestamp": _utc_now(),
+        "note": note,
+    }
+    gates[gate_id] = decision
+    state["gates"] = gates
+    payload.update(
+        {
+            "decision": decision,
+            "status": "decided",
+            "updated_at": _utc_now(),
+            "state": state,
+        }
+    )
+    _write_checkpoint(path, payload)
+    return payload
+
+
+def complete_gate_checkpoint(
+    path: Path,
+    payload: dict[str, Any],
+    *,
+    state: dict[str, Any],
+    next_status: str,
+) -> None:
+    payload.update(
+        {
+            "status": next_status,
+            "updated_at": _utc_now(),
+            "state": state,
+        }
+    )
+    _write_checkpoint(path, payload)
 
 
 def gate_route(gate_id: str):
@@ -87,3 +157,10 @@ def gate_route(gate_id: str):
 
     _route.__name__ = f"route_{gate_id}"
     return _route
+
+
+def _write_checkpoint(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.tmp")
+    temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
+    temporary.replace(path)
