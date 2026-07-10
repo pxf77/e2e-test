@@ -1,12 +1,13 @@
 id: ecommerce
 name: Ecommerce E2E Regression Domain
-version: "1.0.0"
+version: "1.1.0"
 description: "电商商品浏览、购物车、结算、支付与订单结果链路领域包。"
 
 extends:
   - generic-web
 
 ontology: ontology.yaml
+state_machine: state-machine.yaml
 state_deps: state-deps.yaml
 assertion_pack: assertion-pack.yaml
 data_pack: data-pack.yaml
