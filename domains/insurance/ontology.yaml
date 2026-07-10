@@ -1,42 +1,138 @@
-version: "1.0.0"
+version: "1.1.0"
 
 page_types:
   product_detail:
+    name: "Product Detail"
     description: "保险产品详情页。"
+    node_type: form
+    url_pattern: "/product/detail"
     keywords: [product, detail, insurance, 产品, 详情]
   premium_calculation:
+    name: "Premium Calculation"
     description: "保费试算或报价页。"
+    node_type: form
+    url_pattern: "/product/to-insure"
     keywords: [premium, quote, price, calculate, 保费, 报价, 试算]
+  plan_selection:
+    name: "Plan Selection"
+    description: "保障计划选择页。"
+    node_type: form
+    url_pattern: "/insure/plan"
+    keywords: [plan, coverage, 计划, 保障方案]
+  applicant_info:
+    name: "Applicant Info"
+    description: "投保人信息页。"
+    node_type: form
+    url_pattern: "/insure/applicant"
+    keywords: [applicant, holder, 投保人]
+  insured_info:
+    name: "Insured Info"
+    description: "被保人信息页。"
+    node_type: form
+    url_pattern: "/insure/insured"
+    keywords: [insured, 被保人]
+  beneficiary:
+    name: "Beneficiary"
+    description: "受益人信息页。"
+    node_type: form
+    url_pattern: "/insure/beneficiary"
+    keywords: [beneficiary, 受益人]
+  insure_form:
+    name: "Insure Form"
+    description: "投保信息录入页。"
+    node_type: form
+    url_pattern: "/product/insure"
+    keywords: [insure, application, applicant, insured, 投保, 被保人]
+  tax_info:
+    name: "Tax Identity"
+    description: "税收居民身份页。"
+    node_type: form
+    url_pattern: "/insure/tax"
+    keywords: [tax, identity, 税收, 税务居民]
   suitability:
+    name: "Suitability Questionnaire"
     description: "适当性或投保资格确认页。"
+    node_type: form
+    url_pattern: "/product/to-insure"
     keywords: [suitability, eligibility, 适当性, 资格]
   health_notice:
+    name: "Health Notice"
     description: "健康告知页。"
+    node_type: form
+    url_pattern: "/insure/health-notice"
     keywords: [health, notice, declaration, 健康告知]
-  insure_form:
-    description: "投保信息录入页。"
-    keywords: [insure, application, applicant, insured, 投保, 被保人]
   underwriting:
+    name: "Underwriting"
     description: "核保结果或承保确认页。"
+    node_type: confirm
+    url_pattern: "/underwriting"
     keywords: [underwriting, audit, approve, reject, 核保, 承保, 拒保]
   risk_control:
+    name: "Risk Control"
     description: "风控、人机验证或身份认证页。"
+    node_type: form
+    url_pattern: "/risk-control"
     keywords: [risk, authentication, captcha, 风控, 认证]
   payment:
+    name: "Payment"
     description: "支付页。"
+    node_type: payment
+    url_pattern: "/payment"
     keywords: [payment, pay, checkout, 支付]
   policy_result:
+    name: "Policy Result"
     description: "支付或出单结果页。"
+    node_type: result
+    url_pattern: "/result"
     keywords: [policy, result, issue, success, 保单, 出单, 结果]
+  policy_service:
+    name: "Policy Service"
+    description: "保单服务页。"
+    node_type: form
+    url_pattern: "/policy/service"
+    keywords: [policy service, policy change, 保单服务, 保全]
+  surrender:
+    name: "Surrender"
+    description: "退保申请页。"
+    node_type: form
+    url_pattern: "/policy/surrender"
+    keywords: [surrender, cancel policy, 退保]
 
 business_intents:
   quote:
     keywords: [premium, quote, calculate, 保费, 试算, 报价]
+  main_flow:
+    keywords: [main flow, new business, 完整投保, 主流程]
   health_notice:
     keywords: [health, notice, 健康告知]
+  tax_identity:
+    keywords: [tax, identity, 税收身份]
   underwriting:
     keywords: [underwriting, approve, reject, 核保, 承保, 拒保]
   payment:
     keywords: [payment, pay, 支付]
+  policy:
+    keywords: [policy service, policy, 保单服务, 保单]
   policy_issue:
     keywords: [policy, issue, result, 保单, 出单]
+  surrender:
+    keywords: [surrender, cancel policy, 退保]
+
+flow_chains:
+  quote: [product_detail, premium_calculation]
+  main_flow: [product_detail, premium_calculation, suitability, health_notice, insure_form, underwriting, risk_control, payment, policy_result]
+  health_notice: [product_detail, premium_calculation, suitability, health_notice, insure_form, underwriting, risk_control, payment, policy_result]
+  tax_identity: [product_detail, suitability, insure_form, tax_info, policy_result]
+  underwriting: [product_detail, premium_calculation, suitability, health_notice, insure_form, underwriting, risk_control, payment, policy_result]
+  payment: [product_detail, premium_calculation, suitability, health_notice, insure_form, underwriting, risk_control, payment, policy_result]
+  policy_issue: [product_detail, premium_calculation, suitability, health_notice, insure_form, underwriting, risk_control, payment, policy_result]
+  policy: [product_detail, premium_calculation, suitability, health_notice, insure_form, underwriting, risk_control, payment, policy_result, policy_service]
+  surrender: [product_detail, premium_calculation, suitability, health_notice, insure_form, underwriting, risk_control, payment, policy_result, policy_service, surrender, policy_result]
+
+optional_page_types:
+  - premium_calculation
+  - suitability
+  - health_notice
+  - underwriting
+  - risk_control
+  - payment
