@@ -7,6 +7,7 @@ from typing import Any
 from urllib.parse import urljoin
 
 from e2e_agent.core.domain_path_planner import build_domain_path_nodes, resolve_business_intent
+from e2e_agent.reporting import normalize_failure, write_report_bundle
 from e2e_agent.runners.base import ExecutionPlan
 from e2e_agent.runners.playwright.runner import PlaywrightRunner
 
@@ -175,6 +176,7 @@ async def playwright_runner_node(state: WorkflowRuntimeState, node_spec: dict[st
 
 def report_node(state: WorkflowRuntimeState, node_spec: dict[str, Any]) -> NodeResult:
     artifacts = state.get("artifacts") or {}
+    metadata = state.get("metadata") or {}
     execution = artifacts.get("execution_result") or {}
     assertion_report = artifacts.get("assertion_report") or {}
     summary = execution.get("summary") or {}
@@ -182,6 +184,7 @@ def report_node(state: WorkflowRuntimeState, node_spec: dict[str, Any]) -> NodeR
     status = execution.get("status") or "unknown"
     if assertion_failed:
         status = "failed"
+    failures = [normalize_failure(item) for item in execution.get("failures") or [] if isinstance(item, dict)]
     report = {
         "run_id": state.get("run_id"),
         "workflow_id": state.get("workflow_id"),
@@ -192,9 +195,21 @@ def report_node(state: WorkflowRuntimeState, node_spec: dict[str, Any]) -> NodeR
             "passed": int(summary.get("passed") or 0),
             "failed": int(summary.get("failed") or 0) + assertion_failed,
             "skipped": int(summary.get("skipped") or 0),
+            "duration_ms": int(summary.get("duration_ms") or 0),
         },
-        "failures": execution.get("failures") or [],
+        "failures": failures,
         "assertions": assertion_report,
         "runner_artifacts": execution.get("artifacts") or [],
     }
-    return NodeResult(outputs={"test_report": report, "healing_events": []})
+    report_artifacts: list[dict[str, Any]] = []
+    artifacts_dir = metadata.get("artifacts_dir")
+    if artifacts_dir:
+        report_artifacts = write_report_bundle(report, Path(str(artifacts_dir)))
+    return NodeResult(
+        outputs={
+            "test_report": report,
+            "report_artifacts": report_artifacts,
+            "healing_events": [],
+        },
+        metrics={"report_artifact_count": len(report_artifacts)},
+    )
