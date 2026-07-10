@@ -1,0 +1,16 @@
+id: demo-api
+name: Demo API
+domain: generic-web
+
+requirements:
+  prd: requirements.md
+
+entrypoints:
+  api:
+    base_url: http://127.0.0.1:8089
+
+execution:
+  default_runner: api
+  environments:
+    local:
+      timeout_seconds: 10
