@@ -1,0 +1,35 @@
+version: "1.0.0"
+
+whitelist:
+  "/workspace*":
+    - tenantId
+    - workspaceId
+    - role
+  "/resources*":
+    - tenantId
+    - workspaceId
+    - resourceType
+    - resourceStatus
+  "/permissions*":
+    - tenantId
+    - workspaceId
+    - role
+    - memberStatus
+  "/audit*":
+    - tenantId
+    - workspaceId
+    - actorId
+    - actionType
+
+normalization:
+  strip_timestamp: true
+  lowercase_values: false
+
+hot_values:
+  role: [owner, admin, editor, viewer]
+  resourceStatus: [draft, active, archived]
+  memberStatus: [invited, active, disabled]
+
+cardinality:
+  max_combinations: 60
+  warn_threshold: 30
