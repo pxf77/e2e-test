@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pxf77.github.io/e2e-test/schemas/v2/node.schema.json",
+  "title": "Workflow Node v2",
+  "description": "可独立复用的 Workflow 节点定义契约。",
+  "type": "object",
+  "required": ["id", "type", "implementation"],
+  "additionalProperties": true,
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_:-]*$"},
+    "type": {"type": "string", "enum": ["agent", "gate", "runner", "plugin", "report", "utility", "assertion"]},
+    "implementation": {"type": "string"},
+    "policy": {"type": "string"},
+    "when": {"type": "string"},
+    "uses": {"type": "array", "items": {"type": "string"}},
+    "inputs": {"type": "array", "items": {"type": "string"}},
+    "outputs": {"type": "array", "items": {"type": "string"}},
+    "config": {"type": "object"}
+  }
+}
