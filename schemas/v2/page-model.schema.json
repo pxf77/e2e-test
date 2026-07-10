@@ -1,0 +1,18 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pxf77.github.io/e2e-test/schemas/v2/page-model.schema.json",
+  "title": "Page Model v2",
+  "description": "Runner 无关页面模型，描述页面身份、元素、动作、状态和断言锚点。",
+  "type": "object",
+  "required": ["id", "page_type"],
+  "additionalProperties": true,
+  "properties": {
+    "id": {"type": "string"},
+    "page_type": {"type": "string"},
+    "url_pattern": {"type": ["string", "null"]},
+    "elements": {"type": "object"},
+    "actions": {"type": "object"},
+    "state_keys": {"type": "array", "items": {"type": "string"}},
+    "assertion_anchors": {"type": "array", "items": {"type": "string"}}
+  }
+}
