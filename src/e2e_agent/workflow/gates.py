@@ -77,7 +77,7 @@ def persist_pending_gate(state: WorkflowRuntimeState, gate_id: str) -> Path | No
         "decision": None,
         "status": "pending",
         "updated_at": _utc_now(),
-        "state": state,
+        "state": _checkpoint_state(state),
     }
     _write_checkpoint(path, payload)
     return path
@@ -126,7 +126,7 @@ def decide_gate(
             "decision": decision,
             "status": "decided",
             "updated_at": _utc_now(),
-            "state": state,
+            "state": _checkpoint_state(state),
         }
     )
     _write_checkpoint(path, payload)
@@ -144,7 +144,7 @@ def complete_gate_checkpoint(
         {
             "status": next_status,
             "updated_at": _utc_now(),
-            "state": state,
+            "state": _checkpoint_state(state),
         }
     )
     _write_checkpoint(path, payload)
@@ -157,6 +157,10 @@ def gate_route(gate_id: str):
 
     _route.__name__ = f"route_{gate_id}"
     return _route
+
+
+def _checkpoint_state(state: dict[str, Any]) -> dict[str, Any]:
+    return {key: value for key, value in state.items() if key != "runtime_data"}
 
 
 def _write_checkpoint(path: Path, payload: dict[str, Any]) -> None:
