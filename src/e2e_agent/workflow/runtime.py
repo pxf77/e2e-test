@@ -13,6 +13,7 @@ from e2e_agent.domains import DomainPackLoader
 from .compiler import WorkflowCompiler
 from .defaults import build_default_node_registry
 from .dsl import WorkflowDefinition, load_workflow
+from .gates import complete_gate_checkpoint, load_gate_checkpoint
 from .registry import NodeRegistry
 from .state import WorkflowRuntimeState
 
@@ -51,9 +52,20 @@ class WorkflowRuntime:
     def load_definition(self, workflow: str | Path) -> WorkflowDefinition:
         return load_workflow(self.resolve_workflow_path(workflow), registry=self.contract_registry)
 
-    def build(self, workflow: str | Path, *, checkpointer: Any | None = None):
+    def build(
+        self,
+        workflow: str | Path,
+        *,
+        checkpointer: Any | None = None,
+        entrypoint_override: str | None = None,
+    ):
         definition = self.load_definition(workflow)
-        return self.compiler.compile_langgraph(definition, self.registry, checkpointer=checkpointer)
+        return self.compiler.compile_langgraph(
+            definition,
+            self.registry,
+            checkpointer=checkpointer,
+            entrypoint_override=entrypoint_override,
+        )
 
     def prepare_state(
         self,
@@ -150,6 +162,67 @@ class WorkflowRuntime:
         )
         graph = self.build(workflow)
         result = await graph.ainvoke(state, config={"recursion_limit": 100})
+        return self._finalize(result)
+
+    async def resume(
+        self,
+        *,
+        run_id: str,
+        checkpoint_dir: str | Path | None = None,
+    ) -> WorkflowRuntimeState:
+        directory = Path(checkpoint_dir) if checkpoint_dir else self.repo_root / ".local" / "e2e-agent" / "gate-checkpoints"
+        checkpoint_path, checkpoint = load_gate_checkpoint(run_id, directory)
+        state: WorkflowRuntimeState = dict(checkpoint["state"])
+        gate_id = str(checkpoint.get("pending_gate") or "")
+        gate = dict((state.get("gates") or {}).get(gate_id) or {})
+        outcome = str(gate.get("status") or "")
+        if outcome not in {"approved", "rejected"}:
+            raise ValueError(f"Gate {gate_id} has no decision; approve or reject before resume")
+
+        workflow_id = str(state.get("workflow_id") or checkpoint.get("workflow_id") or "")
+        definition = self.load_definition(workflow_id)
+        target = self.compiler.route_target(definition, gate_id, outcome)
+
+        metadata = dict(state.get("metadata") or {})
+        history = list(metadata.get("gate_history") or [])
+        history.append({"gate_id": gate_id, **gate})
+        metadata["gate_history"] = history
+        state["metadata"] = metadata
+
+        if outcome == "rejected":
+            gates = dict(state.get("gates") or {})
+            gates.pop(gate_id, None)
+            state["gates"] = gates
+            legacy_state = dict(state.get("legacy_state") or {})
+            legacy_state.pop(gate_id, None)
+            state["legacy_state"] = legacy_state
+
+        if target == "END":
+            result = self._finalize(state)
+            complete_gate_checkpoint(checkpoint_path, checkpoint, state=result, next_status="completed")
+            return result
+
+        graph = self.build(workflow_id, entrypoint_override=target)
+        result = await graph.ainvoke(state, config={"recursion_limit": 100})
+        result = self._finalize(result)
+        pending = [
+            gate_name
+            for gate_name, gate_state in (result.get("gates") or {}).items()
+            if str((gate_state or {}).get("status") or "") == "pending"
+        ]
+        active_checkpoint = checkpoint
+        if pending:
+            _, active_checkpoint = load_gate_checkpoint(run_id, directory)
+        complete_gate_checkpoint(
+            checkpoint_path,
+            active_checkpoint,
+            state=result,
+            next_status="pending" if pending else "completed",
+        )
+        return result
+
+    def _finalize(self, state: WorkflowRuntimeState) -> WorkflowRuntimeState:
+        result: WorkflowRuntimeState = dict(state)
         store = ArtifactManifestStore.from_state(result, contract_registry=self.contract_registry)
         if store is not None:
             result["artifact_manifest"] = store.finalize(result)
