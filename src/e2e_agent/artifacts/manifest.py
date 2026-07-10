@@ -52,7 +52,7 @@ def _atomic_write(path: Path, data: bytes) -> None:
 
 
 class ArtifactManifestStore:
-    """Persists v2 workflow outputs and a machine-readable artifact index."""
+    """Persist workflow outputs and all external evidence in one manifest."""
 
     def __init__(
         self,
@@ -131,12 +131,10 @@ class ArtifactManifestStore:
         }
         for output_name, payload in outputs.items():
             relative_path = Path("by-node") / _safe_segment(node_id) / f"{_safe_segment(output_name)}.json"
-            absolute_path = self.run_dir / relative_path
             data = _json_bytes(payload)
-            _atomic_write(absolute_path, data)
-            artifact_id = f"{node_id}:{output_name}"
-            entries[artifact_id] = {
-                "id": artifact_id,
+            _atomic_write(self.run_dir / relative_path, data)
+            entries[f"{node_id}:{output_name}"] = {
+                "id": f"{node_id}:{output_name}",
                 "contract": _CONTRACT_BY_OUTPUT.get(output_name),
                 "path": relative_path.as_posix(),
                 "sha256": _sha256(data),
@@ -147,6 +145,8 @@ class ArtifactManifestStore:
             }
             if output_name == "execution_result" and isinstance(payload, dict):
                 self._record_runner_files(entries, node_id=node_id, implementation=implementation, payload=payload)
+            if output_name == "report_artifacts" and isinstance(payload, list):
+                self._record_report_files(entries, node_id=node_id, implementation=implementation, items=payload)
         manifest["artifacts"] = sorted(entries.values(), key=lambda item: str(item.get("id")))
         manifest["updated_at"] = _utc_now()
         self._write_manifest(manifest)
@@ -190,20 +190,57 @@ class ArtifactManifestStore:
         implementation: str,
         payload: dict[str, Any],
     ) -> None:
-        for index, item in enumerate(payload.get("artifacts") or [], start=1):
+        self._record_file_items(
+            entries,
+            node_id=node_id,
+            implementation=implementation,
+            items=payload.get("artifacts") or [],
+            category="runner",
+        )
+
+    def _record_report_files(
+        self,
+        entries: dict[str, dict[str, Any]],
+        *,
+        node_id: str,
+        implementation: str,
+        items: list[Any],
+    ) -> None:
+        self._record_file_items(
+            entries,
+            node_id=node_id,
+            implementation=implementation,
+            items=items,
+            category="report",
+        )
+
+    def _record_file_items(
+        self,
+        entries: dict[str, dict[str, Any]],
+        *,
+        node_id: str,
+        implementation: str,
+        items: Iterable[Any],
+        category: str,
+    ) -> None:
+        for index, item in enumerate(items, start=1):
             if not isinstance(item, dict) or not item.get("path"):
                 continue
             source = Path(str(item["path"]))
             if not source.exists() or not source.is_file():
                 continue
-            target_dir = self.run_dir / "runner" / _safe_segment(node_id)
-            target_dir.mkdir(parents=True, exist_ok=True)
-            target = target_dir / _safe_segment(source.name)
-            if source.resolve() != target.resolve():
-                shutil.copy2(source, target)
+            try:
+                relative = source.resolve().relative_to(self.run_dir.resolve())
+                target = source
+            except ValueError:
+                target_dir = self.run_dir / category / _safe_segment(node_id)
+                target_dir.mkdir(parents=True, exist_ok=True)
+                target = target_dir / _safe_segment(source.name)
+                if source.resolve() != target.resolve():
+                    shutil.copy2(source, target)
+                relative = target.relative_to(self.run_dir)
             data = target.read_bytes()
-            relative = target.relative_to(self.run_dir)
-            artifact_id = f"{node_id}:runner:{index}:{target.name}"
+            artifact_id = f"{node_id}:{category}:{index}:{target.name}"
             entries[artifact_id] = {
                 "id": artifact_id,
                 "contract": item.get("contract"),
@@ -213,7 +250,7 @@ class ArtifactManifestStore:
                 "node_id": node_id,
                 "created_at": _utc_now(),
                 "metadata": {
-                    "kind": item.get("kind") or "runner-artifact",
+                    "kind": item.get("kind") or f"{category}-artifact",
                     "source_path": str(source),
                     "size_bytes": len(data),
                 },
