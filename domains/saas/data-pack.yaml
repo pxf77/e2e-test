@@ -1,0 +1,19 @@
+id: saas-data
+version: "1.0.0"
+
+profiles:
+  admin_user:
+    provider: account_pool
+    file: data/admin-accounts.json
+  random_resource:
+    provider: faker
+    seed: saas-resource
+    fields:
+      name: person.name
+      external_id: uuid
+  audit_actor:
+    provider: faker
+    seed: saas-auditor
+    fields:
+      name: person.name
+      email: internet.email
