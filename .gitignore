@@ -27,6 +27,9 @@ tc-exec/
 *.log
 tmp-agent4-visible-run.js
 
+# v2 App Pack runtime artifacts
+apps/**/*.assets/
+
 # Product runtime artifacts
 products/**/*.assets/
 products/**/reg/
