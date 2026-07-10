@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pxf77.github.io/e2e-test/schemas/v2/gate-policy.schema.json",
+  "title": "Gate Policy v2",
+  "description": "人工或自动 Gate 的策略、超时、通知和决策要求。",
+  "type": "object",
+  "required": ["id", "mode"],
+  "additionalProperties": true,
+  "properties": {
+    "id": {"type": "string"},
+    "mode": {"type": "string", "enum": ["human_required", "human_optional", "report_only", "automatic"]},
+    "timeout_seconds": {"type": "integer", "minimum": 0},
+    "required_roles": {"type": "array", "items": {"type": "string"}},
+    "notifications": {"type": "array", "items": {"type": "object"}},
+    "evidence_inputs": {"type": "array", "items": {"type": "string"}}
+  }
+}
