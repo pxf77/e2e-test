@@ -1,0 +1,73 @@
+version: "1.0.0"
+
+page_types:
+  login:
+    name: Login
+    description: "登录与身份验证页面。"
+    node_type: form
+    url_pattern: /login
+    keywords: [login, sign in, 登录, 认证]
+  workspace:
+    name: Workspace
+    description: "工作区首页或控制台。"
+    node_type: form
+    url_pattern: /workspace
+    keywords: [workspace, dashboard, 工作区, 控制台]
+  resource_list:
+    name: Resource List
+    description: "资源列表页面。"
+    node_type: form
+    url_pattern: /resources
+    keywords: [resource list, projects, items, 资源列表, 项目列表]
+  resource_editor:
+    name: Resource Editor
+    description: "资源创建或编辑页面。"
+    node_type: form
+    url_pattern: /resources/edit
+    keywords: [create resource, edit resource, 新建资源, 编辑资源]
+  permission:
+    name: Permission Management
+    description: "成员、角色与权限配置页面。"
+    node_type: form
+    url_pattern: /permissions
+    keywords: [permission, role, member, 权限, 角色, 成员]
+  audit_log:
+    name: Audit Log
+    description: "审计日志页面。"
+    node_type: result
+    url_pattern: /audit
+    keywords: [audit log, activity, 审计, 操作记录]
+  result:
+    name: Operation Result
+    description: "操作成功或失败反馈。"
+    node_type: result
+    url_pattern: /result
+    keywords: [success, result, saved, 成功, 结果, 已保存]
+
+business_intents:
+  create_resource:
+    keywords: [create resource, new project, 新建资源, 创建项目]
+  manage_permission:
+    keywords: [permission, role, invite member, 权限, 角色, 邀请成员]
+  audit_change:
+    keywords: [audit, activity, operation log, 审计, 操作日志]
+
+flow_chains:
+  create_resource:
+    - login
+    - workspace
+    - resource_list
+    - resource_editor
+    - result
+  manage_permission:
+    - login
+    - workspace
+    - permission
+    - result
+  audit_change:
+    - login
+    - workspace
+    - audit_log
+
+optional_page_types:
+  - login

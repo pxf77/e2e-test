@@ -1,0 +1,26 @@
+id: mobile-regression
+version: "1.0.0"
+description: "通过外部 Appium 测试命令执行原生移动端回归并生成统一报告。"
+
+inputs:
+  app: required
+  domain: required
+  mobile_fixtures: required
+
+nodes:
+  - id: execute_mobile
+    type: runner
+    implementation: runner.appium
+    outputs: [execution_result]
+
+  - id: report
+    type: report
+    implementation: builtin.report
+    inputs: [execution_result]
+    outputs: [test_report, report_artifacts, healing_events]
+
+edges:
+  - from: execute_mobile
+    to: report
+  - from: report
+    to: END

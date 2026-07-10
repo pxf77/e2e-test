@@ -3,15 +3,22 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import re
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
 
 from e2e_agent import cli as legacy_cli
+from e2e_agent.config.yaml_loader import load_yaml_file
 from e2e_agent.data import DataProviderRegistry
 from e2e_agent.plugins import PluginManager
 from e2e_agent.workflow import WorkflowRuntime
 from e2e_agent.workflow.gates import decide_gate, load_gate_checkpoint
+
+
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parents[2]
 
 
 def _build_v2_run_parser() -> argparse.ArgumentParser:
@@ -37,6 +44,14 @@ def _build_v2_gate_parser() -> argparse.ArgumentParser:
         command_parser.add_argument("--operator", default="manual")
         command_parser.add_argument("--note", default=f"{command}d via v2 CLI")
         command_parser.add_argument("--checkpoint-dir", default=None)
+    return parser
+
+
+def _build_plugin_create_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="e2e-agent plugin create")
+    parser.add_argument("plugin_id")
+    parser.add_argument("--runtime", choices=["python", "node"], default="python")
+    parser.add_argument("--root", default=None)
     return parser
 
 
@@ -150,7 +165,7 @@ def gate_v2(argv: list[str]) -> int:
 
 
 def list_plugins() -> int:
-    root = Path(__file__).resolve().parents[2]
+    root = _repo_root()
     manifests = PluginManager(root / "plugins").list()
     payload = [
         {
@@ -167,9 +182,67 @@ def list_plugins() -> int:
     return 0
 
 
+def list_runners() -> int:
+    payload = [load_yaml_file(path) for path in sorted((_repo_root() / "runners").glob("*.yaml"))]
+    print(json.dumps(payload, ensure_ascii=False, indent=2))
+    return 0
+
+
 def list_data_providers() -> int:
     print(json.dumps(DataProviderRegistry().list_names(), ensure_ascii=False, indent=2))
     return 0
+
+
+def create_plugin(argv: list[str]) -> int:
+    args = _build_plugin_create_parser().parse_args(argv)
+    plugin_id = str(args.plugin_id)
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", plugin_id):
+        raise ValueError("plugin id must match [a-z0-9][a-z0-9-]*")
+    plugins_root = Path(args.root) if args.root else _repo_root() / "plugins"
+    plugin_root = plugins_root / plugin_id
+    if plugin_root.exists():
+        raise FileExistsError(f"Plugin already exists: {plugin_root}")
+    plugin_root.mkdir(parents=True)
+    entry = "plugin.py" if args.runtime == "python" else "plugin.js"
+    manifest = f'''id: {plugin_id}
+version: "0.1.0"
+kind: node
+description: "Generated plugin {plugin_id}."
+runtime:
+  type: {args.runtime}
+  entry: {entry}
+  timeout_seconds: 300
+contracts:
+  input: []
+  output: []
+capabilities: []
+'''
+    (plugin_root / "plugin.yaml").write_text(manifest, encoding="utf-8")
+    if args.runtime == "python":
+        source = '''from __future__ import annotations
+import json
+import sys
+
+payload = json.loads(sys.stdin.read() or "{}")
+print(json.dumps({"status": "success", "outputs": {}, "metrics": {}, "warnings": []}))
+'''
+    else:
+        source = '''let data = "";
+process.stdin.on("data", chunk => data += chunk);
+process.stdin.on("end", () => console.log(JSON.stringify({status: "success", outputs: {}, metrics: {}, warnings: []})));
+'''
+    (plugin_root / entry).write_text(source, encoding="utf-8")
+    print(json.dumps({"id": plugin_id, "path": str(plugin_root), "runtime": args.runtime}, ensure_ascii=False, indent=2))
+    return 0
+
+
+def run_acceptance() -> int:
+    completed = subprocess.run(
+        [sys.executable, str(_repo_root() / "tools" / "acceptance_matrix.py")],
+        cwd=str(_repo_root()),
+        check=False,
+    )
+    return int(completed.returncode)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -181,8 +254,14 @@ def main(argv: list[str] | None = None) -> int:
             return gate_v2(actual[1:])
         if actual == ["plugins"] or actual == ["plugins", "--json"]:
             return list_plugins()
+        if actual == ["runners"] or actual == ["runners", "--json"]:
+            return list_runners()
         if actual == ["data-providers"] or actual == ["data-providers", "--json"]:
             return list_data_providers()
+        if len(actual) >= 2 and actual[:2] == ["plugin", "create"]:
+            return create_plugin(actual[2:])
+        if actual == ["acceptance"]:
+            return run_acceptance()
         return legacy_cli.main(actual)
     except Exception as exc:
         print(str(exc), file=sys.stderr)

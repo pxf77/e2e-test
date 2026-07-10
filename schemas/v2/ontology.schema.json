@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pxf77.github.io/e2e-test/schemas/v2/ontology.schema.json",
+  "title": "Domain Ontology v2",
+  "description": "领域页面类型、业务意图、流程链和可选页面契约。",
+  "type": "object",
+  "required": ["version", "page_types"],
+  "additionalProperties": true,
+  "properties": {
+    "version": {"type": "string"},
+    "page_types": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["description"],
+        "additionalProperties": true,
+        "properties": {
+          "name": {"type": "string"},
+          "description": {"type": "string"},
+          "node_type": {"type": "string"},
+          "url_pattern": {"type": ["string", "null"]},
+          "keywords": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    },
+    "business_intents": {"type": "object"},
+    "flow_chains": {
+      "type": "object",
+      "additionalProperties": {"type": "array", "items": {"type": "string"}}
+    },
+    "optional_page_types": {"type": "array", "items": {"type": "string"}}
+  }
+}

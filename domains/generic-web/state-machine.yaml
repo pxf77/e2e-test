@@ -1,0 +1,32 @@
+id: generic-operation
+initial_state: idle
+states:
+  - idle
+  - in_progress
+  - pending
+  - succeeded
+  - failed
+  - cancelled
+terminal_states:
+  - succeeded
+  - failed
+  - cancelled
+transitions:
+  - from: idle
+    to: in_progress
+    event: start
+  - from: in_progress
+    to: pending
+    event: wait
+  - from: pending
+    to: in_progress
+    event: resume
+  - from: in_progress
+    to: succeeded
+    event: complete
+  - from: in_progress
+    to: failed
+    event: fail
+  - from: pending
+    to: cancelled
+    event: cancel

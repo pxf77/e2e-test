@@ -1,0 +1,11 @@
+id: appium
+version: "1.0.0"
+kind: mobile
+implementation: runner.appium
+capabilities:
+  - native-mobile
+  - external-command
+  - artifact-collection
+config:
+  timeout_seconds: 900
+  requires_command: true

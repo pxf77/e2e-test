@@ -1,4 +1,4 @@
-.PHONY: install install-uv test validate-schemas validate-domains validate-workflows boundary-check ci-check clean
+.PHONY: install install-uv test validate-schemas validate-domains validate-workflows validate-runners validate-plugins boundary-check ci-check acceptance clean
 
 PYTHON ?= python
 
@@ -20,12 +20,21 @@ validate-domains:
 validate-workflows:
 	$(PYTHON) tools/validate_workflows.py
 
+validate-runners:
+	$(PYTHON) tools/validate_runners.py
+
+validate-plugins:
+	$(PYTHON) tools/validate_plugins.py
+
 boundary-check:
 	$(PYTHON) tools/check_domain_boundaries.py
 
 ci-check:
 	$(PYTHON) tools/ci_rule_check.py
 	$(PYTHON) tools/check_domain_boundaries.py
+
+acceptance:
+	$(PYTHON) tools/acceptance_matrix.py
 
 install-playwright:
 	$(PYTHON) -m playwright install chromium

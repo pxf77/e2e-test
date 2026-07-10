@@ -17,6 +17,7 @@ from .builtins import (
 )
 from .data_node import prepare_data_node
 from .registry import NodeRegistry
+from .runner_nodes import api_runner_node, appium_runner_node
 
 
 def build_default_node_registry(repo_root: Path | None = None) -> NodeRegistry:
@@ -30,6 +31,8 @@ def build_default_node_registry(repo_root: Path | None = None) -> NodeRegistry:
     registry.register("builtin.assertions", assertion_node, kind="assertion")
     registry.register("builtin.report", report_node, kind="report")
     registry.register("runner.playwright", playwright_runner_node, kind="runner")
+    registry.register("runner.api", api_runner_node, kind="runner")
+    registry.register("runner.appium", appium_runner_node, kind="runner")
     register_legacy_nodes(registry)
 
     plugin_manager = PluginManager(

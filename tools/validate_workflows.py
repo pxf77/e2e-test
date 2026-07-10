@@ -1,4 +1,4 @@
-"""Validate Workflow DSL files under workflows/."""
+"""Validate Workflow DSL schema, structure and implementation registration."""
 from __future__ import annotations
 
 import sys
@@ -10,6 +10,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from e2e_agent.workflow import WorkflowCompiler, load_workflow  # noqa: E402
+from e2e_agent.workflow.defaults import build_default_node_registry  # noqa: E402
 
 
 def main() -> int:
@@ -19,11 +20,13 @@ def main() -> int:
         print("ERROR: no workflow YAML files found under workflows/", file=sys.stderr)
         return 1
     compiler = WorkflowCompiler()
+    registry = build_default_node_registry(ROOT)
     failed = 0
     for path in workflow_files:
         try:
             definition = load_workflow(path)
             compiled = compiler.compile(definition)
+            compiler.compile_langgraph(definition, registry)
         except Exception as exc:  # pragma: no cover - command-line reporting
             failed += 1
             print(f"  FAIL  {path.relative_to(ROOT)}: {exc}")

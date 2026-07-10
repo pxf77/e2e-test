@@ -19,6 +19,7 @@ class WorkflowRuntimeState(TypedDict, total=False):
     domain_id: str
     workflow_id: str
     env: str
+    config: dict[str, Any]
     app: dict[str, Any]
     domain: dict[str, Any]
     inputs: dict[str, Any]

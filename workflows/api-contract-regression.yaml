@@ -1,0 +1,26 @@
+id: api-contract-regression
+version: "1.0.0"
+description: "执行声明式 HTTP 场景并输出统一报告。"
+
+inputs:
+  app: required
+  domain: required
+  api_scenarios: required
+
+nodes:
+  - id: execute_api
+    type: runner
+    implementation: runner.api
+    outputs: [execution_result]
+
+  - id: report
+    type: report
+    implementation: builtin.report
+    inputs: [execution_result]
+    outputs: [test_report, healing_events]
+
+edges:
+  - from: execute_api
+    to: report
+  - from: report
+    to: END

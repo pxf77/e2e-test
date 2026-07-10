@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pxf77.github.io/e2e-test/schemas/v2/execution-runner.schema.json",
+  "title": "Execution Runner Manifest v2",
+  "description": "执行器能力、运行时与配置契约。",
+  "type": "object",
+  "required": ["id", "version", "kind", "implementation"],
+  "additionalProperties": true,
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "version": {"type": "string"},
+    "kind": {"type": "string", "enum": ["web", "api", "mobile", "custom"]},
+    "implementation": {"type": "string"},
+    "capabilities": {"type": "array", "items": {"type": "string"}},
+    "config": {"type": "object"}
+  }
+}

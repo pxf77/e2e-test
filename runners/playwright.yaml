@@ -1,0 +1,14 @@
+id: playwright
+version: "1.0.0"
+kind: web
+implementation: runner.playwright
+capabilities:
+  - web-ui
+  - chromium
+  - trace
+  - video
+  - screenshot
+  - html-report
+config:
+  language: typescript
+  browser: chromium

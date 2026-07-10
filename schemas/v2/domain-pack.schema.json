@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://pxf77.github.io/e2e-test/schemas/v2/domain-pack.schema.json",
   "title": "Domain Pack v2",
-  "description": "行业领域包契约，描述 ontology、state deps、assertion pack、data pack 与领域扩展入口。",
+  "description": "行业领域包契约，描述 ontology、state machine、state deps、assertion pack、data pack 与领域扩展入口。",
   "type": "object",
   "required": ["id", "name", "version"],
   "additionalProperties": true,
@@ -17,6 +17,7 @@
       "default": []
     },
     "ontology": {"type": "string"},
+    "state_machine": {"type": "string"},
     "state_deps": {"type": "string"},
     "assertion_pack": {"type": "string"},
     "data_pack": {"type": "string"},

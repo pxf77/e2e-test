@@ -1,0 +1,26 @@
+id: saas-resource
+initial_state: draft
+states:
+  - draft
+  - active
+  - archived
+  - failed
+terminal_states:
+  - archived
+  - failed
+transitions:
+  - from: draft
+    to: active
+    event: publish
+  - from: active
+    to: draft
+    event: unpublish
+  - from: active
+    to: archived
+    event: archive
+  - from: draft
+    to: failed
+    event: validation_failed
+  - from: active
+    to: failed
+    event: operation_failed

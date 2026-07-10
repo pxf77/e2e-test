@@ -1,0 +1,26 @@
+# Changelog
+
+## 1.0.0
+
+### Added
+
+- App Pack、Domain Pack 继承和 Workflow DSL → LangGraph Runtime。
+- generic-web、insurance、ecommerce、saas Domain Pack。
+- Playwright、HTTP API 和 Appium command Runner。
+- Assertion Engine、Assertion Report 和领域断言包。
+- Data Pack Runtime：JSON、CSV、合成数据、Secret、账号池、API、SQLite。
+- Python/Node Plugin SDK、契约校验和插件脚手架。
+- v2 Gate 跨进程批准、驳回和恢复。
+- Artifact Manifest、JSON/HTML/JUnit 报告和失败分类。
+- 分层配置解析、Runner/Plugin/Domain/Workflow 验证工具。
+- Golden 基线和最终验收矩阵。
+
+### Compatibility
+
+- 保留 v1 `product-input.json`、保险四 Agent Graph、旧 Gate CLI 和 Skill Package。
+
+### Security
+
+- Secret 与账号原值隔离在非持久化 `runtime_data`。
+- Run Context 和 Gate checkpoint 不记录敏感运行数据。
+- 模型调用继续强制通过 LLMWrapper。
