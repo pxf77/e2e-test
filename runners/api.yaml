@@ -1,0 +1,11 @@
+id: api
+version: "1.0.0"
+kind: api
+implementation: runner.api
+capabilities:
+  - http
+  - json-assertion
+  - status-assertion
+  - response-artifact
+config:
+  timeout_seconds: 30
