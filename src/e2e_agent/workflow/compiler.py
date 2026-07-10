@@ -51,6 +51,7 @@ class WorkflowCompiler:
         registry: NodeRegistry,
         *,
         checkpointer: Any | None = None,
+        entrypoint_override: str | None = None,
     ):
         compiled = self.compile(definition)
         builder = StateGraph(WorkflowRuntimeState)
@@ -63,7 +64,11 @@ class WorkflowCompiler:
             registry.get(implementation)  # fail during compilation, not execution
             builder.add_node(node_id, self._make_registered_node(registry, implementation, node_spec))
 
-        builder.set_entry_point(compiled.entrypoint)
+        entrypoint = entrypoint_override or compiled.entrypoint
+        if entrypoint not in compiled.nodes:
+            raise ValueError(f"Workflow resume entrypoint not found: {entrypoint}")
+        builder.set_entry_point(entrypoint)
+
         outgoing: dict[str, list[dict[str, Any]]] = {}
         for edge in compiled.edges:
             outgoing.setdefault(str(edge["from"]), []).append(edge)
@@ -89,6 +94,17 @@ class WorkflowCompiler:
                 builder.add_edge(source, END if target == "END" else str(target))
 
         return builder.compile(checkpointer=checkpointer) if checkpointer is not None else builder.compile()
+
+    @staticmethod
+    def route_target(definition: WorkflowDefinition, gate_id: str, outcome: str) -> str:
+        matches = [
+            edge
+            for edge in definition.payload.get("edges") or []
+            if str(edge.get("from")) == gate_id and str(edge.get("on")) == outcome
+        ]
+        if len(matches) != 1:
+            raise ValueError(f"Expected exactly one route for {gate_id}:{outcome}, found {len(matches)}")
+        return str(matches[0]["to"])
 
     @staticmethod
     def _make_registered_node(
