@@ -20,6 +20,9 @@ def test_child_domain_inherits_generic_assets() -> None:
     assert "api-contract-regression" in ecommerce.supported_workflows
     assert "visible_element" in ecommerce.assertion_pack["templates"]
     assert "cart_total" in ecommerce.assertion_pack["templates"]
+    assert ecommerce.state_machine["id"] == "ecommerce-order"
+    assert "created" in ecommerce.state_machine["states"]
+    assert "idle" not in ecommerce.state_machine["states"]
 
 
 def test_saas_domain_is_complete() -> None:
@@ -29,6 +32,7 @@ def test_saas_domain_is_complete() -> None:
     assert "permission_applied" in saas.assertion_pack["templates"]
     assert "random_resource" in saas.data_pack["profiles"]
     assert "p0-web-regression" in saas.supported_workflows
+    assert saas.state_machine["initial_state"] == "draft"
 
 
 def test_domain_inheritance_cycle_is_rejected(tmp_path: Path) -> None:
