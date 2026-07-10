@@ -2,14 +2,16 @@ from __future__ import annotations
 
 import asyncio
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from e2e_agent.contracts import ContractRegistry
-from e2e_agent.workflow.registry import NodeRegistry, NodeResult
-from e2e_agent.workflow.state import WorkflowRuntimeState
 
 from .loader import PluginManifest, PluginManifestLoader
 from .runtime import PluginRuntime
+
+if TYPE_CHECKING:
+    from e2e_agent.workflow.registry import NodeRegistry
+    from e2e_agent.workflow.state import WorkflowRuntimeState
 
 
 class PluginManager:
@@ -33,14 +35,16 @@ class PluginManager:
     def list(self) -> list[PluginManifest]:
         return list(self._manifests.values()) if self._manifests else self.discover()
 
-    def register_nodes(self, registry: NodeRegistry) -> None:
+    def register_nodes(self, registry: "NodeRegistry") -> None:
         for manifest in self.list():
             if manifest.kind not in {"node", "skill"}:
                 continue
             registry.register(manifest.implementation_id, self._handler(manifest), kind="plugin")
 
     def _handler(self, manifest: PluginManifest):
-        async def _invoke(state: WorkflowRuntimeState, node_spec: dict[str, Any]) -> NodeResult:
+        async def _invoke(state: "WorkflowRuntimeState", node_spec: dict[str, Any]):
+            from e2e_agent.workflow.registry import NodeResult
+
             self._validate_inputs(manifest, state)
             payload = {
                 "run_context": {
@@ -68,7 +72,7 @@ class PluginManager:
 
         return _invoke
 
-    def _validate_inputs(self, manifest: PluginManifest, state: WorkflowRuntimeState) -> None:
+    def _validate_inputs(self, manifest: PluginManifest, state: "WorkflowRuntimeState") -> None:
         contracts = (manifest.payload.get("contracts") or {}).get("input") or []
         for contract_ref in contracts:
             name, version = self._split_contract(str(contract_ref))
