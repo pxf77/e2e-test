@@ -10,8 +10,8 @@ class WorkflowRuntimeState(TypedDict, total=False):
 
     Dynamic node outputs are stored in ``artifacts`` rather than becoming
     top-level state fields. ``artifact_manifest`` indexes persisted outputs,
-    while ``legacy_state`` temporarily contains the v1 E2EAgentState payload
-    during incremental migration.
+    ``runtime_data`` holds non-persisted sensitive material, while
+    ``legacy_state`` temporarily contains the v1 E2EAgentState payload.
     """
 
     run_id: str
@@ -24,6 +24,7 @@ class WorkflowRuntimeState(TypedDict, total=False):
     inputs: dict[str, Any]
     artifacts: dict[str, Any]
     artifact_manifest: dict[str, Any]
+    runtime_data: dict[str, Any]
     gates: dict[str, dict[str, Any]]
     metadata: dict[str, Any]
     errors: list[dict[str, Any]]
