@@ -50,6 +50,7 @@ class DomainPackLoader:
         parent_ids = [str(item) for item in own_manifest.get("extends") or []]
         manifest: dict[str, Any] = {}
         ontology: dict[str, Any] = {}
+        state_machine: dict[str, Any] = {}
         state_deps: dict[str, Any] = {}
         assertion_pack: dict[str, Any] = {}
         data_pack: dict[str, Any] = {}
@@ -60,6 +61,7 @@ class DomainPackLoader:
             parent = self._load(parent_id, [*stack, domain_id])
             manifest = _deep_merge(manifest, parent.manifest)
             ontology = _deep_merge(ontology, parent.ontology)
+            state_machine = _deep_merge(state_machine, parent.state_machine)
             state_deps = _deep_merge(state_deps, parent.state_deps)
             assertion_pack = _deep_merge(assertion_pack, parent.assertion_pack)
             data_pack = _deep_merge(data_pack, parent.data_pack)
@@ -70,6 +72,7 @@ class DomainPackLoader:
         manifest["id"] = loaded_id
         manifest["resolved_lineage"] = _unique([*lineage, *parent_ids])
         ontology = _deep_merge(ontology, self._load_optional_yaml(root, own_manifest.get("ontology")))
+        state_machine = _deep_merge(state_machine, self._load_optional_yaml(root, own_manifest.get("state_machine")))
         state_deps = _deep_merge(state_deps, self._load_optional_yaml(root, own_manifest.get("state_deps")))
         assertion_pack = _deep_merge(assertion_pack, self._load_optional_yaml(root, own_manifest.get("assertion_pack")))
         data_pack = _deep_merge(data_pack, self._load_optional_yaml(root, own_manifest.get("data_pack")))
@@ -82,6 +85,7 @@ class DomainPackLoader:
             root=root,
             manifest=manifest,
             ontology=ontology,
+            state_machine=state_machine,
             state_deps=state_deps,
             assertion_pack=assertion_pack,
             data_pack=data_pack,
