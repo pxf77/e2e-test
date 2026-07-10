@@ -7,11 +7,7 @@ from typing import Any
 
 @dataclass(frozen=True)
 class DomainPack:
-    """Loaded domain knowledge package.
-
-    Core components consume this structure instead of hard-coding business
-    terms such as policy, underwriting, cart, order, or workspace.
-    """
+    """Resolved domain knowledge package consumed by the framework core."""
 
     id: str
     name: str
@@ -19,6 +15,7 @@ class DomainPack:
     root: Path
     manifest: dict[str, Any]
     ontology: dict[str, Any] = field(default_factory=dict)
+    state_machine: dict[str, Any] = field(default_factory=dict)
     state_deps: dict[str, Any] = field(default_factory=dict)
     assertion_pack: dict[str, Any] = field(default_factory=dict)
     data_pack: dict[str, Any] = field(default_factory=dict)
