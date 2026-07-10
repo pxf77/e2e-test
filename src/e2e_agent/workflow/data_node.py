@@ -14,6 +14,10 @@ def _app_root(state: WorkflowRuntimeState) -> Path:
     return Path(str((state.get("metadata") or {}).get("app_root") or "."))
 
 
+def _repo_root(state: WorkflowRuntimeState) -> Path:
+    return Path(str((state.get("metadata") or {}).get("repo_root") or "."))
+
+
 def _app_path(state: WorkflowRuntimeState, value: str | None) -> Path | None:
     if not value:
         return None
@@ -49,7 +53,7 @@ def prepare_data_node(state: WorkflowRuntimeState, node_spec: dict[str, Any]) ->
         warnings.append(f"App data pack not found: {app_pack_path}")
 
     domain_pack = domain.get("data_pack") or {}
-    domain_root = Path(str(domain.get("root") or _app_root(state)))
+    domain_root = _repo_root(state) / "domains" / str(state.get("domain_id") or "")
     app_profiles = app_pack.get("profiles") or {}
     domain_profiles = domain_pack.get("profiles") or {}
     for profile_name in profile_names:
