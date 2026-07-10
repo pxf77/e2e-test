@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urljoin
 
+from e2e_agent.core.domain_path_planner import build_domain_path_nodes, resolve_business_intent
 from e2e_agent.runners.base import ExecutionPlan
 from e2e_agent.runners.playwright.runner import PlaywrightRunner
 
@@ -64,34 +65,81 @@ def case_merge_node(state: WorkflowRuntimeState, node_spec: dict[str, Any]) -> N
 
 def path_extract_node(state: WorkflowRuntimeState, node_spec: dict[str, Any]) -> NodeResult:
     artifacts = state.get("artifacts") or {}
+    domain = state.get("domain") or {}
+    ontology = domain.get("ontology") or {}
     cases = artifacts.get("merged_cases") or []
     paths: list[dict[str, Any]] = []
+    flow_nodes: dict[str, dict[str, Any]] = {}
+    flow_edges: dict[tuple[str, str], dict[str, str]] = {}
+
     for index, case in enumerate(cases, start=1):
-        steps = case.get("steps") or []
+        domain_nodes = build_domain_path_nodes(case, ontology)
+        if domain_nodes:
+            path_nodes = domain_nodes
+        else:
+            steps = case.get("steps") or []
+            path_nodes = [
+                {
+                    "id": f"step-{step_index:02d}",
+                    "page_type": "unknown",
+                    "name": str(step),
+                    "node_type": "action",
+                    "url_pattern": None,
+                    "optional": False,
+                    "action": str(step),
+                }
+                for step_index, step in enumerate(steps, start=1)
+            ]
+
+        for node in path_nodes:
+            flow_nodes.setdefault(str(node["id"]), dict(node))
+        for left, right in zip(path_nodes, path_nodes[1:]):
+            key = (str(left["id"]), str(right["id"]))
+            flow_edges.setdefault(key, {"from": key[0], "to": key[1]})
+
+        intent = resolve_business_intent(case, ontology)
+        optional_nodes = [str(node["id"]) for node in path_nodes if node.get("optional")]
         paths.append(
             {
                 "path_id": f"PATH-{index:03d}",
                 "case_ids": [str(case.get("case_id") or f"CASE-{index:03d}")],
                 "title": str(case.get("title") or case.get("name") or f"Regression path {index}"),
-                "nodes": [
-                    {"id": f"step-{step_index:02d}", "action": str(step)}
-                    for step_index, step in enumerate(steps, start=1)
-                ],
+                "business_intent": intent,
+                "nodes": path_nodes,
+                "optional_nodes": optional_nodes,
+                "execution_policy": {
+                    "name": "domain_ontology_path" if domain_nodes else "case_step_path",
+                    "skip_absent_optional_nodes": bool(optional_nodes),
+                },
             }
         )
+
+    regression_flow = {
+        "domain_id": state.get("domain_id"),
+        "entry_url": _entry_url(state),
+        "flow_version": "domain-ontology-v2",
+        "nodes": list(flow_nodes.values()),
+        "edges": list(flow_edges.values()),
+    }
     return NodeResult(
-        outputs={"regression_paths": paths},
-        metrics={"path_count": len(paths)},
+        outputs={"regression_flow": regression_flow, "regression_paths": paths},
+        metrics={
+            "path_count": len(paths),
+            "ontology_page_type_count": len(ontology.get("page_types") or {}),
+        },
     )
 
 
 def explore_static_node(state: WorkflowRuntimeState, node_spec: dict[str, Any]) -> NodeResult:
     entry_url = _entry_url(state)
+    ontology = ((state.get("domain") or {}).get("ontology") or {})
+    page_types = ontology.get("page_types") or {}
+    first_page_type = next(iter(page_types), "landing")
     page_registry = {
         "pages": [
             {
                 "page_key": "entry",
-                "page_type": "landing",
+                "page_type": first_page_type,
                 "url": entry_url,
                 "source": "static_app_pack",
             }
@@ -122,7 +170,10 @@ async def playwright_runner_node(state: WorkflowRuntimeState, node_spec: dict[st
         artifacts_dir=str(metadata.get("artifacts_dir") or ""),
     )
     execution_result = await runner.execute(plan)
-    return NodeResult(outputs={"execution_result": asdict(execution_result)})
+    return NodeResult(
+        outputs={"execution_result": asdict(execution_result)},
+        metrics={"runner_artifact_count": len(execution_result.artifacts)},
+    )
 
 
 def report_node(state: WorkflowRuntimeState, node_spec: dict[str, Any]) -> NodeResult:
@@ -142,5 +193,6 @@ def report_node(state: WorkflowRuntimeState, node_spec: dict[str, Any]) -> NodeR
             "skipped": int(summary.get("skipped") or 0),
         },
         "failures": execution.get("failures") or [],
+        "runner_artifacts": execution.get("artifacts") or [],
     }
     return NodeResult(outputs={"test_report": report, "healing_events": []})
