@@ -34,3 +34,12 @@ def test_insurance_workflow_preserves_legacy_node_names() -> None:
         "exec_healing",
         "r4_gate",
     ]
+
+
+def test_workflow_loader_preserves_on_as_string_key() -> None:
+    definition = load_workflow(ROOT / "workflows" / "p0-insurance-regression.yaml")
+    conditional_edges = [edge for edge in definition.payload["edges"] if "on" in edge]
+
+    assert conditional_edges
+    assert all(True not in edge for edge in conditional_edges)
+    assert {edge["on"] for edge in conditional_edges} >= {"approved", "rejected", "pending"}
