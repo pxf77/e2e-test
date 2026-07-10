@@ -1,9 +1,10 @@
 id: generic-web
 name: Generic Web E2E Domain
-version: "1.3.0"
-description: "行业无关 Web、API 与多端回归基础领域包，提供页面类型、状态依赖和通用断言。"
+version: "1.4.0"
+description: "行业无关 Web、API 与多端回归基础领域包，提供页面、状态机、状态依赖和通用断言。"
 
 ontology: ontology.yaml
+state_machine: state-machine.yaml
 state_deps: state-deps.yaml
 assertion_pack: assertion-pack.yaml
 data_pack: data-pack.yaml
