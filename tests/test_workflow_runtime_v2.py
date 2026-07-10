@@ -23,8 +23,15 @@ async def test_smoke_static_web_runs_to_report() -> None:
     artifacts = result["artifacts"]
     assert artifacts["page_registry"]["entry_url"] == "https://example.com/"
     assert artifacts["execution_result"]["status"] == "skipped"
+    assert artifacts["assertion_report"]["status"] == "skipped"
     assert artifacts["test_report"]["status"] == "skipped"
-    assert [item["node_id"] for item in result["node_trace"]] == ["explore", "execute", "report"]
+    assert [item["node_id"] for item in result["node_trace"]] == [
+        "explore",
+        "prepare_data",
+        "execute",
+        "assertions",
+        "report",
+    ]
 
 
 @pytest.mark.asyncio
