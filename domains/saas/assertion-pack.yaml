@@ -1,0 +1,56 @@
+id: saas-basic
+version: "1.0.0"
+description: "SaaS 资源、权限与审计链路断言。"
+
+operators:
+  - exists
+  - visible
+  - text_contains
+  - status_in
+  - business_rule
+
+templates:
+  resource_saved:
+    name: "resource saved assertion"
+    category: resource
+    required: true
+    match:
+      page_types: [resource_editor, result]
+      keywords: [resource, saved, created, 资源, 保存, 创建]
+    variables:
+      required: [resourceId, resourceStatus]
+    checks:
+      - operator: exists
+        actual: "${business.resource_id}"
+        expected: true
+      - operator: status_in
+        actual: "${business.resource_status}"
+        expected: [draft, active, archived]
+
+  permission_applied:
+    name: "permission assertion"
+    category: permission
+    required: true
+    match:
+      page_types: [permission, result]
+      keywords: [permission, role, 权限, 角色]
+    variables:
+      required: [role]
+    checks:
+      - operator: status_in
+        actual: "${business.role}"
+        expected: [owner, admin, editor, viewer]
+
+  audit_recorded:
+    name: "audit log assertion"
+    category: audit
+    required: true
+    match:
+      page_types: [audit_log]
+      keywords: [audit, activity, 审计, 操作记录]
+    variables:
+      required: [auditEntryId]
+    checks:
+      - operator: exists
+        actual: "${business.audit_entry_id}"
+        expected: true
