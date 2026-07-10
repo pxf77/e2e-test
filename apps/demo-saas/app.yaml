@@ -1,0 +1,24 @@
+id: demo-saas
+name: Demo SaaS Administration
+domain: saas
+
+requirements:
+  prd: requirements.md
+  manual_cases: manual-cases.json
+
+entrypoints:
+  web:
+    base_url: https://example.com
+    start_url: /workspace
+
+page_models:
+  dir: page-models
+
+data:
+  profiles:
+    - random_resource
+
+execution:
+  default_runner: playwright
+  environments:
+    local: envs/local.yaml
