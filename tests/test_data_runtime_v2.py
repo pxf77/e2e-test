@@ -64,9 +64,11 @@ async def test_workflow_keeps_actual_data_out_of_run_context(tmp_path: Path) -> 
         metadata={"artifacts_dir": str(tmp_path / "run"), "gate_checkpoint_dir": ""},
     )
 
-    assert result["runtime_data"]["test_data"]["random_user"]["email"].endswith("@example.test")
+    raw_email = result["runtime_data"]["test_data"]["random_user"]["email"]
+    assert raw_email.endswith("@example.test")
     assert "***@example.test" in result["artifacts"]["test_data"]["random_user"]["email"]
     assert result["artifacts"]["assertion_report"]["status"] == "passed"
-    run_context = json.loads((tmp_path / "run" / "run-context.json").read_text(encoding="utf-8"))
+    run_context_text = (tmp_path / "run" / "run-context.json").read_text(encoding="utf-8")
+    run_context = json.loads(run_context_text)
     assert "runtime_data" not in run_context
-    assert "@example.test" not in json.dumps(run_context.get("artifacts", {}).get("test_data", {}), ensure_ascii=False).replace("***@example.test", "")
+    assert raw_email not in run_context_text
