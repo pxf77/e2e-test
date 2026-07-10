@@ -20,8 +20,9 @@ def _case_texts(case: dict[str, Any]) -> list[str]:
 def resolve_business_intent(case: dict[str, Any], ontology: dict[str, Any]) -> str | None:
     """Resolve an intent from explicit fields, tags, or ontology keywords.
 
-    Domain-specific intents that own an explicit flow chain are evaluated before
-    generic navigation/input intents inherited from a parent Domain Pack.
+    Intent precedence is: explicit value > business-intent tag > local domain
+    intent > inherited intent. Within the same scope, an intent with an explicit
+    flow chain and a more specific keyword wins.
     """
     flow_chains = ontology.get("flow_chains") or {}
     explicit = str(case.get("business_intent") or case.get("scenario_type") or "").strip()
@@ -37,12 +38,10 @@ def resolve_business_intent(case: dict[str, Any], ontology: dict[str, Any]) -> s
 
     haystack = _normalise(" ".join(_case_texts(case)))
     intents = ontology.get("business_intents") or {}
-    ordered_intents = [
-        *[item for item in intents.items() if str(item[0]) in flow_chains],
-        *[item for item in intents.items() if str(item[0]) not in flow_chains],
-    ]
-    matches: list[tuple[int, int, str]] = []
-    for order, (intent, spec) in enumerate(ordered_intents):
+    local_intents = {str(item) for item in ontology.get("_local_business_intents") or []}
+    matches: list[tuple[int, int, int, str]] = []
+    for intent, spec in intents.items():
+        intent_name = str(intent)
         keywords = spec.get("keywords") if isinstance(spec, dict) else []
         matched_lengths = [
             len(_normalise(str(keyword)))
@@ -50,12 +49,13 @@ def resolve_business_intent(case: dict[str, Any], ontology: dict[str, Any]) -> s
             if _normalise(str(keyword)) and _normalise(str(keyword)) in haystack
         ]
         if matched_lengths:
-            flow_priority = 1 if str(intent) in flow_chains else 0
-            matches.append((flow_priority, max(matched_lengths), str(intent)))
+            local_priority = 1 if intent_name in local_intents else 0
+            flow_priority = 1 if intent_name in flow_chains else 0
+            matches.append((local_priority, flow_priority, max(matched_lengths), intent_name))
     if not matches:
         return None
-    matches.sort(key=lambda item: (item[0], item[1]), reverse=True)
-    return matches[0][2]
+    matches.sort(key=lambda item: (item[0], item[1], item[2]), reverse=True)
+    return matches[0][3]
 
 
 def resolve_page_types(case: dict[str, Any], ontology: dict[str, Any]) -> list[str]:
