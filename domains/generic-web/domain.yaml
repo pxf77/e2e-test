@@ -1,7 +1,7 @@
 id: generic-web
 name: Generic Web E2E Domain
-version: "1.1.0"
-description: "行业无关 Web UI 回归测试领域包，提供基础页面类型、状态依赖和通用断言。"
+version: "1.2.0"
+description: "行业无关 Web 与 API 回归测试领域包，提供基础页面类型、状态依赖和通用断言。"
 
 ontology: ontology.yaml
 state_deps: state-deps.yaml
@@ -12,6 +12,7 @@ supported_workflows:
   - p0-web-regression
   - smoke-static-web
   - plugin-smoke
+  - api-contract-regression
 
 page_types:
   - landing
