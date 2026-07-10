@@ -3,8 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-import yaml
-
+from e2e_agent.config.yaml_loader import load_yaml_file
 from e2e_agent.contracts import ContractRegistry
 
 from .model import DomainPack
@@ -55,10 +54,7 @@ class DomainPackLoader:
 
     @staticmethod
     def _read_yaml(path: Path) -> dict[str, Any]:
-        payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-        if not isinstance(payload, dict):
-            raise ValueError(f"YAML document must be an object: {path}")
-        return payload
+        return load_yaml_file(path)
 
     def _load_optional_yaml(self, root: Path, relative_path: Any) -> dict[str, Any]:
         if not relative_path:
