@@ -4,8 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-import yaml
-
+from e2e_agent.config.yaml_loader import load_yaml_file
 from e2e_agent.contracts import ContractRegistry
 
 
@@ -23,9 +22,7 @@ class WorkflowDefinition:
 
 def load_workflow(path: Path, registry: ContractRegistry | None = None) -> WorkflowDefinition:
     registry = registry or ContractRegistry().discover()
-    payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    if not isinstance(payload, dict):
-        raise ValueError(f"Workflow YAML must be an object: {path}")
+    payload = load_yaml_file(path)
     registry.validate("workflow", "v2", payload)
     return WorkflowDefinition(
         id=str(payload["id"]),
