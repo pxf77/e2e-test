@@ -6,6 +6,7 @@ from typing import Any
 
 from e2e_agent.adapters.legacy import build_legacy_state
 from e2e_agent.artifacts import ArtifactManifestStore
+from e2e_agent.config.resolver import ConfigResolver
 from e2e_agent.config.yaml_loader import load_yaml_file
 from e2e_agent.contracts import ContractRegistry
 from e2e_agent.domains import DomainPackLoader
@@ -24,7 +25,7 @@ def _new_run_id(app_id: str) -> str:
 
 
 class WorkflowRuntime:
-    """Loads App/Domain/Workflow packs and executes the compiled LangGraph."""
+    """Load App/Domain/Workflow packs and execute the compiled LangGraph."""
 
     def __init__(
         self,
@@ -35,8 +36,9 @@ class WorkflowRuntime:
     ) -> None:
         self.repo_root = repo_root or Path(__file__).resolve().parents[3]
         self.contract_registry = contract_registry or ContractRegistry(self.repo_root / "schemas").discover()
-        self.registry = registry or build_default_node_registry()
+        self.registry = registry or build_default_node_registry(self.repo_root)
         self.compiler = WorkflowCompiler()
+        self.config_resolver = ConfigResolver()
         self.domain_loader = DomainPackLoader(self.repo_root / "domains", registry=self.contract_registry)
 
     def resolve_workflow_path(self, workflow: str | Path) -> Path:
@@ -86,9 +88,21 @@ class WorkflowRuntime:
         if domain.supported_workflows and definition.id not in domain.supported_workflows:
             raise ValueError(f"Domain {domain.id} does not support workflow {definition.id}")
 
+        actual_inputs = dict(inputs or {})
         actual_run_id = run_id or _new_run_id(str(app["id"]))
         app_root = resolved_app.parent
         artifacts_dir = app_root / ".assets" / "runs" / actual_run_id
+        effective_config = self.config_resolver.resolve(
+            defaults={
+                "runner": {"default": (app.get("execution") or {}).get("default_runner") or "playwright"},
+                "workflow": {"id": definition.id, "version": definition.version},
+            },
+            domain=domain.manifest,
+            app=app,
+            app_root=app_root,
+            env=env,
+            runtime=actual_inputs.get("config_overrides") if isinstance(actual_inputs.get("config_overrides"), dict) else {},
+        )
         runtime_metadata = {
             "repo_root": str(self.repo_root),
             "app_root": str(app_root),
@@ -96,6 +110,7 @@ class WorkflowRuntime:
             "gate_checkpoint_dir": str(self.repo_root / ".local" / "e2e-agent" / "gate-checkpoints"),
             "artifacts_dir": str(artifacts_dir),
             "artifact_manifest_path": str(artifacts_dir / "artifact-manifest.json"),
+            "domain_lineage": list(domain.manifest.get("resolved_lineage") or []),
         }
         runtime_metadata.update(metadata or {})
         legacy_required = any(
@@ -118,17 +133,20 @@ class WorkflowRuntime:
             "domain_id": domain.id,
             "workflow_id": definition.id,
             "env": env,
+            "config": effective_config,
             "app": app,
             "domain": {
                 "manifest": domain.manifest,
+                "root": str(domain.root),
                 "ontology": domain.ontology,
                 "state_deps": domain.state_deps,
                 "assertion_pack": domain.assertion_pack,
                 "data_pack": domain.data_pack,
             },
-            "inputs": dict(inputs or {}),
+            "inputs": actual_inputs,
             "artifacts": {},
             "artifact_manifest": {},
+            "runtime_data": {},
             "gates": dict(gates or {}),
             "metadata": runtime_metadata,
             "errors": [],
@@ -183,16 +201,16 @@ class WorkflowRuntime:
         definition = self.load_definition(workflow_id)
         target = self.compiler.route_target(definition, gate_id, outcome)
 
-        metadata = dict(state.get("metadata") or {})
-        history = list(metadata.get("gate_history") or [])
+        runtime_metadata = dict(state.get("metadata") or {})
+        history = list(runtime_metadata.get("gate_history") or [])
         history.append({"gate_id": gate_id, **gate})
-        metadata["gate_history"] = history
-        state["metadata"] = metadata
+        runtime_metadata["gate_history"] = history
+        state["metadata"] = runtime_metadata
 
         if outcome == "rejected":
-            gates = dict(state.get("gates") or {})
-            gates.pop(gate_id, None)
-            state["gates"] = gates
+            current_gates = dict(state.get("gates") or {})
+            current_gates.pop(gate_id, None)
+            state["gates"] = current_gates
             legacy_state = dict(state.get("legacy_state") or {})
             legacy_state.pop(gate_id, None)
             state["legacy_state"] = legacy_state
