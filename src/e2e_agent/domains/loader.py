@@ -61,7 +61,8 @@ class DomainPackLoader:
             parent = self._load(parent_id, [*stack, domain_id])
             manifest = _deep_merge(manifest, parent.manifest)
             ontology = _deep_merge(ontology, parent.ontology)
-            state_machine = _deep_merge(state_machine, parent.state_machine)
+            if parent.state_machine:
+                state_machine = deepcopy(parent.state_machine)
             state_deps = _deep_merge(state_deps, parent.state_deps)
             assertion_pack = _deep_merge(assertion_pack, parent.assertion_pack)
             data_pack = _deep_merge(data_pack, parent.data_pack)
@@ -72,7 +73,9 @@ class DomainPackLoader:
         manifest["id"] = loaded_id
         manifest["resolved_lineage"] = _unique([*lineage, *parent_ids])
         ontology = _deep_merge(ontology, self._load_optional_yaml(root, own_manifest.get("ontology")))
-        state_machine = _deep_merge(state_machine, self._load_optional_yaml(root, own_manifest.get("state_machine")))
+        own_state_machine = self._load_optional_yaml(root, own_manifest.get("state_machine"))
+        if own_state_machine:
+            state_machine = own_state_machine
         state_deps = _deep_merge(state_deps, self._load_optional_yaml(root, own_manifest.get("state_deps")))
         assertion_pack = _deep_merge(assertion_pack, self._load_optional_yaml(root, own_manifest.get("assertion_pack")))
         data_pack = _deep_merge(data_pack, self._load_optional_yaml(root, own_manifest.get("data_pack")))
