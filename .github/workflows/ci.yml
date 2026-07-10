@@ -26,4 +26,4 @@ jobs:
           python tools/ci_rule_check.py
           python tools/check_domain_boundaries.py
       - name: Run tests
-        run: python -m pytest tests/ -v
+        run: python -m pytest tests/ -q --tb=short
