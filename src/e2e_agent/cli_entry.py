@@ -8,6 +8,8 @@ from pathlib import Path
 from typing import Any
 
 from e2e_agent import cli as legacy_cli
+from e2e_agent.data import DataProviderRegistry
+from e2e_agent.plugins import PluginManager
 from e2e_agent.workflow import WorkflowRuntime
 from e2e_agent.workflow.gates import decide_gate, load_gate_checkpoint
 
@@ -147,6 +149,29 @@ def gate_v2(argv: list[str]) -> int:
     return _runtime_exit_code(summary)
 
 
+def list_plugins() -> int:
+    root = Path(__file__).resolve().parents[2]
+    manifests = PluginManager(root / "plugins").list()
+    payload = [
+        {
+            "id": item.id,
+            "version": item.version,
+            "kind": item.kind,
+            "implementation": item.implementation_id,
+            "runtime": item.runtime_type,
+            "path": str(item.path),
+        }
+        for item in manifests
+    ]
+    print(json.dumps(payload, ensure_ascii=False, indent=2))
+    return 0
+
+
+def list_data_providers() -> int:
+    print(json.dumps(DataProviderRegistry().list_names(), ensure_ascii=False, indent=2))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     actual = list(sys.argv[1:] if argv is None else argv)
     try:
@@ -154,6 +179,10 @@ def main(argv: list[str] | None = None) -> int:
             return run_v2(actual[1:])
         if actual and actual[0] == "gate-v2":
             return gate_v2(actual[1:])
+        if actual == ["plugins"] or actual == ["plugins", "--json"]:
+            return list_plugins()
+        if actual == ["data-providers"] or actual == ["data-providers", "--json"]:
+            return list_data_providers()
         return legacy_cli.main(actual)
     except Exception as exc:
         print(str(exc), file=sys.stderr)
