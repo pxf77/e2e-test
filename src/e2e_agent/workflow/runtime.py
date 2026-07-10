@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from e2e_agent.adapters.legacy import build_legacy_state
+from e2e_agent.artifacts import ArtifactManifestStore
 from e2e_agent.config.yaml_loader import load_yaml_file
 from e2e_agent.contracts import ContractRegistry
 from e2e_agent.domains import DomainPackLoader
@@ -75,12 +76,14 @@ class WorkflowRuntime:
 
         actual_run_id = run_id or _new_run_id(str(app["id"]))
         app_root = resolved_app.parent
+        artifacts_dir = app_root / ".assets" / "runs" / actual_run_id
         runtime_metadata = {
             "repo_root": str(self.repo_root),
             "app_root": str(app_root),
             "app_path": str(resolved_app),
             "gate_checkpoint_dir": str(self.repo_root / ".local" / "e2e-agent" / "gate-checkpoints"),
-            "artifacts_dir": str(app_root / ".assets" / "runs" / actual_run_id),
+            "artifacts_dir": str(artifacts_dir),
+            "artifact_manifest_path": str(artifacts_dir / "artifact-manifest.json"),
         }
         runtime_metadata.update(metadata or {})
         legacy_required = any(
@@ -97,7 +100,7 @@ class WorkflowRuntime:
             if legacy_required
             else {}
         )
-        return {
+        state: WorkflowRuntimeState = {
             "run_id": actual_run_id,
             "app_id": str(app["id"]),
             "domain_id": domain.id,
@@ -113,12 +116,17 @@ class WorkflowRuntime:
             },
             "inputs": dict(inputs or {}),
             "artifacts": {},
+            "artifact_manifest": {},
             "gates": dict(gates or {}),
             "metadata": runtime_metadata,
             "errors": [],
             "legacy_state": legacy_state,
             "node_trace": [],
         }
+        store = ArtifactManifestStore.from_state(state, contract_registry=self.contract_registry)
+        if store is not None:
+            state["artifact_manifest"] = store.initialize()
+        return state
 
     async def run(
         self,
@@ -142,4 +150,7 @@ class WorkflowRuntime:
         )
         graph = self.build(workflow)
         result = await graph.ainvoke(state, config={"recursion_limit": 100})
+        store = ArtifactManifestStore.from_state(result, contract_registry=self.contract_registry)
+        if store is not None:
+            result["artifact_manifest"] = store.finalize(result)
         return result
