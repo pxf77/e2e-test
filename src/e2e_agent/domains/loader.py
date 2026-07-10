@@ -72,7 +72,12 @@ class DomainPackLoader:
         manifest = _deep_merge(manifest, own_manifest)
         manifest["id"] = loaded_id
         manifest["resolved_lineage"] = _unique([*lineage, *parent_ids])
-        ontology = _deep_merge(ontology, self._load_optional_yaml(root, own_manifest.get("ontology")))
+        own_ontology = self._load_optional_yaml(root, own_manifest.get("ontology"))
+        ontology = _deep_merge(ontology, own_ontology)
+        if isinstance(own_ontology.get("flow_chains"), dict):
+            inherited_chains = dict(ontology.get("flow_chains") or {})
+            inherited_chains.update(deepcopy(own_ontology["flow_chains"]))
+            ontology["flow_chains"] = inherited_chains
         own_state_machine = self._load_optional_yaml(root, own_manifest.get("state_machine"))
         if own_state_machine:
             state_machine = own_state_machine
