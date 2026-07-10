@@ -9,6 +9,7 @@ from typing import Any
 
 from e2e_agent import cli as legacy_cli
 from e2e_agent.workflow import WorkflowRuntime
+from e2e_agent.workflow.gates import decide_gate, load_gate_checkpoint
 
 
 def _build_v2_run_parser() -> argparse.ArgumentParser:
@@ -18,6 +19,22 @@ def _build_v2_run_parser() -> argparse.ArgumentParser:
     parser.add_argument("--env", default="local")
     parser.add_argument("--run-id", default=None)
     parser.add_argument("--inputs-json", default=None)
+    return parser
+
+
+def _build_v2_gate_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="e2e-agent gate-v2")
+    subparsers = parser.add_subparsers(dest="gate_command", required=True)
+    for command in ("status", "resume"):
+        command_parser = subparsers.add_parser(command)
+        command_parser.add_argument("run_id")
+        command_parser.add_argument("--checkpoint-dir", default=None)
+    for command in ("approve", "reject"):
+        command_parser = subparsers.add_parser(command)
+        command_parser.add_argument("run_id")
+        command_parser.add_argument("--operator", default="manual")
+        command_parser.add_argument("--note", default=f"{command}d via v2 CLI")
+        command_parser.add_argument("--checkpoint-dir", default=None)
     return parser
 
 
@@ -61,6 +78,10 @@ def _runtime_exit_code(summary: dict[str, Any]) -> int:
     return 1 if str(summary.get("status")) in {"failed", "error"} else 0
 
 
+def _checkpoint_dir(runtime: WorkflowRuntime, explicit: str | None) -> Path:
+    return Path(explicit) if explicit else runtime.repo_root / ".local" / "e2e-agent" / "gate-checkpoints"
+
+
 def run_v2(argv: list[str]) -> int:
     args = _build_v2_run_parser().parse_args(argv)
     runtime = WorkflowRuntime()
@@ -78,15 +99,65 @@ def run_v2(argv: list[str]) -> int:
     return _runtime_exit_code(summary)
 
 
+def gate_v2(argv: list[str]) -> int:
+    args = _build_v2_gate_parser().parse_args(argv)
+    runtime = WorkflowRuntime()
+    directory = _checkpoint_dir(runtime, args.checkpoint_dir)
+    if args.gate_command == "status":
+        path, payload = load_gate_checkpoint(args.run_id, directory)
+        state = payload.get("state") or {}
+        gate_id = str(payload.get("pending_gate") or "")
+        gate = (state.get("gates") or {}).get(gate_id) or {}
+        response = {
+            "run_id": args.run_id,
+            "checkpoint": str(path),
+            "checkpoint_status": payload.get("status"),
+            "pending_gate": gate_id,
+            "gate": gate,
+            "decision": payload.get("decision"),
+            "updated_at": payload.get("updated_at"),
+        }
+        print(json.dumps(response, ensure_ascii=False, indent=2))
+        return 0
+    if args.gate_command in {"approve", "reject"}:
+        status = "approved" if args.gate_command == "approve" else "rejected"
+        payload = decide_gate(
+            args.run_id,
+            directory,
+            status=status,
+            operator=args.operator,
+            note=args.note,
+        )
+        print(
+            json.dumps(
+                {
+                    "run_id": args.run_id,
+                    "pending_gate": payload.get("pending_gate"),
+                    "status": payload.get("status"),
+                    "decision": payload.get("decision"),
+                },
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
+        return 0
+    result = asyncio.run(runtime.resume(run_id=args.run_id, checkpoint_dir=directory))
+    summary = _runtime_summary(result)
+    print(json.dumps(summary, ensure_ascii=False, indent=2))
+    return _runtime_exit_code(summary)
+
+
 def main(argv: list[str] | None = None) -> int:
     actual = list(sys.argv[1:] if argv is None else argv)
-    if actual and actual[0] == "run" and "--app" in actual[1:]:
-        try:
+    try:
+        if actual and actual[0] == "run" and "--app" in actual[1:]:
             return run_v2(actual[1:])
-        except Exception as exc:
-            print(str(exc), file=sys.stderr)
-            return 1
-    return legacy_cli.main(actual)
+        if actual and actual[0] == "gate-v2":
+            return gate_v2(actual[1:])
+        return legacy_cli.main(actual)
+    except Exception as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
 
 
 if __name__ == "__main__":
