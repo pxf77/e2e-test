@@ -1,0 +1,12 @@
+{
+  "cases": [
+    {
+      "id": "SAAS-001",
+      "title": "Create a workspace resource",
+      "priority": "P0",
+      "business_intent": "create_resource",
+      "steps": ["Sign in", "Open workspace", "Create resource", "Save resource"],
+      "assertions": ["The resource is saved and a resource id is displayed"]
+    }
+  ]
+}
