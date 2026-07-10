@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_domain_pack_loader_lists_foundation_domains() -> None:
     loader = DomainPackLoader(ROOT / "domains")
 
-    assert loader.list_domain_ids() == ["ecommerce", "generic-web", "insurance"]
+    assert loader.list_domain_ids() == ["ecommerce", "generic-web", "insurance", "saas"]
 
 
 def test_insurance_domain_pack_loads_state_deps() -> None:
