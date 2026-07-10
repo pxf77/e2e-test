@@ -3,35 +3,152 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from langgraph.graph import END, StateGraph
+
 from .dsl import WorkflowDefinition, validate_workflow_graph
+from .gates import evaluate_gate, gate_route, persist_pending_gate
+from .registry import NodeRegistry
+from .state import WorkflowRuntimeState
 
 
 @dataclass(frozen=True)
 class CompiledWorkflow:
-    """Static compilation result for the v2 Workflow DSL.
-
-    The first implementation validates structure and preserves the normalized
-    node/edge payload. A later migration can map this object to a LangGraph
-    StateGraph without changing workflow YAML files.
-    """
+    """Normalized static representation of a Workflow DSL document."""
 
     id: str
     version: str
     nodes: dict[str, dict[str, Any]]
     edges: list[dict[str, Any]]
+    entrypoint: str
 
 
 class WorkflowCompiler:
-    """Compiles WorkflowDefinition into an executable plan skeleton."""
+    """Validates Workflow DSL and compiles it into a LangGraph StateGraph."""
 
     def compile(self, definition: WorkflowDefinition) -> CompiledWorkflow:
         errors = validate_workflow_graph(definition)
         if errors:
             raise ValueError("\n".join(errors))
         nodes = {str(node["id"]): dict(node) for node in definition.payload.get("nodes", [])}
+        if not nodes:
+            raise ValueError(f"Workflow has no nodes: {definition.path}")
+        entrypoint = str(definition.payload.get("entrypoint") or next(iter(nodes)))
+        if entrypoint not in nodes:
+            raise ValueError(f"Workflow entrypoint not found: {entrypoint}")
         return CompiledWorkflow(
             id=definition.id,
             version=definition.version,
             nodes=nodes,
             edges=[dict(edge) for edge in definition.payload.get("edges", [])],
+            entrypoint=entrypoint,
         )
+
+    def compile_langgraph(
+        self,
+        definition: WorkflowDefinition,
+        registry: NodeRegistry,
+        *,
+        checkpointer: Any | None = None,
+    ):
+        compiled = self.compile(definition)
+        builder = StateGraph(WorkflowRuntimeState)
+
+        for node_id, node_spec in compiled.nodes.items():
+            if node_spec.get("type") == "gate":
+                builder.add_node(node_id, self._make_gate_node(node_id, node_spec))
+                continue
+            implementation = str(node_spec.get("implementation") or "")
+            registry.get(implementation)  # fail during compilation, not execution
+            builder.add_node(node_id, self._make_registered_node(registry, implementation, node_spec))
+
+        builder.set_entry_point(compiled.entrypoint)
+        outgoing: dict[str, list[dict[str, Any]]] = {}
+        for edge in compiled.edges:
+            outgoing.setdefault(str(edge["from"]), []).append(edge)
+
+        for source, edges in outgoing.items():
+            conditional = [edge for edge in edges if "on" in edge]
+            unconditional = [edge for edge in edges if "on" not in edge]
+            if conditional and unconditional:
+                raise ValueError(f"Node {source} mixes conditional and unconditional edges")
+            if conditional:
+                route_map: dict[str, Any] = {}
+                for edge in conditional:
+                    outcome = str(edge["on"])
+                    if outcome in route_map:
+                        raise ValueError(f"Node {source} has duplicate route outcome: {outcome}")
+                    route_map[outcome] = END if edge["to"] == "END" else str(edge["to"])
+                builder.add_conditional_edges(source, gate_route(source), route_map)
+                continue
+            if len(unconditional) > 1:
+                raise ValueError(f"Node {source} has multiple unconditional edges")
+            if unconditional:
+                target = unconditional[0]["to"]
+                builder.add_edge(source, END if target == "END" else str(target))
+
+        return builder.compile(checkpointer=checkpointer) if checkpointer is not None else builder.compile()
+
+    @staticmethod
+    def _make_registered_node(
+        registry: NodeRegistry,
+        implementation: str,
+        node_spec: dict[str, Any],
+    ):
+        async def _node(state: WorkflowRuntimeState) -> dict[str, Any]:
+            result = await registry.invoke(implementation, state, node_spec)
+            artifacts = dict(state.get("artifacts") or {})
+            artifacts.update(result.outputs)
+            trace = list(state.get("node_trace") or [])
+            trace.append(
+                {
+                    "node_id": node_spec["id"],
+                    "implementation": implementation,
+                    "outputs": sorted(result.outputs),
+                    "warnings": list(result.warnings),
+                    "metrics": dict(result.metrics),
+                }
+            )
+            updates = dict(result.state_updates)
+            updates["artifacts"] = artifacts
+            updates["node_trace"] = trace
+            if result.warnings:
+                errors = list(state.get("errors") or [])
+                errors.extend(
+                    {
+                        "type": "NodeWarning",
+                        "node_id": node_spec["id"],
+                        "message": warning,
+                    }
+                    for warning in result.warnings
+                )
+                updates["errors"] = errors
+            return updates
+
+        _node.__name__ = f"workflow_node_{node_spec['id']}"
+        return _node
+
+    @staticmethod
+    def _make_gate_node(node_id: str, node_spec: dict[str, Any]):
+        def _gate_node(state: WorkflowRuntimeState) -> dict[str, Any]:
+            gate = evaluate_gate(state, node_spec)
+            gates = dict(state.get("gates") or {})
+            gates[node_id] = gate
+            trace = list(state.get("node_trace") or [])
+            trace.append(
+                {
+                    "node_id": node_id,
+                    "implementation": node_spec.get("implementation"),
+                    "gate_status": gate["status"],
+                    "policy": gate.get("policy"),
+                }
+            )
+            updates: dict[str, Any] = {"gates": gates, "node_trace": trace}
+            legacy_state = dict(state.get("legacy_state") or {})
+            if node_id in {"r1_gate", "r2_gate", "r3_gate", "r4_gate"}:
+                legacy_state[node_id] = gate
+                updates["legacy_state"] = legacy_state
+            persist_pending_gate({**state, **updates}, node_id)
+            return updates
+
+        _gate_node.__name__ = f"workflow_gate_{node_id}"
+        return _gate_node

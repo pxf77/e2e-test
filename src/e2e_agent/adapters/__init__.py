@@ -1,0 +1,1 @@
+"""Compatibility and integration adapters."""
