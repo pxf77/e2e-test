@@ -21,16 +21,24 @@ jobs:
         run: python tools/validate_domains.py
       - name: Validate workflows
         run: python tools/validate_workflows.py
+      - name: Validate runners and plugins
+        run: |
+          python tools/validate_runners.py
+          python tools/validate_plugins.py
       - name: Check model and domain boundaries
         run: |
           python tools/ci_rule_check.py
           python tools/check_domain_boundaries.py
       - name: Run tests
         run: python -m pytest tests/ -q --tb=short > pytest.log 2>&1
-      - name: Upload pytest log
+      - name: Run release acceptance matrix
+        run: python tools/acceptance_matrix.py > acceptance.json
+      - name: Upload validation evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pytest-log
-          path: pytest.log
-          if-no-files-found: error
+          name: validation-evidence
+          path: |
+            pytest.log
+            acceptance.json
+          if-no-files-found: warn
