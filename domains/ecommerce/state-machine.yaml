@@ -1,0 +1,40 @@
+id: ecommerce-order
+initial_state: created
+states:
+  - created
+  - pending_payment
+  - paid
+  - processing
+  - shipped
+  - completed
+  - cancelled
+  - failed
+terminal_states:
+  - completed
+  - cancelled
+  - failed
+transitions:
+  - from: created
+    to: pending_payment
+    event: checkout
+  - from: pending_payment
+    to: paid
+    event: payment_succeeded
+  - from: pending_payment
+    to: failed
+    event: payment_failed
+  - from: paid
+    to: processing
+    event: fulfill
+  - from: processing
+    to: shipped
+    event: ship
+  - from: shipped
+    to: completed
+    event: deliver
+  - from: created
+    to: cancelled
+    event: cancel
+  - from: pending_payment
+    to: cancelled
+    event: cancel
