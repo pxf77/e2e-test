@@ -1,7 +1,7 @@
 [project]
 name = "e2e-agent"
-version = "0.1.0"
-description = "星火计划 — AI 驱动 P0 回归测试自动化系统 (v4)"
+version = "0.2.0"
+description = "Domain-pack based AI E2E regression automation framework"
 requires-python = ">=3.12"
 dependencies = [
     "langgraph==1.1.9",
@@ -23,7 +23,7 @@ dev = [
 ]
 
 [project.scripts]
-e2e-agent = "e2e_agent.cli:main"
+e2e-agent = "e2e_agent.cli_entry:main"
 
 [build-system]
 requires = ["hatchling"]

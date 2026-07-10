@@ -1,23 +1,41 @@
-version: "1.0.0"
+version: "1.1.0"
 
 page_types:
   product_listing:
+    name: "Product Listing"
     description: "商品列表或搜索结果页。"
+    node_type: form
+    url_pattern: "/products*"
     keywords: [products, catalog, list, search, 商品, 列表, 搜索]
   product_detail:
+    name: "Product Detail"
     description: "商品详情页。"
+    node_type: form
+    url_pattern: "/product/*"
     keywords: [product, detail, sku, 商品, 详情]
   cart:
+    name: "Cart"
     description: "购物车页。"
-    keywords: [cart, basket, 购物车]
+    node_type: form
+    url_pattern: "/cart*"
+    keywords: [cart, basket, add to cart, 加购, 购物车]
   checkout:
+    name: "Checkout"
     description: "结算页。"
+    node_type: confirm
+    url_pattern: "/checkout*"
     keywords: [checkout, address, shipping, 结算, 地址]
   payment:
+    name: "Payment"
     description: "支付页。"
+    node_type: payment
+    url_pattern: "/payment*"
     keywords: [payment, pay, 支付]
   order_result:
+    name: "Order Result"
     description: "订单结果页。"
+    node_type: result
+    url_pattern: "/order/result*"
     keywords: [order, success, result, confirmation, 订单, 成功, 结果]
 
 business_intents:
@@ -29,3 +47,16 @@ business_intents:
     keywords: [payment, pay, 支付]
   order_confirm:
     keywords: [order, confirmation, success, 订单, 确认, 成功]
+  main_flow:
+    keywords: [purchase flow, complete purchase, 完整购买, 主流程]
+
+flow_chains:
+  add_to_cart: [product_listing, product_detail, cart]
+  checkout: [product_detail, cart, checkout]
+  payment: [product_detail, cart, checkout, payment, order_result]
+  order_confirm: [payment, order_result]
+  main_flow: [product_listing, product_detail, cart, checkout, payment, order_result]
+
+optional_page_types:
+  - product_listing
+  - payment

@@ -5,6 +5,8 @@ from typing import Any
 
 from langgraph.graph import END, StateGraph
 
+from e2e_agent.artifacts import ArtifactManifestStore
+
 from .dsl import WorkflowDefinition, validate_workflow_graph
 from .gates import evaluate_gate, gate_route, persist_pending_gate
 from .registry import NodeRegistry
@@ -98,18 +100,34 @@ class WorkflowCompiler:
             result = await registry.invoke(implementation, state, node_spec)
             artifacts = dict(state.get("artifacts") or {})
             artifacts.update(result.outputs)
+
+            artifact_manifest = dict(state.get("artifact_manifest") or {})
+            store = ArtifactManifestStore.from_state(state)
+            if store is not None and result.outputs:
+                artifact_manifest = store.record_outputs(
+                    node_id=str(node_spec["id"]),
+                    implementation=implementation,
+                    outputs=result.outputs,
+                )
+
             trace = list(state.get("node_trace") or [])
             trace.append(
                 {
                     "node_id": node_spec["id"],
                     "implementation": implementation,
                     "outputs": sorted(result.outputs),
+                    "artifact_ids": sorted(
+                        str(item.get("id"))
+                        for item in artifact_manifest.get("artifacts") or []
+                        if isinstance(item, dict) and str(item.get("node_id") or "") == str(node_spec["id"])
+                    ),
                     "warnings": list(result.warnings),
                     "metrics": dict(result.metrics),
                 }
             )
             updates = dict(result.state_updates)
             updates["artifacts"] = artifacts
+            updates["artifact_manifest"] = artifact_manifest
             updates["node_trace"] = trace
             if result.warnings:
                 errors = list(state.get("errors") or [])
