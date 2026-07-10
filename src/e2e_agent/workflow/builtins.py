@@ -74,23 +74,18 @@ def path_extract_node(state: WorkflowRuntimeState, node_spec: dict[str, Any]) ->
 
     for index, case in enumerate(cases, start=1):
         domain_nodes = build_domain_path_nodes(case, ontology)
-        if domain_nodes:
-            path_nodes = domain_nodes
-        else:
-            steps = case.get("steps") or []
-            path_nodes = [
-                {
-                    "id": f"step-{step_index:02d}",
-                    "page_type": "unknown",
-                    "name": str(step),
-                    "node_type": "action",
-                    "url_pattern": None,
-                    "optional": False,
-                    "action": str(step),
-                }
-                for step_index, step in enumerate(steps, start=1)
-            ]
-
+        path_nodes = domain_nodes or [
+            {
+                "id": f"step-{step_index:02d}",
+                "page_type": "unknown",
+                "name": str(step),
+                "node_type": "action",
+                "url_pattern": None,
+                "optional": False,
+                "action": str(step),
+            }
+            for step_index, step in enumerate(case.get("steps") or [], start=1)
+        ]
         for node in path_nodes:
             flow_nodes.setdefault(str(node["id"]), dict(node))
         for left, right in zip(path_nodes, path_nodes[1:]):
@@ -123,10 +118,7 @@ def path_extract_node(state: WorkflowRuntimeState, node_spec: dict[str, Any]) ->
     }
     return NodeResult(
         outputs={"regression_flow": regression_flow, "regression_paths": paths},
-        metrics={
-            "path_count": len(paths),
-            "ontology_page_type_count": len(ontology.get("page_types") or {}),
-        },
+        metrics={"path_count": len(paths), "ontology_page_type_count": len(ontology.get("page_types") or {})},
     )
 
 
@@ -160,12 +152,17 @@ def explore_node(state: WorkflowRuntimeState, node_spec: dict[str, Any]) -> Node
 async def playwright_runner_node(state: WorkflowRuntimeState, node_spec: dict[str, Any]) -> NodeResult:
     artifacts = state.get("artifacts") or {}
     metadata = state.get("metadata") or {}
+    inputs = state.get("inputs") or {}
+    fixtures = dict(inputs.get("runner_fixtures") or {})
+    runtime_test_data = ((state.get("runtime_data") or {}).get("test_data") or {})
+    if runtime_test_data:
+        fixtures.setdefault("test_data", runtime_test_data)
     runner = PlaywrightRunner(repo_root=Path(str(metadata.get("repo_root") or Path.cwd())))
     plan = ExecutionPlan(
         id=f"{state.get('run_id', 'run')}-{node_spec.get('id', 'execute')}",
         runner=runner.name,
         scenarios=list(artifacts.get("scenarios") or artifacts.get("regression_paths") or []),
-        fixtures=dict((state.get("inputs") or {}).get("runner_fixtures") or {}),
+        fixtures=fixtures,
         env={"name": state.get("env", "local")},
         artifacts_dir=str(metadata.get("artifacts_dir") or ""),
     )
@@ -179,8 +176,12 @@ async def playwright_runner_node(state: WorkflowRuntimeState, node_spec: dict[st
 def report_node(state: WorkflowRuntimeState, node_spec: dict[str, Any]) -> NodeResult:
     artifacts = state.get("artifacts") or {}
     execution = artifacts.get("execution_result") or {}
+    assertion_report = artifacts.get("assertion_report") or {}
     summary = execution.get("summary") or {}
+    assertion_failed = int((assertion_report.get("summary") or {}).get("failed") or 0)
     status = execution.get("status") or "unknown"
+    if assertion_failed:
+        status = "failed"
     report = {
         "run_id": state.get("run_id"),
         "workflow_id": state.get("workflow_id"),
@@ -189,10 +190,11 @@ def report_node(state: WorkflowRuntimeState, node_spec: dict[str, Any]) -> NodeR
         "status": status,
         "summary": {
             "passed": int(summary.get("passed") or 0),
-            "failed": int(summary.get("failed") or 0),
+            "failed": int(summary.get("failed") or 0) + assertion_failed,
             "skipped": int(summary.get("skipped") or 0),
         },
         "failures": execution.get("failures") or [],
+        "assertions": assertion_report,
         "runner_artifacts": execution.get("artifacts") or [],
     }
     return NodeResult(outputs={"test_report": report, "healing_events": []})

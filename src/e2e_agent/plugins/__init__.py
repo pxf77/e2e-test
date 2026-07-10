@@ -1,5 +1,13 @@
-"""General plugin runtime primitives."""
+"""General plugin discovery and runtime primitives."""
 
-from .runtime import PluginRuntime, PluginResult
+from .loader import PluginManifest, PluginManifestLoader
+from .manager import PluginManager
+from .runtime import PluginResult, PluginRuntime
 
-__all__ = ["PluginRuntime", "PluginResult"]
+__all__ = [
+    "PluginManifest",
+    "PluginManifestLoader",
+    "PluginManager",
+    "PluginResult",
+    "PluginRuntime",
+]

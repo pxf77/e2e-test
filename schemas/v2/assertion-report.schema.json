@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pxf77.github.io/e2e-test/schemas/v2/assertion-report.schema.json",
+  "title": "Assertion Report v2",
+  "description": "领域 Assertion Pack 的统一执行报告契约。",
+  "type": "object",
+  "required": ["template_ids", "summary", "checks", "status"],
+  "additionalProperties": true,
+  "properties": {
+    "pack_id": {"type": ["string", "null"]},
+    "pack_version": {"type": ["string", "null"]},
+    "template_ids": {"type": "array", "items": {"type": "string"}},
+    "status": {"type": "string", "enum": ["passed", "failed", "skipped"]},
+    "summary": {
+      "type": "object",
+      "required": ["templates", "checks", "passed", "failed", "skipped"],
+      "properties": {
+        "templates": {"type": "integer", "minimum": 0},
+        "checks": {"type": "integer", "minimum": 0},
+        "passed": {"type": "integer", "minimum": 0},
+        "failed": {"type": "integer", "minimum": 0},
+        "skipped": {"type": "integer", "minimum": 0}
+      }
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["template_id", "operator", "status", "message"],
+        "additionalProperties": true,
+        "properties": {
+          "template_id": {"type": "string"},
+          "operator": {"type": "string"},
+          "status": {"type": "string", "enum": ["passed", "failed", "skipped", "error"]},
+          "passed": {"type": ["boolean", "null"]},
+          "message": {"type": "string"}
+        }
+      }
+    }
+  }
+}

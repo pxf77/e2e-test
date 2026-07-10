@@ -1,0 +1,17 @@
+id: plugin-smoke
+version: "1.0.0"
+description: "验证 v2 Plugin Manifest 自动发现、子进程执行与输出 Contract 校验。"
+
+inputs:
+  app: required
+  domain: generic-web
+
+nodes:
+  - id: echo
+    type: plugin
+    implementation: plugin.echo
+    outputs: [plugin_echo]
+
+edges:
+  - from: echo
+    to: END

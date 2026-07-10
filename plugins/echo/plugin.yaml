@@ -1,0 +1,21 @@
+id: echo
+version: "1.0.0"
+kind: node
+description: "Echo workflow inputs through the v2 subprocess plugin protocol."
+
+runtime:
+  type: python
+  entry: plugin.py
+  timeout_seconds: 30
+
+contracts:
+  input: []
+  output:
+    - plugin-echo@v2
+
+capabilities:
+  - echo
+  - plugin-smoke
+
+config:
+  default_message: hello-from-plugin
