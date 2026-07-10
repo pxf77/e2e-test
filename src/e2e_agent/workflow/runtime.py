@@ -210,9 +210,12 @@ class WorkflowRuntime:
             for gate_name, gate_state in (result.get("gates") or {}).items()
             if str((gate_state or {}).get("status") or "") == "pending"
         ]
+        active_checkpoint = checkpoint
+        if pending:
+            _, active_checkpoint = load_gate_checkpoint(run_id, directory)
         complete_gate_checkpoint(
             checkpoint_path,
-            checkpoint,
+            active_checkpoint,
             state=result,
             next_status="pending" if pending else "completed",
         )
