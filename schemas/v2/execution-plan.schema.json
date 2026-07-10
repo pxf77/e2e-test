@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pxf77.github.io/e2e-test/schemas/v2/execution-plan.schema.json",
+  "title": "Execution Plan v2",
+  "description": "Runner 无关的执行计划，包含场景、fixture、环境与产物目录。",
+  "type": "object",
+  "required": ["id", "runner", "scenarios"],
+  "additionalProperties": true,
+  "properties": {
+    "id": {"type": "string", "minLength": 1},
+    "runner": {"type": "string", "minLength": 1},
+    "scenarios": {"type": "array", "items": {"type": "object"}},
+    "fixtures": {"type": "object"},
+    "env": {"type": "object"},
+    "artifacts_dir": {"type": ["string", "null"]}
+  }
+}
