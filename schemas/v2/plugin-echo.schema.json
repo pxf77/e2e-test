@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pxf77.github.io/e2e-test/schemas/v2/plugin-echo.schema.json",
+  "title": "Plugin Echo Result v2",
+  "description": "示例 Echo 插件输出契约，用于验证 Plugin SDK 的输出校验。",
+  "type": "object",
+  "required": ["message", "plugin_id"],
+  "additionalProperties": true,
+  "properties": {
+    "message": {"type": "string"},
+    "plugin_id": {"type": "string", "const": "echo"}
+  }
+}
