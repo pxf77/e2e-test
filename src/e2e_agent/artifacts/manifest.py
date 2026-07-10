@@ -139,9 +139,8 @@ class ArtifactManifestStore:
             data = _json_bytes(payload)
             _atomic_write(absolute_path, data)
             artifact_id = f"{node_id}:{output_name}"
-            entries[artifact_id] = {
+            entry = {
                 "id": artifact_id,
-                "contract": _CONTRACT_BY_OUTPUT.get(output_name),
                 "path": relative_path.as_posix(),
                 "sha256": _sha256(data),
                 "producer": implementation,
@@ -149,6 +148,10 @@ class ArtifactManifestStore:
                 "created_at": _utc_now(),
                 "metadata": {"output_name": output_name, "format": "json"},
             }
+            contract = _CONTRACT_BY_OUTPUT.get(output_name)
+            if contract:
+                entry["contract"] = contract
+            entries[artifact_id] = entry
             if output_name == "execution_result" and isinstance(payload, dict):
                 self._record_runner_files(entries, node_id=node_id, implementation=implementation, payload=payload)
         manifest["artifacts"] = sorted(entries.values(), key=lambda item: str(item.get("id")))
@@ -158,11 +161,7 @@ class ArtifactManifestStore:
 
     def finalize(self, state: dict[str, Any]) -> dict[str, Any]:
         manifest = self.load()
-        context_payload = {
-            key: value
-            for key, value in state.items()
-            if key != "artifact_manifest"
-        }
+        context_payload = {key: value for key, value in state.items() if key != "artifact_manifest"}
         data = _json_bytes(context_payload)
         relative_path = Path("run-context.json")
         _atomic_write(self.run_dir / relative_path, data)
@@ -208,9 +207,8 @@ class ArtifactManifestStore:
             data = target.read_bytes()
             relative = target.relative_to(self.run_dir)
             artifact_id = f"{node_id}:runner:{index}:{target.name}"
-            entries[artifact_id] = {
+            entry = {
                 "id": artifact_id,
-                "contract": item.get("contract"),
                 "path": relative.as_posix(),
                 "sha256": _sha256(data),
                 "producer": implementation,
@@ -222,6 +220,9 @@ class ArtifactManifestStore:
                     "size_bytes": len(data),
                 },
             }
+            if item.get("contract"):
+                entry["contract"] = str(item["contract"])
+            entries[artifact_id] = entry
 
     def _write_manifest(self, manifest: dict[str, Any]) -> None:
         data = _json_bytes(manifest)
