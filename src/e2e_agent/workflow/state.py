@@ -9,8 +9,9 @@ class WorkflowRuntimeState(TypedDict, total=False):
     """State schema shared by all v2 workflows.
 
     Dynamic node outputs are stored in ``artifacts`` rather than becoming
-    top-level state fields. ``legacy_state`` temporarily contains the v1
-    E2EAgentState payload while existing agents are migrated incrementally.
+    top-level state fields. ``artifact_manifest`` indexes persisted outputs,
+    while ``legacy_state`` temporarily contains the v1 E2EAgentState payload
+    during incremental migration.
     """
 
     run_id: str
@@ -22,6 +23,7 @@ class WorkflowRuntimeState(TypedDict, total=False):
     domain: dict[str, Any]
     inputs: dict[str, Any]
     artifacts: dict[str, Any]
+    artifact_manifest: dict[str, Any]
     gates: dict[str, dict[str, Any]]
     metadata: dict[str, Any]
     errors: list[dict[str, Any]]
