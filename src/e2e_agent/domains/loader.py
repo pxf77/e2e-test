@@ -78,6 +78,12 @@ class DomainPackLoader:
             inherited_chains = dict(ontology.get("flow_chains") or {})
             inherited_chains.update(deepcopy(own_ontology["flow_chains"]))
             ontology["flow_chains"] = inherited_chains
+        ontology["_local_business_intents"] = sorted(
+            str(item) for item in (own_ontology.get("business_intents") or {})
+        )
+        ontology["_local_page_types"] = sorted(
+            str(item) for item in (own_ontology.get("page_types") or {})
+        )
         own_state_machine = self._load_optional_yaml(root, own_manifest.get("state_machine"))
         if own_state_machine:
             state_machine = own_state_machine
