@@ -1,0 +1,53 @@
+id: insurance-policy-order
+initial_state: applying
+states:
+  - applying
+  - underwriting
+  - pending_payment
+  - paid
+  - issued
+  - rejected
+  - surrendering
+  - surrendered
+  - failed
+  - cancelled
+terminal_states:
+  - issued
+  - rejected
+  - surrendered
+  - failed
+  - cancelled
+transitions:
+  - from: applying
+    to: underwriting
+    event: submit
+  - from: applying
+    to: pending_payment
+    event: submit_without_underwriting
+  - from: underwriting
+    to: pending_payment
+    event: approve
+  - from: underwriting
+    to: rejected
+    event: reject
+  - from: pending_payment
+    to: paid
+    event: payment_succeeded
+  - from: pending_payment
+    to: failed
+    event: payment_failed
+  - from: paid
+    to: issued
+    event: issue_policy
+  - from: issued
+    to: surrendering
+    event: request_surrender
+  - from: surrendering
+    to: surrendered
+    event: approve_surrender
+  - from: applying
+    to: cancelled
+    event: cancel
+  - from: pending_payment
+    to: cancelled
+    event: cancel
