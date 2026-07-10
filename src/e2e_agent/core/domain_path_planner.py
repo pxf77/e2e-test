@@ -18,7 +18,11 @@ def _case_texts(case: dict[str, Any]) -> list[str]:
 
 
 def resolve_business_intent(case: dict[str, Any], ontology: dict[str, Any]) -> str | None:
-    """Resolve an intent from explicit fields, tags, or ontology keywords."""
+    """Resolve an intent from explicit fields, tags, or ontology keywords.
+
+    Domain-specific intents that own an explicit flow chain are evaluated before
+    generic navigation/input intents inherited from a parent Domain Pack.
+    """
     flow_chains = ontology.get("flow_chains") or {}
     explicit = str(case.get("business_intent") or case.get("scenario_type") or "").strip()
     if explicit and (not flow_chains or explicit in flow_chains):
@@ -32,11 +36,26 @@ def resolve_business_intent(case: dict[str, Any], ontology: dict[str, Any]) -> s
                 return value
 
     haystack = _normalise(" ".join(_case_texts(case)))
-    for intent, spec in (ontology.get("business_intents") or {}).items():
+    intents = ontology.get("business_intents") or {}
+    ordered_intents = [
+        *[item for item in intents.items() if str(item[0]) in flow_chains],
+        *[item for item in intents.items() if str(item[0]) not in flow_chains],
+    ]
+    matches: list[tuple[int, int, str]] = []
+    for order, (intent, spec) in enumerate(ordered_intents):
         keywords = spec.get("keywords") if isinstance(spec, dict) else []
-        if any(_normalise(str(keyword)) in haystack for keyword in keywords or []):
-            return str(intent)
-    return None
+        matched_lengths = [
+            len(_normalise(str(keyword)))
+            for keyword in keywords or []
+            if _normalise(str(keyword)) and _normalise(str(keyword)) in haystack
+        ]
+        if matched_lengths:
+            flow_priority = 1 if str(intent) in flow_chains else 0
+            matches.append((flow_priority, max(matched_lengths), str(intent)))
+    if not matches:
+        return None
+    matches.sort(key=lambda item: (item[0], item[1]), reverse=True)
+    return matches[0][2]
 
 
 def resolve_page_types(case: dict[str, Any], ontology: dict[str, Any]) -> list[str]:
