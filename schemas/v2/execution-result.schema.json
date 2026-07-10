@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pxf77.github.io/e2e-test/schemas/v2/execution-result.schema.json",
+  "title": "Execution Result v2",
+  "description": "执行器统一输出契约，用于隔离 Playwright、API、Mobile 等 Runner 的私有结果格式。",
+  "type": "object",
+  "required": ["run_id", "runner", "status", "summary"],
+  "additionalProperties": true,
+  "properties": {
+    "run_id": {"type": "string", "minLength": 1},
+    "runner": {"type": "string", "minLength": 1},
+    "status": {"type": "string", "enum": ["passed", "failed", "skipped", "blocked", "error"]},
+    "summary": {
+      "type": "object",
+      "required": ["passed", "failed", "skipped"],
+      "additionalProperties": true,
+      "properties": {
+        "passed": {"type": "integer", "minimum": 0},
+        "failed": {"type": "integer", "minimum": 0},
+        "skipped": {"type": "integer", "minimum": 0},
+        "duration_ms": {"type": "integer", "minimum": 0}
+      }
+    },
+    "failures": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/failure"}
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {"type": "object", "additionalProperties": true}
+    },
+    "metrics": {"type": "object", "additionalProperties": true}
+  },
+  "definitions": {
+    "failure": {
+      "type": "object",
+      "required": ["id", "category", "message"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string"},
+        "scenario_id": {"type": "string"},
+        "category": {
+          "type": "string",
+          "enum": [
+            "locator_broken",
+            "assertion_failed",
+            "business_rule_failed",
+            "test_data_invalid",
+            "environment_unavailable",
+            "auth_failed",
+            "network_error",
+            "third_party_unavailable",
+            "runner_error",
+            "llm_generation_error",
+            "contract_validation_error",
+            "unknown"
+          ]
+        },
+        "message": {"type": "string"},
+        "retryable": {"type": "boolean"}
+      }
+    }
+  }
+}

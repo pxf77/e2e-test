@@ -1,0 +1,39 @@
+id: generic-web-basic
+version: "1.0.0"
+description: "行业无关 Web UI 基础断言包。"
+
+operators:
+  - exists
+  - visible
+  - text_contains
+  - text_equals
+  - url_matches
+
+templates:
+  visible_element:
+    name: "visible element assertion"
+    category: ui
+    required: false
+    match:
+      page_types: [landing, listing, detail, form, review, result]
+      keywords: [visible, display, 展示, 可见]
+    variables:
+      required: [selector]
+    checks:
+      - operator: visible
+        actual: "${page.selector}"
+        expected: true
+
+  url_result:
+    name: "result url assertion"
+    category: navigation
+    required: false
+    match:
+      page_types: [result]
+      keywords: [url, result, success, 地址, 结果]
+    variables:
+      required: [url_pattern]
+    checks:
+      - operator: url_matches
+        actual: "${page.url}"
+        expected: "${expected.url_pattern}"

@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pxf77.github.io/e2e-test/schemas/v2/assertion-pack.schema.json",
+  "title": "Assertion Pack v2",
+  "description": "领域断言包契约，描述可匹配的业务断言模板与通用断言操作符。",
+  "type": "object",
+  "required": ["id", "version", "templates"],
+  "additionalProperties": true,
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "version": {"type": "string", "minLength": 1},
+    "description": {"type": "string"},
+    "operators": {"type": "array", "items": {"type": "string"}},
+    "templates": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/definitions/template"}
+    }
+  },
+  "definitions": {
+    "template": {
+      "type": "object",
+      "required": ["name", "category", "checks"],
+      "additionalProperties": true,
+      "properties": {
+        "name": {"type": "string"},
+        "category": {"type": "string"},
+        "required": {"type": "boolean"},
+        "match": {"type": "object", "additionalProperties": true},
+        "variables": {"type": "object", "additionalProperties": true},
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["operator"],
+            "additionalProperties": true,
+            "properties": {
+              "operator": {"type": "string"},
+              "actual": {"type": "string"},
+              "expected": {},
+              "message": {"type": "string"}
+            }
+          }
+        }
+      }
+    }
+  }
+}

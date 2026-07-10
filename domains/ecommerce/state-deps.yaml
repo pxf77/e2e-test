@@ -1,0 +1,43 @@
+version: "1.0.0"
+
+whitelist:
+  "/products*":
+    - categoryId
+    - keyword
+    - sort
+  "/product/*":
+    - skuId
+    - priceBand
+    - inventoryStatus
+  "/cart*":
+    - cartId
+    - skuId
+    - quantity
+    - couponCode
+  "/checkout*":
+    - cartId
+    - addressId
+    - shippingMethod
+    - couponCode
+  "/payment*":
+    - orderId
+    - paymentMethod
+    - paymentStatus
+  "/order/result*":
+    - orderId
+    - orderStatus
+    - paymentStatus
+
+normalization:
+  strip_timestamp: true
+  lowercase_values: false
+
+hot_values:
+  inventoryStatus: [in_stock, out_of_stock, limited]
+  paymentMethod: [mock_card, wallet, bank]
+  paymentStatus: [pending, paid, failed]
+  orderStatus: [created, paid, shipped, cancelled]
+
+cardinality:
+  max_combinations: 60
+  warn_threshold: 30

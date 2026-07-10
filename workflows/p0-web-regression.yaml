@@ -1,0 +1,108 @@
+id: p0-web-regression
+version: "1.0.0"
+description: "跨行业 Web P0 回归默认工作流。"
+
+inputs:
+  app: required
+  domain: required
+  env: optional
+
+nodes:
+  - id: case_merge
+    type: agent
+    implementation: builtin.case_merge
+    outputs: [merged_cases, merge_conflicts]
+
+  - id: r1_case_review
+    type: gate
+    implementation: builtin.human_gate
+    policy: human_optional
+    inputs: [merged_cases, merge_conflicts]
+
+  - id: path_extract
+    type: agent
+    implementation: builtin.path_extract
+    uses: [domain.ontology, domain.state_deps]
+    inputs: [merged_cases]
+    outputs: [regression_paths]
+
+  - id: r2_path_review
+    type: gate
+    implementation: builtin.human_gate
+    policy: human_required
+    inputs: [regression_paths]
+
+  - id: explore
+    type: agent
+    implementation: builtin.explore
+    uses: [app.entrypoints, app.page_models]
+    outputs: [page_registry, page_models]
+
+  - id: r3_contract_review
+    type: gate
+    implementation: builtin.human_gate
+    policy: human_optional
+    inputs: [page_registry, page_models]
+
+  - id: execute
+    type: runner
+    implementation: runner.playwright
+    inputs: [regression_paths, page_models, test_data]
+    outputs: [execution_result]
+
+  - id: report
+    type: report
+    implementation: builtin.report
+    inputs: [execution_result]
+    outputs: [test_report, healing_events]
+
+  - id: r4_report_review
+    type: gate
+    implementation: builtin.human_gate
+    policy: report_only
+    inputs: [test_report, healing_events]
+
+edges:
+  - from: case_merge
+    to: r1_case_review
+  - from: r1_case_review
+    on: approved
+    to: path_extract
+  - from: r1_case_review
+    on: rejected
+    to: case_merge
+  - from: r1_case_review
+    on: pending
+    to: END
+  - from: path_extract
+    to: r2_path_review
+  - from: r2_path_review
+    on: approved
+    to: explore
+  - from: r2_path_review
+    on: rejected
+    to: path_extract
+  - from: r2_path_review
+    on: pending
+    to: END
+  - from: explore
+    to: r3_contract_review
+  - from: r3_contract_review
+    on: approved
+    to: execute
+  - from: r3_contract_review
+    on: rejected
+    to: explore
+  - from: r3_contract_review
+    on: pending
+    to: END
+  - from: execute
+    to: report
+  - from: report
+    to: r4_report_review
+  - from: r4_report_review
+    on: approved
+    to: END
+  - from: r4_report_review
+    on: pending
+    to: END

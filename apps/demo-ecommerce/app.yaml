@@ -1,0 +1,23 @@
+id: demo-ecommerce
+name: Demo Ecommerce
+domain: ecommerce
+
+requirements:
+  prd: requirements.md
+  manual_cases: manual-cases.json
+
+entrypoints:
+  web:
+    base_url: https://example.com
+    start_url: /products/demo
+
+page_models:
+  dir: page-models
+
+data:
+  pack: data/data-pack.yaml
+
+execution:
+  default_runner: playwright
+  environments:
+    local: envs/local.yaml

@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pxf77.github.io/e2e-test/schemas/v2/plugin-manifest.schema.json",
+  "title": "Plugin Manifest v2",
+  "description": "Node、Skill、Runner、Assertion 与 Data Provider 插件 Manifest 契约。",
+  "type": "object",
+  "required": ["id", "version", "kind", "runtime"],
+  "additionalProperties": true,
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "version": {"type": "string", "minLength": 1},
+    "kind": {"type": "string", "enum": ["node", "skill", "runner", "assertion", "data_provider"]},
+    "description": {"type": "string"},
+    "runtime": {
+      "type": "object",
+      "required": ["type", "entry"],
+      "additionalProperties": true,
+      "properties": {
+        "type": {"type": "string", "enum": ["python", "node", "builtin"]},
+        "entry": {"type": "string"}
+      }
+    },
+    "contracts": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "input": {"type": "array", "items": {"type": "string"}},
+        "output": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "capabilities": {"type": "array", "items": {"type": "string"}},
+    "llm": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "route": {"type": "string"},
+        "required": {"type": "boolean"}
+      }
+    }
+  }
+}

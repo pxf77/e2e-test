@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pxf77.github.io/e2e-test/schemas/v2/data-pack.schema.json",
+  "title": "Data Pack v2",
+  "description": "测试数据包契约，描述静态数据、合成数据、账号池、API seed 与 secret 引用。",
+  "type": "object",
+  "required": ["id", "version"],
+  "additionalProperties": true,
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "version": {"type": "string", "minLength": 1},
+    "profiles": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/definitions/profile"}
+    }
+  },
+  "definitions": {
+    "profile": {
+      "type": "object",
+      "required": ["provider"],
+      "additionalProperties": true,
+      "properties": {
+        "provider": {"type": "string", "enum": ["static_json", "csv", "faker", "api_seed", "db_seed", "account_pool", "secret_ref"]},
+        "file": {"type": "string"},
+        "locale": {"type": "string"},
+        "fields": {"type": "object"},
+        "secret": {"type": "string"}
+      }
+    }
+  }
+}

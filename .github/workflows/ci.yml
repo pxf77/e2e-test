@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install package
+        run: python -m pip install -e ".[dev]"
+      - name: Validate schemas
+        run: python tools/validate_schemas.py
+      - name: Validate domain packs
+        run: python tools/validate_domains.py
+      - name: Validate workflows
+        run: python tools/validate_workflows.py
+      - name: Check model and domain boundaries
+        run: |
+          python tools/ci_rule_check.py
+          python tools/check_domain_boundaries.py
+      - name: Run tests
+        run: python -m pytest tests/ -v

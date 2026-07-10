@@ -1,0 +1,31 @@
+version: "1.0.0"
+
+page_types:
+  product_listing:
+    description: "商品列表或搜索结果页。"
+    keywords: [products, catalog, list, search, 商品, 列表, 搜索]
+  product_detail:
+    description: "商品详情页。"
+    keywords: [product, detail, sku, 商品, 详情]
+  cart:
+    description: "购物车页。"
+    keywords: [cart, basket, 购物车]
+  checkout:
+    description: "结算页。"
+    keywords: [checkout, address, shipping, 结算, 地址]
+  payment:
+    description: "支付页。"
+    keywords: [payment, pay, 支付]
+  order_result:
+    description: "订单结果页。"
+    keywords: [order, success, result, confirmation, 订单, 成功, 结果]
+
+business_intents:
+  add_to_cart:
+    keywords: [add to cart, cart, 加购, 购物车]
+  checkout:
+    keywords: [checkout, shipping, address, 结算, 地址]
+  payment:
+    keywords: [payment, pay, 支付]
+  order_confirm:
+    keywords: [order, confirmation, success, 订单, 确认, 成功]

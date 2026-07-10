@@ -1,0 +1,13 @@
+id: insurance-data
+version: "1.0.0"
+
+profiles:
+  standard_adult:
+    provider: static_json
+    file: data/standard-adult.json
+  manual_review_case:
+    provider: static_json
+    file: data/manual-review-case.json
+  payment_account:
+    provider: account_pool
+    name: insurance-payment-test-accounts

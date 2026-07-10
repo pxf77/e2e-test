@@ -1,0 +1,42 @@
+version: "1.0.0"
+
+page_types:
+  product_detail:
+    description: "保险产品详情页。"
+    keywords: [product, detail, insurance, 产品, 详情]
+  premium_calculation:
+    description: "保费试算或报价页。"
+    keywords: [premium, quote, price, calculate, 保费, 报价, 试算]
+  suitability:
+    description: "适当性或投保资格确认页。"
+    keywords: [suitability, eligibility, 适当性, 资格]
+  health_notice:
+    description: "健康告知页。"
+    keywords: [health, notice, declaration, 健康告知]
+  insure_form:
+    description: "投保信息录入页。"
+    keywords: [insure, application, applicant, insured, 投保, 被保人]
+  underwriting:
+    description: "核保结果或承保确认页。"
+    keywords: [underwriting, audit, approve, reject, 核保, 承保, 拒保]
+  risk_control:
+    description: "风控、人机验证或身份认证页。"
+    keywords: [risk, authentication, captcha, 风控, 认证]
+  payment:
+    description: "支付页。"
+    keywords: [payment, pay, checkout, 支付]
+  policy_result:
+    description: "支付或出单结果页。"
+    keywords: [policy, result, issue, success, 保单, 出单, 结果]
+
+business_intents:
+  quote:
+    keywords: [premium, quote, calculate, 保费, 试算, 报价]
+  health_notice:
+    keywords: [health, notice, 健康告知]
+  underwriting:
+    keywords: [underwriting, approve, reject, 核保, 承保, 拒保]
+  payment:
+    keywords: [payment, pay, 支付]
+  policy_issue:
+    keywords: [policy, issue, result, 保单, 出单]

@@ -1,4 +1,4 @@
-"""T-FS-4: 校验 schemas/ 目录下所有 JSON Schema 的语法合法性。
+"""Validate all JSON Schema files under schemas/ recursively.
 
 Usage:
     python tools/validate_schemas.py
@@ -22,7 +22,7 @@ SCHEMAS_DIR = Path(__file__).parent.parent / "schemas"
 
 
 def validate_schema_file(path: Path) -> list[str]:
-    errors = []
+    errors: list[str] = []
     try:
         with open(path, encoding="utf-8") as f:
             schema = json.load(f)
@@ -30,7 +30,7 @@ def validate_schema_file(path: Path) -> list[str]:
         errors.append(f"JSON parse error: {e}")
         return errors
 
-    # Check it's a valid JSON Schema (Draft-07) when jsonschema is installed.
+    # Check it is a valid JSON Schema (Draft-07) when jsonschema is installed.
     if Draft7Validator is not None and jsonschema is not None:
         try:
             Draft7Validator.check_schema(schema)
@@ -38,7 +38,7 @@ def validate_schema_file(path: Path) -> list[str]:
             errors.append(f"Schema error: {e.message}")
             return errors
 
-    # Enforce required metadata fields
+    # Enforce required metadata fields.
     if "$schema" not in schema:
         errors.append("Missing '$schema' field")
     if "$id" not in schema:
@@ -51,6 +51,10 @@ def validate_schema_file(path: Path) -> list[str]:
     return errors
 
 
+def iter_schema_files() -> list[Path]:
+    return sorted(SCHEMAS_DIR.rglob("*.schema.json"))
+
+
 def main() -> int:
     if not SCHEMAS_DIR.exists():
         print(f"ERROR: schemas/ directory not found at {SCHEMAS_DIR}", file=sys.stderr)
@@ -58,9 +62,9 @@ def main() -> int:
     if Draft7Validator is None:
         print("WARN: jsonschema is not installed; running JSON syntax + metadata checks only.")
 
-    schema_files = sorted(SCHEMAS_DIR.glob("*.schema.json"))
+    schema_files = iter_schema_files()
     if not schema_files:
-        print("ERROR: No *.schema.json files found in schemas/", file=sys.stderr)
+        print("ERROR: No *.schema.json files found under schemas/", file=sys.stderr)
         return 1
 
     total = len(schema_files)
@@ -69,22 +73,22 @@ def main() -> int:
 
     for path in schema_files:
         errors = validate_schema_file(path)
+        display = path.relative_to(SCHEMAS_DIR)
         if errors:
             failed += 1
-            print(f"  FAIL  {path.name}")
+            print(f"  FAIL  {display}")
             for err in errors:
                 print(f"        → {err}")
         else:
             passed += 1
-            print(f"  pass  {path.name}")
+            print(f"  pass  {display}")
 
     print(f"\nResults: {passed}/{total} passed", end="")
     if failed:
         print(f", {failed} FAILED")
         return 1
-    else:
-        print(" OK")
-        return 0
+    print(" OK")
+    return 0
 
 
 if __name__ == "__main__":

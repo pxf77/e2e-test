@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pxf77.github.io/e2e-test/schemas/v2/app.schema.json",
+  "title": "App Pack v2",
+  "description": "应用接入包契约，用于替代领域专用 product-input.json 并声明应用、领域、入口、需求、数据与执行配置。",
+  "type": "object",
+  "required": ["id", "name", "domain"],
+  "additionalProperties": true,
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "name": {"type": "string", "minLength": 1},
+    "domain": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "requirements": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "prd": {"type": "string"},
+        "manual_cases": {"type": "string"}
+      }
+    },
+    "entrypoints": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "web": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "base_url": {"type": "string"},
+            "start_url": {"type": "string"}
+          }
+        }
+      }
+    },
+    "page_models": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "dir": {"type": "string"}
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "pack": {"type": "string"}
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "default_runner": {"type": "string"},
+        "environments": {"type": "object"}
+      }
+    }
+  }
+}

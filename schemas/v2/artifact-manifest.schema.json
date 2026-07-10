@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pxf77.github.io/e2e-test/schemas/v2/artifact-manifest.schema.json",
+  "title": "Artifact Manifest v2",
+  "description": "运行产物索引契约，记录每个产物的契约版本、生产者、路径、hash 与元数据。",
+  "type": "object",
+  "required": ["run_id", "artifacts"],
+  "additionalProperties": true,
+  "properties": {
+    "run_id": {"type": "string", "minLength": 1},
+    "app_id": {"type": "string"},
+    "domain_id": {"type": "string"},
+    "workflow_id": {"type": "string"},
+    "created_at": {"type": "string"},
+    "artifacts": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/artifact"}
+    }
+  },
+  "definitions": {
+    "artifact": {
+      "type": "object",
+      "required": ["id", "path", "producer"],
+      "additionalProperties": true,
+      "properties": {
+        "id": {"type": "string"},
+        "contract": {"type": "string"},
+        "path": {"type": "string"},
+        "sha256": {"type": "string"},
+        "producer": {"type": "string"},
+        "created_at": {"type": "string"},
+        "metadata": {"type": "object"}
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import asyncio
 import argparse
+import asyncio
 import functools
 import http.server
 import json
@@ -14,9 +14,14 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+import yaml
+
+from e2e_agent.contracts import ContractRegistry
 from e2e_agent.core.healing_apply import apply_healing_event
+from e2e_agent.domains import DomainPackLoader
 from e2e_agent.graph.gates import get_gate_checkpoint_path
 from e2e_agent.graph.graph import build_graph
+from e2e_agent.workflow import WorkflowCompiler, load_workflow
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _MODEL_KEY_ENV_NAMES = ("OPENAI_API_KEY", "GEMINI_API_KEY", "DEEPSEEK_API_KEY")
@@ -35,6 +40,13 @@ def _load_checkpoint(run_id: str) -> tuple[Path, dict[str, Any]]:
 
 def _write_checkpoint(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _load_yaml(path: Path) -> dict[str, Any]:
+    payload = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    if not isinstance(payload, dict):
+        raise ValueError(f"YAML document must be an object: {path}")
+    return payload
 
 
 def gate_approve(run_id: str, gate_name: str, operator: str, note: str) -> str:
@@ -159,6 +171,77 @@ def list_product_inputs() -> list[dict[str, str]]:
     return result
 
 
+def list_domain_packs() -> list[dict[str, str]]:
+    loader = DomainPackLoader(_REPO_ROOT / "domains")
+    result: list[dict[str, str]] = []
+    for domain_id in loader.list_domain_ids():
+        pack = loader.load(domain_id)
+        result.append(
+            {
+                "id": pack.id,
+                "name": pack.name,
+                "version": pack.version,
+                "path": _display_path(pack.root / "domain.yaml"),
+            }
+        )
+    return result
+
+
+def list_workflows() -> list[dict[str, Any]]:
+    workflows_root = _REPO_ROOT / "workflows"
+    result: list[dict[str, Any]] = []
+    if not workflows_root.exists():
+        return result
+    compiler = WorkflowCompiler()
+    for path in sorted(workflows_root.glob("*.yaml")):
+        definition = load_workflow(path)
+        compiled = compiler.compile(definition)
+        result.append(
+            {
+                "id": compiled.id,
+                "version": compiled.version,
+                "nodes": len(compiled.nodes),
+                "edges": len(compiled.edges),
+                "path": _display_path(path),
+            }
+        )
+    return result
+
+
+def validate_app_pack(app_path: Path, workflow_id: str | None = None) -> dict[str, Any]:
+    resolved_path = app_path if app_path.is_absolute() else _REPO_ROOT / app_path
+    payload = _load_yaml(resolved_path)
+    registry = ContractRegistry().discover()
+    registry.validate("app", "v2", payload)
+
+    domain_id = str(payload["domain"])
+    domain_pack = DomainPackLoader(_REPO_ROOT / "domains", registry=registry).load(domain_id)
+    workflows = list_workflows()
+    workflow_ids = {item["id"] for item in workflows}
+    selected_workflow = workflow_id or "p0-web-regression"
+    if selected_workflow not in workflow_ids:
+        raise ValueError(f"Workflow not found: {selected_workflow}")
+    if domain_pack.supported_workflows and selected_workflow not in domain_pack.supported_workflows:
+        raise ValueError(f"Domain {domain_pack.id} does not support workflow {selected_workflow}")
+
+    return {
+        "app_id": payload["id"],
+        "domain_id": domain_pack.id,
+        "workflow_id": selected_workflow,
+        "app_path": _display_path(resolved_path),
+        "domain_path": _display_path(domain_pack.root / "domain.yaml"),
+        "status": "valid",
+    }
+
+
+def run_v2_app(app_path: Path, workflow_id: str | None, env: str) -> int:
+    validation = validate_app_pack(app_path, workflow_id)
+    validation["env"] = env
+    validation["execution"] = "validation_only_foundation"
+    print(json.dumps(validation, ensure_ascii=False, indent=2))
+    return 0
+
+
 def doctor_status() -> dict[str, Any]:
     python_ok = sys.version_info >= (3, 12)
     node_path = shutil.which("node")
@@ -183,6 +266,8 @@ def doctor_status() -> dict[str, Any]:
         },
         "model_keys": {name: bool(os.environ.get(name)) for name in _MODEL_KEY_ENV_NAMES},
         "product_inputs": list_product_inputs(),
+        "domain_packs": list_domain_packs() if (_REPO_ROOT / "domains").exists() else [],
+        "workflows": list_workflows() if (_REPO_ROOT / "workflows").exists() else [],
     }
 
 
@@ -202,6 +287,12 @@ def _print_doctor_text(status: dict[str, Any]) -> None:
     print("product inputs:")
     for index, item in enumerate(status["product_inputs"], start=1):
         print(f"{index}. {item['path']} ({item['product_id']})")
+    print("domain packs:")
+    for index, item in enumerate(status.get("domain_packs") or [], start=1):
+        print(f"{index}. {item['path']} ({item['id']}@{item['version']})")
+    print("workflows:")
+    for index, item in enumerate(status.get("workflows") or [], start=1):
+        print(f"{index}. {item['path']} ({item['id']}@{item['version']})")
 
 
 def run_full_workflow(product_input: Path, extra_env: dict[str, str] | None = None) -> int:
@@ -260,8 +351,31 @@ def _build_parser() -> argparse.ArgumentParser:
     products_parser = subparsers.add_parser("products")
     products_parser.add_argument("--json", action="store_true", dest="as_json")
 
+    domains_parser = subparsers.add_parser("domains")
+    domains_parser.add_argument("--json", action="store_true", dest="as_json")
+
+    workflows_parser = subparsers.add_parser("workflows")
+    workflows_parser.add_argument("--json", action="store_true", dest="as_json")
+
+    runners_parser = subparsers.add_parser("runners")
+    runners_parser.add_argument("--json", action="store_true", dest="as_json")
+
+    validate_parser = subparsers.add_parser("validate")
+    validate_subparsers = validate_parser.add_subparsers(dest="validate_command", required=True)
+    validate_app_parser = validate_subparsers.add_parser("app")
+    validate_app_parser.add_argument("path")
+    validate_app_parser.add_argument("--workflow", default="p0-web-regression")
+    validate_domain_parser = validate_subparsers.add_parser("domain")
+    validate_domain_parser.add_argument("id")
+    validate_workflow_parser = validate_subparsers.add_parser("workflow")
+    validate_workflow_parser.add_argument("path")
+
     run_parser = subparsers.add_parser("run")
-    run_parser.add_argument("--product-input", required=True)
+    run_input_group = run_parser.add_mutually_exclusive_group(required=True)
+    run_input_group.add_argument("--product-input")
+    run_input_group.add_argument("--app")
+    run_parser.add_argument("--workflow", default="p0-web-regression")
+    run_parser.add_argument("--env", default="local")
 
     reports_parser = subparsers.add_parser("reports")
     reports_subparsers = reports_parser.add_subparsers(dest="reports_command", required=True)
@@ -318,8 +432,44 @@ def main(argv: list[str] | None = None) -> int:
                     print("No product-input.json found under products/")
                 for index, item in enumerate(products, start=1):
                     print(f"{index}. {item['path']} ({item['product_id']} - {item['product_name']})")
+        elif args.command == "domains":
+            domains = list_domain_packs()
+            if args.as_json:
+                print(json.dumps(domains, ensure_ascii=False))
+            else:
+                for index, item in enumerate(domains, start=1):
+                    print(f"{index}. {item['path']} ({item['id']}@{item['version']} - {item['name']})")
+        elif args.command == "workflows":
+            workflows = list_workflows()
+            if args.as_json:
+                print(json.dumps(workflows, ensure_ascii=False))
+            else:
+                for index, item in enumerate(workflows, start=1):
+                    print(f"{index}. {item['path']} ({item['id']}@{item['version']}, nodes={item['nodes']}, edges={item['edges']})")
+        elif args.command == "runners":
+            runners = [{"id": "playwright", "status": "registered_adapter"}]
+            if args.as_json:
+                print(json.dumps(runners, ensure_ascii=False))
+            else:
+                for item in runners:
+                    print(f"{item['id']} ({item['status']})")
+        elif args.command == "validate":
+            if args.validate_command == "app":
+                print(json.dumps(validate_app_pack(Path(args.path), args.workflow), ensure_ascii=False, indent=2))
+            elif args.validate_command == "domain":
+                pack = DomainPackLoader(_REPO_ROOT / "domains").load(args.id)
+                print(json.dumps({"id": pack.id, "version": pack.version, "status": "valid"}, ensure_ascii=False, indent=2))
+            elif args.validate_command == "workflow":
+                definition = load_workflow(Path(args.path))
+                compiled = WorkflowCompiler().compile(definition)
+                print(json.dumps({"id": compiled.id, "version": compiled.version, "status": "valid"}, ensure_ascii=False, indent=2))
+            else:
+                parser.error(f"Unsupported validate command: {args.validate_command}")
+                return 2
         elif args.command == "run":
-            return run_full_workflow(Path(args.product_input))
+            if args.product_input:
+                return run_full_workflow(Path(args.product_input))
+            return run_v2_app(Path(args.app), args.workflow, args.env)
         elif args.command == "reports":
             if args.reports_command == "serve":
                 _serve_static_reports(_REPO_ROOT / "products", args.host, args.port)
