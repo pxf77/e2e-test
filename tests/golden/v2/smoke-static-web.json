@@ -1,0 +1,24 @@
+{
+  "node_ids": [
+    "explore",
+    "prepare_data",
+    "execute",
+    "assertions",
+    "report"
+  ],
+  "artifact_names": [
+    "assertion_report",
+    "data_metadata",
+    "execution_result",
+    "healing_events",
+    "page_registry",
+    "report_artifacts",
+    "test_data",
+    "test_report"
+  ],
+  "report_files": [
+    "junit.xml",
+    "report.html",
+    "report.json"
+  ]
+}
