@@ -1,4 +1,4 @@
-.PHONY: install install-uv test validate-schemas validate-domains validate-workflows validate-runners validate-plugins boundary-check ci-check acceptance clean
+.PHONY: install install-uv test validate-repository validate-schemas validate-domains validate-workflows validate-runners validate-plugins boundary-check ci-check acceptance clean
 
 PYTHON ?= python
 
@@ -10,6 +10,9 @@ install-uv:
 
 test:
 	$(PYTHON) -m pytest tests/ -v --cov=src/e2e_agent --cov-report=term-missing
+
+validate-repository:
+	$(PYTHON) tools/validate_repository.py
 
 validate-schemas:
 	$(PYTHON) tools/validate_schemas.py
@@ -30,6 +33,7 @@ boundary-check:
 	$(PYTHON) tools/check_domain_boundaries.py
 
 ci-check:
+	$(PYTHON) tools/validate_repository.py
 	$(PYTHON) tools/ci_rule_check.py
 	$(PYTHON) tools/check_domain_boundaries.py
 
