@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from pathlib import Path
 
 from e2e_agent.adapters.legacy import register_legacy_nodes
@@ -20,7 +21,11 @@ from .registry import NodeRegistry
 from .runner_nodes import api_runner_node, appium_runner_node
 
 
-def build_default_node_registry(repo_root: Path | None = None) -> NodeRegistry:
+def build_default_node_registry(
+    repo_root: Path | None = None,
+    *,
+    plugin_roots: Iterable[Path] | None = None,
+) -> NodeRegistry:
     root = repo_root or Path(__file__).resolve().parents[3]
     registry = NodeRegistry()
     registry.register("builtin.case_merge", case_merge_node, kind="agent")
@@ -35,8 +40,9 @@ def build_default_node_registry(repo_root: Path | None = None) -> NodeRegistry:
     registry.register("runner.appium", appium_runner_node, kind="runner")
     register_legacy_nodes(registry)
 
+    discovery_roots = [root / "plugins", *(Path(item) for item in (plugin_roots or []))]
     plugin_manager = PluginManager(
-        root / "plugins",
+        discovery_roots,
         contract_registry=ContractRegistry(root / "schemas").discover(),
     )
     plugin_manager.register_nodes(registry)
