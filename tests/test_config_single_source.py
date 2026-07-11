@@ -14,7 +14,6 @@ OBSOLETE_CONFIG_FILES = [
     "assertion-templates.yaml",
     "skill-manifest.yaml",
     "playwright-config.yaml",
-    "gate-operator.yaml",
 ]
 
 CURRENT_RUNTIME_DIRS = [
@@ -35,6 +34,7 @@ CURRENT_RUNTIME_DIRS = [
 def test_obsolete_global_configs_are_absent() -> None:
     assert [name for name in OBSOLETE_CONFIG_FILES if (ROOT / "config" / name).exists()] == []
     assert (ROOT / "config" / "model-routing.yaml").exists()
+    assert (ROOT / "config" / "gate-operator.yaml").exists()
 
 
 def test_legacy_agent2_uses_insurance_domain_state_deps() -> None:
@@ -59,10 +59,10 @@ def test_skill_packages_are_discovered_without_global_index() -> None:
     assert {
         "mpt-ins-prd-ana",
         "mpt-ins-tc-gen",
-        "mpt-ins-ts-gen",
         "mpt-reg-case-merge",
         "mpt-reg-exec",
         "mpt-reg-path-extract",
+        "mpt-ins-ts-gen",
     } <= set(skills)
 
 
