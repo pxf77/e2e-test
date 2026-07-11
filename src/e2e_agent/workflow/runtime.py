@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -33,10 +34,15 @@ class WorkflowRuntime:
         repo_root: Path | None = None,
         registry: NodeRegistry | None = None,
         contract_registry: ContractRegistry | None = None,
+        plugin_roots: Iterable[Path] | None = None,
     ) -> None:
         self.repo_root = repo_root or Path(__file__).resolve().parents[3]
         self.contract_registry = contract_registry or ContractRegistry(self.repo_root / "schemas").discover()
-        self.registry = registry or build_default_node_registry(self.repo_root)
+        self.plugin_roots = tuple(Path(item) for item in (plugin_roots or []))
+        self.registry = registry or build_default_node_registry(
+            self.repo_root,
+            plugin_roots=self.plugin_roots,
+        )
         self.compiler = WorkflowCompiler()
         self.config_resolver = ConfigResolver()
         self.domain_loader = DomainPackLoader(self.repo_root / "domains", registry=self.contract_registry)
@@ -111,6 +117,7 @@ class WorkflowRuntime:
             "artifacts_dir": str(artifacts_dir),
             "artifact_manifest_path": str(artifacts_dir / "artifact-manifest.json"),
             "domain_lineage": list(domain.manifest.get("resolved_lineage") or []),
+            "plugin_roots": [str(path) for path in self.plugin_roots],
         }
         runtime_metadata.update(metadata or {})
         legacy_required = any(

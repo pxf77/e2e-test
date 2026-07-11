@@ -1,4 +1,4 @@
-"""Validate plugin manifests, entries and workflow registrations."""
+"""Validate production and example plugin manifests, entries and registrations."""
 from __future__ import annotations
 
 import sys
@@ -14,9 +14,12 @@ from e2e_agent.plugins import PluginManager  # noqa: E402
 from e2e_agent.workflow.registry import NodeRegistry  # noqa: E402
 
 
+PLUGIN_ROOTS = [ROOT / "plugins", ROOT / "examples" / "plugins"]
+
+
 def main() -> int:
     manager = PluginManager(
-        ROOT / "plugins",
+        PLUGIN_ROOTS,
         contract_registry=ContractRegistry(ROOT / "schemas").discover(),
     )
     try:
@@ -26,7 +29,8 @@ def main() -> int:
         for manifest in manifests:
             registered = registry.get(manifest.implementation_id) if manifest.kind in {"node", "skill"} else None
             suffix = f" -> {registered.id}" if registered else ""
-            print(f"  pass  {manifest.id}@{manifest.version} ({manifest.runtime_type}){suffix}")
+            location = manifest.path.relative_to(ROOT)
+            print(f"  pass  {manifest.id}@{manifest.version} ({manifest.runtime_type}, {location}){suffix}")
     except Exception as exc:  # pragma: no cover - CLI reporting
         print(f"FAIL: {exc}", file=sys.stderr)
         return 1

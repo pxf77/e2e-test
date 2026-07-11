@@ -21,6 +21,15 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
+def _resolve_repo_paths(values: list[str] | None) -> list[Path]:
+    root = _repo_root()
+    result: list[Path] = []
+    for value in values or []:
+        path = Path(value)
+        result.append(path if path.is_absolute() else root / path)
+    return result
+
+
 def _build_v2_run_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="e2e-agent run")
     parser.add_argument("--app", required=True)
@@ -28,6 +37,12 @@ def _build_v2_run_parser() -> argparse.ArgumentParser:
     parser.add_argument("--env", default="local")
     parser.add_argument("--run-id", default=None)
     parser.add_argument("--inputs-json", default=None)
+    parser.add_argument(
+        "--plugin-dir",
+        action="append",
+        default=[],
+        help="Additional plugin discovery directory; may be repeated.",
+    )
     return parser
 
 
@@ -44,6 +59,13 @@ def _build_v2_gate_parser() -> argparse.ArgumentParser:
         command_parser.add_argument("--operator", default="manual")
         command_parser.add_argument("--note", default=f"{command}d via v2 CLI")
         command_parser.add_argument("--checkpoint-dir", default=None)
+    return parser
+
+
+def _build_plugins_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="e2e-agent plugins")
+    parser.add_argument("--path", action="append", default=[], help="Plugin discovery directory; may be repeated.")
+    parser.add_argument("--json", action="store_true", dest="as_json")
     return parser
 
 
@@ -101,7 +123,7 @@ def _checkpoint_dir(runtime: WorkflowRuntime, explicit: str | None) -> Path:
 
 def run_v2(argv: list[str]) -> int:
     args = _build_v2_run_parser().parse_args(argv)
-    runtime = WorkflowRuntime()
+    runtime = WorkflowRuntime(plugin_roots=_resolve_repo_paths(args.plugin_dir))
     result = asyncio.run(
         runtime.run(
             app_path=Path(args.app),
@@ -164,9 +186,10 @@ def gate_v2(argv: list[str]) -> int:
     return _runtime_exit_code(summary)
 
 
-def list_plugins() -> int:
-    root = _repo_root()
-    manifests = PluginManager(root / "plugins").list()
+def list_plugins(argv: list[str]) -> int:
+    args = _build_plugins_parser().parse_args(argv)
+    roots = _resolve_repo_paths(args.path) if args.path else [_repo_root() / "plugins"]
+    manifests = PluginManager(roots).list()
     payload = [
         {
             "id": item.id,
@@ -252,8 +275,8 @@ def main(argv: list[str] | None = None) -> int:
             return run_v2(actual[1:])
         if actual and actual[0] == "gate-v2":
             return gate_v2(actual[1:])
-        if actual == ["plugins"] or actual == ["plugins", "--json"]:
-            return list_plugins()
+        if actual and actual[0] == "plugins":
+            return list_plugins(actual[1:])
         if actual == ["runners"] or actual == ["runners", "--json"]:
             return list_runners()
         if actual == ["data-providers"] or actual == ["data-providers", "--json"]:

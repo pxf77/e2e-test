@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Iterable
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -17,20 +18,46 @@ if TYPE_CHECKING:
 class PluginManager:
     def __init__(
         self,
-        plugins_root: Path,
+        plugins_root: Path | Iterable[Path],
         *,
         contract_registry: ContractRegistry | None = None,
         runtime: PluginRuntime | None = None,
     ) -> None:
         self.contract_registry = contract_registry or ContractRegistry().discover()
-        self.loader = PluginManifestLoader(plugins_root, self.contract_registry)
+        self.roots = self._normalise_roots(plugins_root)
+        self.loaders = [PluginManifestLoader(root, self.contract_registry) for root in self.roots]
+        # Compatibility alias for callers that inspected the original single loader.
+        self.loader = self.loaders[0] if self.loaders else None
         self.runtime = runtime or PluginRuntime()
         self._manifests: dict[str, PluginManifest] = {}
 
+    @staticmethod
+    def _normalise_roots(plugins_root: Path | Iterable[Path]) -> tuple[Path, ...]:
+        if isinstance(plugins_root, Path):
+            candidates = [plugins_root]
+        else:
+            candidates = [Path(item) for item in plugins_root]
+        result: list[Path] = []
+        seen: set[Path] = set()
+        for candidate in candidates:
+            resolved = candidate.resolve()
+            if resolved not in seen:
+                seen.add(resolved)
+                result.append(resolved)
+        return tuple(result)
+
     def discover(self) -> list[PluginManifest]:
-        manifests = self.loader.discover()
+        manifests = [manifest for loader in self.loaders for manifest in loader.discover()]
+        ids = [item.id for item in manifests]
+        duplicates = sorted({item for item in ids if ids.count(item) > 1})
+        if duplicates:
+            locations = {
+                plugin_id: [str(item.path) for item in manifests if item.id == plugin_id]
+                for plugin_id in duplicates
+            }
+            raise ValueError(f"Duplicate plugin ids across discovery roots: {locations}")
         self._manifests = {item.id: item for item in manifests}
-        return manifests
+        return sorted(manifests, key=lambda item: (item.id, str(item.path)))
 
     def list(self) -> list[PluginManifest]:
         return list(self._manifests.values()) if self._manifests else self.discover()

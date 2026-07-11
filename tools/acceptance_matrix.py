@@ -19,6 +19,7 @@ from e2e_agent.workflow import WorkflowRuntime  # noqa: E402
 
 
 STATIC_COMMANDS = [
+    [sys.executable, "tools/validate_repository.py"],
     [sys.executable, "tools/validate_schemas.py"],
     [sys.executable, "tools/validate_domains.py"],
     [sys.executable, "tools/validate_workflows.py"],
@@ -79,9 +80,13 @@ async def _run_workflows(temp_root: Path) -> list[dict[str, Any]]:
             }
         )
 
-    plugin_result = await runtime.run(
+    plugin_runtime = WorkflowRuntime(
+        repo_root=ROOT,
+        plugin_roots=[ROOT / "examples" / "plugins"],
+    )
+    plugin_result = await plugin_runtime.run(
         app_path=Path("apps/demo-generic-form/app.yaml"),
-        workflow="plugin-smoke",
+        workflow=Path("examples/workflows/plugin-smoke.yaml"),
         run_id="acceptance-plugin",
         inputs={"message": "acceptance"},
         metadata={"artifacts_dir": str(temp_root / "plugin"), "gate_checkpoint_dir": ""},

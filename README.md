@@ -91,9 +91,11 @@ e2e-agent run \
 ```text
 apps/                         # 应用接入包和 Demo
 domains/                      # generic-web / insurance / ecommerce / saas
-workflows/                    # Web、API、Mobile、Plugin 工作流
+workflows/                    # 生产 Web、API、Mobile 工作流
 runners/                      # Runner Manifest
-plugins/                      # v2 Plugin Package
+plugins/                      # 生产 Plugin Package，可为空
+examples/plugins/             # 需显式加载的教学插件
+examples/workflows/           # 配套示例工作流
 schemas/v2/                   # 通用契约
 src/e2e_agent/
   adapters/legacy/            # v1 四 Agent 兼容适配
@@ -200,16 +202,31 @@ Assertion Engine 支持 `${business.value}` 等路径表达式。断言结果输
 
 ## Plugin SDK
 
-创建插件：
+创建生产插件：
 
 ```bash
 e2e-agent plugin create my-plugin --runtime python
 ```
 
-查看插件：
+默认只查看生产插件：
 
 ```bash
 e2e-agent plugins --json
+```
+
+显式查看 Echo 示例：
+
+```bash
+e2e-agent plugins --path examples/plugins --json
+```
+
+执行示例插件工作流：
+
+```bash
+e2e-agent run \
+  --app apps/demo-generic-form/app.yaml \
+  --workflow examples/workflows/plugin-smoke.yaml \
+  --plugin-dir examples/plugins
 ```
 
 Workflow implementation 使用 `plugin.<id>`。插件通过 JSON stdin/stdout 协议运行，并校验 Manifest 中声明的输入输出 Contract。

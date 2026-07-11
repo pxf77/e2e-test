@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Changed
+
+- Production plugin discovery now scans `plugins/` only; teaching plugins and their workflows live under `examples/` and require explicit loading.
+- `WorkflowRuntime` and CLI commands accept additional plugin discovery directories.
+
 ### Removed
 
 - Obsolete Skill migration history under `patches/`.
