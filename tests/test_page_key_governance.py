@@ -84,7 +84,7 @@ def test_repository_state_deps_covers_pilot_business_states() -> None:
     from e2e_agent.core.page_key_governance import validate_state_deps
 
     root_dir = Path(__file__).resolve().parents[1]
-    config_path = root_dir / "config" / "state-deps.yaml"
+    config_path = root_dir / "domains" / "insurance" / "state-deps.yaml"
     text = config_path.read_text(encoding="utf-8")
     config = yaml.safe_load(text)
 
