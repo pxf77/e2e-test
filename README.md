@@ -234,6 +234,7 @@ Artifact Manifest 记录 contract、producer、node、path、SHA-256、类型和
 ## 质量门禁
 
 ```bash
+python tools/validate_repository.py
 python tools/validate_schemas.py
 python tools/validate_domains.py
 python tools/validate_workflows.py
@@ -277,7 +278,6 @@ App Pack + Domain Pack + Workflow DSL + v2 Gate Runtime
 - [Gate Runtime](docs/gate-runtime-v2.md)
 - [统一报告](docs/reporting-v2.md)
 - [v1 → v2 迁移](docs/migration-v1-to-v2.md)
-- [实施完成矩阵](docs/implementation-status.md)
 
 ## 安全规则
 

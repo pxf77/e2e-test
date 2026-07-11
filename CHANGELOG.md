@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Removed
+
+- Obsolete Skill migration history under `patches/`.
+- Unused `.dockerignore` without a Docker build definition.
+- Legacy PowerShell run wrapper superseded by `e2e-agent run --product-input`.
+- Duplicate `tools/run_v2_workflow.py` entrypoint superseded by `e2e-agent run --app`.
+- Point-in-time implementation status document superseded by the changelog and release documentation.
+
 ## 1.0.0
 
 ### Added
