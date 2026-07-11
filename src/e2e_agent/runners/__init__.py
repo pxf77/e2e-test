@@ -1,6 +1,5 @@
-"""Execution runner abstraction."""
+"""Execution runner contracts used by Workflow runner adapters."""
 
 from .base import ExecutionPlan, ExecutionResult, ExecutionRunner
-from .registry import RunnerRegistry
 
-__all__ = ["ExecutionPlan", "ExecutionResult", "ExecutionRunner", "RunnerRegistry"]
+__all__ = ["ExecutionPlan", "ExecutionResult", "ExecutionRunner"]
