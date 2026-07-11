@@ -8,10 +8,12 @@
 
 ```text
 config/
+  gate-operator.yaml
   model-routing.yaml
 ```
 
-模型供应商、fallback、超时和预算规则统一由 `model-routing.yaml` 管理。
+- `model-routing.yaml` 管理模型供应商、fallback、超时和预算。
+- `gate-operator.yaml` 管理旧 R1-R4 流程的通用运营名称、阻塞属性、SLA 和当前 CLI 命令；不包含行业状态或断言规则。
 
 ## Domain Pack 配置
 
@@ -52,9 +54,9 @@ src/e2e_agent/skills/<skill>/MANIFEST.yaml
 
 ## Runner 与 Gate
 
-Runner 能力通过 `runners/*.yaml`、App Pack execution 配置和运行时 overrides 组合解析。
+Runner 能力通过 `runners/*.yaml`、App Pack execution 配置和运行时 overrides 组合解析，不维护独立的旧 Playwright YAML。
 
-Gate 的 operator、note、决策和审计信息由 CLI 与 checkpoint 持久化，不维护静态 operator 清单。
+Gate 的 operator、note、决策和审计结果由 CLI 与 checkpoint 持久化；`gate-operator.yaml` 只描述框架级运营策略，不保存每次决策或人员账号。
 
 ## 配置优先级
 
