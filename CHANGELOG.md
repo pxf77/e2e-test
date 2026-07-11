@@ -8,7 +8,8 @@
 - `WorkflowRuntime` and CLI commands accept additional plugin discovery directories.
 - Insurance state governance and legacy assertion matching now read from `domains/insurance` as the single business configuration source.
 - Skill discovery relies exclusively on package-local `MANIFEST.yaml` files.
-- Global `config/` is restricted to framework-level settings such as model routing.
+- Global `config/` is restricted to framework-level model routing and legacy Gate operations policy.
+- `gate-operator.yaml` now uses current `e2e-agent gate` commands and contains only framework-level operational metadata.
 
 ### Removed
 
@@ -18,7 +19,7 @@
 - Duplicate `tools/run_v2_workflow.py` entrypoint superseded by `e2e-agent run --app`.
 - Point-in-time implementation status document superseded by the changelog and release documentation.
 - Duplicated global insurance state-deps and assertion catalogs.
-- Redundant global Skill index and stale Playwright/Gate operator configuration.
+- Redundant global Skill index and stale Playwright compatibility configuration.
 
 ## 1.0.0
 
