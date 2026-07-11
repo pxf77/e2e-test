@@ -1,7 +1,7 @@
-"""Check that core runtime layers do not depend on concrete domain vocabulary.
+"""Check that core runtime layers and global config stay domain-agnostic.
 
-This is a conservative boundary guard for the generalization effort. It does
-not scan domain packs, fixtures, docs, or legacy adapters.
+Concrete business vocabulary belongs under ``domains/``. Legacy packages,
+fixtures and documentation are intentionally outside this check.
 """
 from __future__ import annotations
 
@@ -31,6 +31,34 @@ BANNED_PATTERNS = [
     ]
 ]
 
+CONFIG_BANNED_PATTERNS = [
+    re.compile(pattern, re.IGNORECASE)
+    for pattern in [
+        r"\bunderwriting\b",
+        r"\bpolicyNo\b",
+        r"\bhealthNotice\b",
+        r"\bpremium\b",
+        r"\bcart\b",
+        r"\bcheckout\b",
+        r"\bworkspace\b",
+        r"\b保费\b",
+        r"\b核保\b",
+        r"\b保单\b",
+    ]
+]
+
+
+def _scan_file(path: Path, patterns: list[re.Pattern[str]]) -> list[str]:
+    violations: list[str] = []
+    text = path.read_text(encoding="utf-8", errors="replace")
+    for lineno, line in enumerate(text.splitlines(), start=1):
+        if "BANNED_PATTERNS" in line:
+            continue
+        for pattern in patterns:
+            if pattern.search(line):
+                violations.append(f"{path.relative_to(ROOT)}:{lineno}: {line.strip()}")
+    return violations
+
 
 def main() -> int:
     violations: list[str] = []
@@ -38,13 +66,14 @@ def main() -> int:
         if not scan_dir.exists():
             continue
         for path in sorted(scan_dir.rglob("*.py")):
-            text = path.read_text(encoding="utf-8")
-            for lineno, line in enumerate(text.splitlines(), start=1):
-                if "BANNED_PATTERNS" in line:
-                    continue
-                for pattern in BANNED_PATTERNS:
-                    if pattern.search(line):
-                        violations.append(f"{path.relative_to(ROOT)}:{lineno}: {line.strip()}")
+            violations.extend(_scan_file(path, BANNED_PATTERNS))
+
+    config_dir = ROOT / "config"
+    if config_dir.exists():
+        for path in sorted(config_dir.rglob("*")):
+            if path.is_file() and path.suffix.lower() in {".yaml", ".yml", ".json", ".toml"}:
+                violations.extend(_scan_file(path, CONFIG_BANNED_PATTERNS))
+
     if violations:
         for violation in violations:
             print(f"VIOLATION: {violation}", file=sys.stderr)

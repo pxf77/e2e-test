@@ -103,7 +103,7 @@ def test_repository_assertion_templates_are_business_filled() -> None:
     from e2e_agent.core.assertion_templates import load_assertion_template_catalog
 
     root_dir = Path(__file__).resolve().parents[1]
-    config_path = root_dir / "config" / "assertion-templates.yaml"
+    config_path = root_dir / "domains" / "insurance" / "assertion-pack.yaml"
     text = config_path.read_text(encoding="utf-8")
     catalog = load_assertion_template_catalog(root_dir=root_dir)
 
@@ -113,7 +113,7 @@ def test_repository_assertion_templates_are_business_filled() -> None:
         match = template.get("match", {})
         assert match.get("route_keywords"), template_type
         assert match.get("assertion_keywords"), template_type
-        assert template.get("validation_rules") or template.get("expected_statuses") or template.get("valid_transitions")
+        assert template.get("checks"), template_type
 
 
 def test_match_assertion_template_falls_back_to_custom_with_justification(tmp_path: Path) -> None:

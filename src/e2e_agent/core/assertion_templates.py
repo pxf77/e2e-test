@@ -59,7 +59,7 @@ def _resolve_catalog_path(
         return candidate
     if root_dir is None:
         root_dir = Path.cwd()
-    candidate = root_dir / "config" / "assertion-templates.yaml"
+    candidate = root_dir / "domains" / "insurance" / "assertion-pack.yaml"
     return candidate if candidate.exists() else None
 
 
