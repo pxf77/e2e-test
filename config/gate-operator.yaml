@@ -1,0 +1,46 @@
+# Framework gate operations policy for the legacy R1-R4 workflow.
+version: "1.1"
+
+gates:
+  R1:
+    name: "Case merge review"
+    description: "Review merged cases and resolve reported conflicts."
+    owner: "senior-test"
+    sla_minutes: 30
+    blocking: true
+    approve_command: "e2e-agent gate approve {run_id} --gate r1 --operator <name> --note <reason>"
+    reject_command: "e2e-agent gate reject {run_id} --gate r1 --operator <name> --note <reason>"
+    resume_command: "e2e-agent gate resume {run_id}"
+
+  R2:
+    name: "Regression path review"
+    description: "Review regression path completeness before exploration."
+    owner: "senior-test"
+    sla_minutes: 20
+    blocking: true
+    approve_command: "e2e-agent gate approve {run_id} --gate r2 --operator <name> --note <reason>"
+    reject_command: "e2e-agent gate reject {run_id} --gate r2 --operator <name> --note <reason>"
+    resume_command: "e2e-agent gate resume {run_id}"
+
+  R3:
+    name: "Exploration contract review"
+    description: "Review exploration-contract.json, path-exploration-results.json, page-elements.json and action-trace.json before execution."
+    owner: "ai-test"
+    sla_minutes: 15
+    blocking: true
+    approve_command: "e2e-agent gate approve {run_id} --gate r3 --operator <name> --note <reason>"
+    reject_command: "e2e-agent gate reject {run_id} --gate r3 --operator <name> --note <reason>"
+    resume_command: "e2e-agent gate resume {run_id}"
+
+  R4:
+    name: "Execution report"
+    description: "Report execution results and healing suggestions without blocking completion."
+    owner: "auto"
+    sla_minutes: 0
+    blocking: false
+    approve_command: "e2e-agent gate approve {run_id} --gate r4 --operator auto --note report-only"
+    resume_command: "e2e-agent gate resume {run_id}"
+
+timeout_policy:
+  default: "pause"
+  R4: "auto-approve"
