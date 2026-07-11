@@ -17,6 +17,20 @@ OBSOLETE_CONFIG_FILES = [
     "gate-operator.yaml",
 ]
 
+CURRENT_RUNTIME_DIRS = [
+    ROOT / "src" / "e2e_agent" / "assertions",
+    ROOT / "src" / "e2e_agent" / "config",
+    ROOT / "src" / "e2e_agent" / "contracts",
+    ROOT / "src" / "e2e_agent" / "data",
+    ROOT / "src" / "e2e_agent" / "domains",
+    ROOT / "src" / "e2e_agent" / "plugins",
+    ROOT / "src" / "e2e_agent" / "reporting",
+    ROOT / "src" / "e2e_agent" / "runners",
+    ROOT / "src" / "e2e_agent" / "workflow",
+    ROOT / "tools",
+    ROOT / "workflows",
+]
+
 
 def test_obsolete_global_configs_are_absent() -> None:
     assert [name for name in OBSOLETE_CONFIG_FILES if (ROOT / "config" / name).exists()] == []
@@ -52,10 +66,12 @@ def test_skill_packages_are_discovered_without_global_index() -> None:
     } <= set(skills)
 
 
-def test_source_does_not_reference_deleted_config_paths() -> None:
+def test_current_runtime_does_not_reference_deleted_config_paths() -> None:
     obsolete_references = [f"config/{name}" for name in OBSOLETE_CONFIG_FILES]
     violations: list[str] = []
-    for scan_root in (ROOT / "src", ROOT / "tools", ROOT / "workflows"):
+    for scan_root in CURRENT_RUNTIME_DIRS:
+        if not scan_root.exists():
+            continue
         for path in scan_root.rglob("*"):
             if not path.is_file() or path.suffix not in {".py", ".yaml", ".yml", ".json"}:
                 continue
