@@ -61,7 +61,3 @@ class NodeRegistry:
 
     def list(self) -> list[RegisteredNode]:
         return [self._nodes[key] for key in sorted(self._nodes)]
-
-
-class GateRegistry(NodeRegistry):
-    """Reserved registry type for custom gate implementations."""
