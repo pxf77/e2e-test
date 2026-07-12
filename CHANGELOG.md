@@ -11,6 +11,7 @@
 - Global `config/` is restricted to framework-level model routing and legacy Gate operations policy.
 - `gate-operator.yaml` now uses current `e2e-agent gate` commands and contains only framework-level operational metadata.
 - `WorkflowRuntimeState` and `NodeRegistry` are the single active Workflow runtime state and node registration models.
+- Documentation is organized under `architecture/`, `guides/`, `reference/`, `sdk/` and `releases/`, with local-link validation in CI.
 
 ### Removed
 
@@ -22,6 +23,7 @@
 - Duplicated global insurance state-deps and assertion catalogs.
 - Redundant global Skill index and stale Playwright compatibility configuration.
 - Unused `RunContext`, `RunnerRegistry` and `GateRegistry` skeletons.
+- Flat version-suffixed documentation paths superseded by the stable documentation hierarchy.
 
 ## 1.0.0
 
