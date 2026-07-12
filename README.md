@@ -1,6 +1,6 @@
 # E2E Agent — 通用端到端回归自动化框架
 
-基于 **LangGraph + LiteLLM + Playwright** 的 Contract-first E2E 回归框架。通过 App Pack、Domain Pack、Workflow DSL、Runner、Assertion/Data Pack 与 Plugin SDK 支持跨行业 Web/API/Mobile 适配，并保留保险四 Agent 兼容流程。
+基于 **LangGraph + LiteLLM + Playwright** 的 Contract-first E2E 回归框架。通过 App Pack、Domain Pack、Workflow DSL、Runner、Assertion/Data Pack 与 Plugin SDK 支持跨行业 Web/API/Mobile 适配，Legacy 保险四 Agent 运行时物理隔离在 `e2e_agent.legacy`。
 
 ## 核心能力
 
@@ -91,7 +91,12 @@ examples/workflows/           # 配套示例工作流
 schemas/v1/                   # Legacy Agent / Skill 契约
 schemas/v2/                   # 通用框架契约
 src/e2e_agent/
-  adapters/legacy/            # Legacy 兼容适配
+  adapters/legacy/            # Workflow 与 Legacy 状态适配
+  legacy/
+    agents/                   # 保险四 Agent
+    browser/                  # Legacy Playwright Python/TS 兼容层
+    graph/                    # Legacy E2EAgentState 与 R1-R4 Graph
+    skills/                   # Legacy Skill Packages
   assertions/                 # Assertion Engine
   artifacts/                  # Artifact Manifest
   commands/                   # 正式 CLI 入口
@@ -188,6 +193,7 @@ python tools/validate_docs.py
 python tools/validate_dependencies.py
 python tools/validate_tests.py
 python tools/validate_schemas.py
+python tools/validate_legacy.py
 python tools/validate_domains.py
 python tools/validate_workflows.py
 python tools/validate_runners.py
@@ -198,15 +204,22 @@ python -m pytest tests/ -q
 python tools/acceptance_matrix.py
 ```
 
-## Legacy 兼容
+## Legacy 运行
 
-Legacy product-input 和四 Agent 流程当前仍可通过兼容入口执行：
+Legacy product-input 和四 Agent 流程继续通过显式 Legacy 包与 CLI 路由执行：
 
 ```bash
 e2e-agent run --product-input products/test-product/eman/product-input.json
 ```
 
-统一 `e2e-agent gate` 会根据 checkpoint 自动识别 v1/v2。
+Python import 路径使用：
+
+```python
+from e2e_agent.legacy.graph.graph import build_graph
+from e2e_agent.legacy.skills.loader import SkillPackageLoader
+```
+
+统一 `e2e-agent gate` 会根据 checkpoint 自动识别 Legacy/v2。
 
 ## 文档
 
