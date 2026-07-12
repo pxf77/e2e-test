@@ -1,0 +1,21 @@
+name: compat-inventory
+
+on:
+  pull_request:
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git ls-files 'tools/*.py' 'src/e2e_agent/cli.py' 'src/e2e_agent/cli_entry.py' 'tools/legacy/**' > compatibility-files.txt
+          git grep -n -E 'cli_entry|e2e_agent import cli|e2e_agent\.cli|gate-v2|tools/(validate_[^ /]+|acceptance_matrix|ci_rule_check|check_domain_boundaries|model_acceptance_harness|playwright_compat_check|run_full_workflow)\.py' -- '*.py' '*.md' '*.yaml' '*.yml' '*.toml' '*.ps1' > compatibility-references.txt || true
+          git archive --format=tar.gz -o source-snapshot.tar.gz HEAD
+      - uses: actions/upload-artifact@v4
+        with:
+          name: compat-inventory
+          path: |
+            compatibility-files.txt
+            compatibility-references.txt
+            source-snapshot.tar.gz
