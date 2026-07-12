@@ -38,7 +38,7 @@ from e2e_agent.legacy.graph.graph import build_graph
 from e2e_agent.legacy.skills.loader import SkillPackageLoader
 ```
 
-The previous top-level packages `e2e_agent.agents`, `e2e_agent.browser`, `e2e_agent.graph` and `e2e_agent.skills` do not exist.
+The former top-level Agent, Browser, Graph and Skill packages no longer exist; their contents are available only beneath `e2e_agent.legacy`.
 
 ## Runtime boundaries
 
@@ -55,4 +55,4 @@ python -m pytest tests/compatibility -q
 python tools/acceptance_matrix.py
 ```
 
-CI rejects old import and filesystem paths outside the validator's own pattern definitions.
+CI rejects former top-level import and filesystem paths outside the validator's own pattern definitions.
