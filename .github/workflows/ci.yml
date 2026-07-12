@@ -31,6 +31,8 @@ jobs:
         run: python tools/validate_tests.py
       - name: Validate schemas
         run: python tools/validate_schemas.py
+      - name: Validate legacy isolation
+        run: python tools/validate_legacy.py
       - name: Validate domain packs
         run: python tools/validate_domains.py
       - name: Validate workflows
