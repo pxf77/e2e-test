@@ -1,6 +1,6 @@
 [project]
 name = "e2e-agent"
-version = "1.0.0"
+version = "1.1.0"
 description = "Domain-pack based AI E2E regression automation framework"
 requires-python = ">=3.12"
 dependencies = [

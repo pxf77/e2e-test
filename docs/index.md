@@ -26,4 +26,5 @@
 
 ## Releases
 
+- [1.1.0 — Repository Simplification](releases/1.1.0.md)
 - [1.0.0](releases/1.0.0.md)
