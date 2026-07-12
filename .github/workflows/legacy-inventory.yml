@@ -1,0 +1,21 @@
+name: legacy-inventory
+
+on:
+  pull_request:
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git ls-files 'src/e2e_agent/agents/**' 'src/e2e_agent/browser/**' 'src/e2e_agent/graph/**' 'src/e2e_agent/skills/**' > legacy-files.txt
+          git grep -n -E 'e2e_agent\.(agents|browser|graph|skills)|src/e2e_agent/(agents|browser|graph|skills)|parents\[[0-9]+\]' -- '*.py' '*.md' '*.yaml' '*.yml' '*.json' '*.toml' > legacy-references.txt || true
+          git archive --format=tar.gz -o source-snapshot.tar.gz HEAD
+      - uses: actions/upload-artifact@v4
+        with:
+          name: legacy-inventory
+          path: |
+            legacy-files.txt
+            legacy-references.txt
+            source-snapshot.tar.gz
