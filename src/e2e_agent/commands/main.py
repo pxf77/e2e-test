@@ -365,7 +365,13 @@ process.stdin.on("end", () => {
 });
 '''
     (target / entry).write_text(body, encoding="utf-8")
-    print(str(target))
+    print(
+        json.dumps(
+            {"id": args.plugin_id, "path": str(target), "runtime": args.runtime},
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
     return 0
 
 
