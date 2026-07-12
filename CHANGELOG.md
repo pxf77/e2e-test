@@ -12,6 +12,8 @@
 - `gate-operator.yaml` now uses current `e2e-agent gate` commands and contains only framework-level operational metadata.
 - `WorkflowRuntimeState` and `NodeRegistry` are the single active Workflow runtime state and node registration models.
 - Documentation is organized under `architecture/`, `guides/`, `reference/`, `sdk/` and `releases/`, with local-link validation in CI.
+- Tool implementations are organized under `tools/validate/`, `tools/diagnostics/`, `tools/legacy/` and `tools/acceptance.py`; existing root scripts remain 1.x compatibility wrappers.
+- Playwright compatibility diagnostics use explicit repository/report arguments and no longer embed a machine-specific source path.
 
 ### Removed
 
