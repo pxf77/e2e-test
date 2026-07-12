@@ -21,7 +21,7 @@ jobs:
           if ! git diff --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add src tests tools docs workflows config examples products README.md AGENTS.md CLAUDE.md Makefile pyproject.toml
+            git add -A
             git commit -m "refactor(legacy): isolate agents browser graph and skills"
             git push origin HEAD:${{ github.head_ref }}
           fi
