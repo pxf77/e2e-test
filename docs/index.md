@@ -3,6 +3,7 @@
 ## Architecture
 
 - [总体架构](architecture/overview.md)
+- [Contract Versioning](architecture/contracts.md)
 - [Domain Pack](architecture/domain-packs.md)
 - [Workflow DSL 与 Runtime](architecture/workflow-runtime.md)
 
