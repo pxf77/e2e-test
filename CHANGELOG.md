@@ -6,10 +6,13 @@
 
 - Legacy four-Agent and Skill Package contracts are physically isolated under `schemas/v1/`; current framework contracts remain under `schemas/v2/`.
 - Contract `$id` values identify their versioned repository path, and CI rejects unversioned root schemas.
+- Legacy Agent, Browser, Graph and Skill Package source code is physically isolated beneath `src/e2e_agent/legacy/`.
+- Current framework modules reach Legacy behavior only through explicit adapters, compatibility CLI dispatch, legacy Workflow registrations or compatibility tests.
 
 ### Breaking
 
 - Filesystem consumers of legacy contracts must use `schemas/v1/<contract>.schema.json` instead of `schemas/<contract>.schema.json`.
+- Python consumers must import Legacy modules through `e2e_agent.legacy.<package>`; the former top-level Agent, Browser, Graph and Skill import paths are removed.
 
 ## 1.1.0 - 2026-07-12
 
