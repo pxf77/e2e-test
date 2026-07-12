@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+import importlib
 import json
 from typing import Any
 
 from e2e_agent import cli_entry
 from e2e_agent.commands import main as exported_main
-from e2e_agent.commands import main as command_main
-import e2e_agent.commands.main as command_module
+
+command_module = importlib.import_module("e2e_agent.commands.main")
+command_main = command_module.main
 
 
 def test_root_help_lists_canonical_commands(capsys: Any) -> None:
