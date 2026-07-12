@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.1.0 - 2026-07-12
+
 ### Changed
 
 - Production plugin discovery now scans `plugins/` only; teaching plugins and their workflows live under `examples/` and require explicit loading.
@@ -9,8 +11,9 @@
 - Insurance state governance and legacy assertion matching now read from `domains/insurance` as the single business configuration source.
 - Skill discovery relies exclusively on package-local `MANIFEST.yaml` files.
 - Global `config/` is restricted to framework-level model routing and legacy Gate operations policy.
-- `gate-operator.yaml` now uses current `e2e-agent gate` commands and contains only framework-level operational metadata.
+- `gate-operator.yaml` uses current `e2e-agent gate` commands and contains only framework-level operational metadata.
 - `WorkflowRuntimeState` and `NodeRegistry` are the single active Workflow runtime state and node registration models.
+- The canonical CLI entry is `e2e_agent.commands.main:main`; unified `gate` dispatches v1/v2 checkpoints and `gate-v2` is a deprecated alias.
 - Documentation is organized under `architecture/`, `guides/`, `reference/`, `sdk/` and `releases/`, with local-link validation in CI.
 - Tool implementations are organized under `tools/validate/`, `tools/diagnostics/`, `tools/legacy/` and `tools/acceptance.py`; existing root scripts remain 1.x compatibility wrappers.
 - Playwright compatibility diagnostics use explicit repository/report arguments and no longer embed a machine-specific source path.
@@ -31,6 +34,11 @@
 - Flat version-suffixed documentation paths superseded by the stable documentation hierarchy.
 - Unused direct Python dependencies `aiofiles`, `click` and `pydantic`; required transitive dependencies remain lock-resolved.
 - Duplicate direct Node dependency `playwright`; `@playwright/test` remains the canonical dependency and provides the CLI/transitive runtime.
+
+### Compatibility
+
+- `product-input.json`, the insurance four-Agent Graph, Skills and v1 Gate behavior remain supported in the 1.x line.
+- Root validation scripts and `cli_entry.py` remain thin compatibility wrappers.
 
 ## 1.0.0
 
