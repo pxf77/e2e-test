@@ -1,4 +1,4 @@
-.PHONY: install install-uv test validate-repository validate-docs validate-schemas validate-domains validate-workflows validate-runners validate-plugins boundary-check ci-check acceptance clean
+.PHONY: install install-uv test validate-repository validate-docs validate-dependencies validate-schemas validate-domains validate-workflows validate-runners validate-plugins boundary-check ci-check acceptance package-smoke clean
 
 PYTHON ?= python
 
@@ -16,6 +16,9 @@ validate-repository:
 
 validate-docs:
 	$(PYTHON) tools/validate_docs.py
+
+validate-dependencies:
+	$(PYTHON) tools/validate_dependencies.py
 
 validate-schemas:
 	$(PYTHON) tools/validate_schemas.py
@@ -38,11 +41,19 @@ boundary-check:
 ci-check:
 	$(PYTHON) tools/validate_repository.py
 	$(PYTHON) tools/validate_docs.py
+	$(PYTHON) tools/validate_dependencies.py
 	$(PYTHON) tools/ci_rule_check.py
 	$(PYTHON) tools/check_domain_boundaries.py
 
 acceptance:
 	$(PYTHON) tools/acceptance_matrix.py
+
+package-smoke:
+	rm -rf dist /tmp/e2e-wheel-smoke
+	$(PYTHON) -m pip wheel . --no-deps -w dist
+	$(PYTHON) -m venv --system-site-packages /tmp/e2e-wheel-smoke
+	/tmp/e2e-wheel-smoke/bin/python -m pip install --no-deps dist/*.whl
+	/tmp/e2e-wheel-smoke/bin/e2e-agent --help
 
 install-playwright:
 	$(PYTHON) -m playwright install chromium
