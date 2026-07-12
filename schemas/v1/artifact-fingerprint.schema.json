@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pxf77.github.io/e2e-test/schemas/v1/artifact-fingerprint.schema.json",
+  "title": "ArtifactFingerprint",
+  "description": "双轨指纹中的 artifact-fingerprint — 记录所有 AI 写盘产物的元信息",
+  "type": "object",
+  "required": [
+    "fingerprint_id",
+    "run_id",
+    "artifact_path",
+    "artifact_type",
+    "producer",
+    "model_routed",
+    "model_primary",
+    "is_fallback",
+    "fallback_chain",
+    "token_usage",
+    "cost_usd",
+    "timestamp",
+    "content_hash"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "fingerprint_id": { "type": "string" },
+    "run_id": { "type": "string" },
+    "artifact_path": {
+      "type": "string",
+      "description": "AI 产出文件的相对路径"
+    },
+    "artifact_type": {
+      "type": "string",
+      "enum": [
+        "prd-analysis",
+        "test-case-skeleton",
+        "candidate-cases",
+        "merged-cases",
+        "conflicts",
+        "merge-trace",
+        "regression-flow",
+        "regression-paths",
+        "governance-summary",
+        "page-registry",
+        "explore-trace",
+        "page-functions",
+        "scenarios",
+        "script-plan",
+        "assertion-results",
+        "test-report",
+        "healing-events",
+        "quarantine"
+      ]
+    },
+    "producer": {
+      "type": "string",
+      "description": "写入该产物的 Agent、Skill entry 或确定性运行时"
+    },
+    "model_routed": {
+      "type": "string",
+      "description": "实际路由到的模型；确定性脚本产物使用 deterministic-skill"
+    },
+    "model_primary": {
+      "type": ["string", "null"],
+      "description": "配置中的 primary 模型；确定性产物可为 null"
+    },
+    "is_fallback": {
+      "type": "boolean",
+      "default": false,
+      "description": "本次产物是否由 fallback 模型产生"
+    },
+    "fallback_chain": {
+      "type": ["array", "null"],
+      "description": "primary + fallback model chain used by LiteLLM routing; deterministic artifacts can be null",
+      "items": { "type": "string" }
+    },
+    "token_usage": {
+      "type": ["object", "null"],
+      "description": "LLM token 与成本统计；确定性产物可为 null",
+      "properties": {
+        "prompt_tokens": { "type": "integer" },
+        "completion_tokens": { "type": "integer" },
+        "total_tokens": { "type": "integer" },
+        "cost_usd": { "type": "number" }
+      }
+    },
+    "cost_usd": {
+      "type": ["number", "null"],
+      "description": "Top-level routed-call cost for JSONL scans; deterministic artifacts can be null"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "content_hash": {
+      "type": "string",
+      "description": "文件内容的 SHA256 hash（完整性校验）"
+    }
+  }
+}

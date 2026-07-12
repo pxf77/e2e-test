@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://huize.example/schemas/v1/run-event.schema.json",
+  "$id": "https://pxf77.github.io/e2e-test/schemas/v1/run-event.schema.json",
   "title": "RunEvent",
   "description": "Unified observability event for skill phases, runtime actions, tool calls and Playwright execution.",
   "type": "object",

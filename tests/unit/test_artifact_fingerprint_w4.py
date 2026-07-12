@@ -13,7 +13,7 @@ def test_artifact_fingerprint_records_route_chain_and_cost(tmp_path) -> None:
 
     from e2e_agent.artifacts.fingerprint import append_artifact_fingerprint
 
-    schema_path = Path(__file__).resolve().parents[2] / "schemas" / "artifact-fingerprint.schema.json"
+    schema_path = Path(__file__).resolve().parents[2] / "schemas" / "v1" / "artifact-fingerprint.schema.json"
 
     record = append_artifact_fingerprint(
         root_dir=tmp_path,

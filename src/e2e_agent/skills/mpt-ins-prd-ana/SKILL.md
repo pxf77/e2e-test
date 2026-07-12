@@ -12,7 +12,7 @@
 - `materialise`: optional boolean, defaults to `true`
 
 ## Output
-- stdout JSON must match `schemas/prd-analysis.schema.json`
+- stdout JSON must match `schemas/v1/prd-analysis.schema.json`
 - materialized artifacts live under `products/{product_id}/prd-ana/`
   - `analysis.json`
   - `analysis.md`

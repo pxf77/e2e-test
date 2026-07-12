@@ -12,7 +12,7 @@ W3_MOCK_RUN_DIR = ROOT / "products" / "test-product" / "runs" / "w3-fullstack-mo
 
 
 def _schema(name: str) -> dict:
-    return json.loads((ROOT / "schemas" / name).read_text(encoding="utf-8"))
+    return json.loads((ROOT / "schemas" / "v1" / name).read_text(encoding="utf-8"))
 
 
 def test_w3_mock_pilot_artifacts_do_not_contain_placeholder_question_marks():

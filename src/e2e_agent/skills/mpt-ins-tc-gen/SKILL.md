@@ -13,7 +13,7 @@
 
 ## Output
 - stdout JSON object with one `skeleton` field
-- `skeleton` must conform to `schemas/test-cases-skeleton.schema.json`
+- `skeleton` must conform to `schemas/v1/test-cases-skeleton.schema.json`
 - materialized artifacts live under `products/{product_id}/tc-gen/`
   - `test-cases-skeleton.json`
   - `test-cases-skeleton.md`
