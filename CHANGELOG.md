@@ -14,6 +14,8 @@
 - Documentation is organized under `architecture/`, `guides/`, `reference/`, `sdk/` and `releases/`, with local-link validation in CI.
 - Tool implementations are organized under `tools/validate/`, `tools/diagnostics/`, `tools/legacy/` and `tools/acceptance.py`; existing root scripts remain 1.x compatibility wrappers.
 - Playwright compatibility diagnostics use explicit repository/report arguments and no longer embed a machine-specific source path.
+- `CLAUDE.md` delegates to canonical `AGENTS.md` and current architecture references instead of duplicating stale instructions.
+- CI validates direct dependency ownership, npm/uv locks, wheel construction and isolated console-script installation.
 
 ### Removed
 
@@ -26,6 +28,8 @@
 - Redundant global Skill index and stale Playwright compatibility configuration.
 - Unused `RunContext`, `RunnerRegistry` and `GateRegistry` skeletons.
 - Flat version-suffixed documentation paths superseded by the stable documentation hierarchy.
+- Unused direct Python dependencies `aiofiles`, `click` and `pydantic`; required transitive dependencies remain lock-resolved.
+- Duplicate direct Node dependency `playwright`; `@playwright/test` remains the canonical dependency and provides the CLI/transitive runtime.
 
 ## 1.0.0
 
