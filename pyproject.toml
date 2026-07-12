@@ -23,7 +23,7 @@ dev = [
 ]
 
 [project.scripts]
-e2e-agent = "e2e_agent.cli_entry:main"
+e2e-agent = "e2e_agent.commands.main:main"
 
 [build-system]
 requires = ["hatchling"]
