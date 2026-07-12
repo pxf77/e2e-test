@@ -9,11 +9,11 @@
 ## 项目结构与边界
 
 - `src/e2e_agent/`：LangGraph + LiteLLM 回归测试 Agent 的 Python 包。
-- `src/e2e_agent/agents/agent1_tc_merge/` 到 `agent4_exec/`：四个流水线节点，按阶段职责分离。
-- `src/e2e_agent/graph/`：`E2EAgentState`、Gate 路由和图组装。测试/冒烟使用 `build_graph(":memory:")`；持久化运行使用 `build_persistent_graph()`。
+- `src/e2e_agent/legacy/agents/agent1_tc_merge/` 到 `agent4_exec/`：四个流水线节点，按阶段职责分离。
+- `src/e2e_agent/legacy/graph/`：`E2EAgentState`、Gate 路由和图组装。测试/冒烟使用 `build_graph(":memory:")`；持久化运行使用 `build_persistent_graph()`。
 - `src/e2e_agent/llm/`：唯一允许的 LLM 集成边界。
-- `src/e2e_agent/skills/<skill>/MANIFEST.yaml`：每个 Skill Package 的唯一入口。发现和执行 Skill 必须通过 `SkillPackageLoader`。
-- `src/e2e_agent/browser/`：Playwright Python 会话，以及 generated/legacy Playwright TypeScript 脚本的 subprocess 执行兼容层。
+- `src/e2e_agent/legacy/skills/<skill>/MANIFEST.yaml`：每个 Skill Package 的唯一入口。发现和执行 Skill 必须通过 `SkillPackageLoader`。
+- `src/e2e_agent/legacy/browser/`：Playwright Python 会话，以及 generated/legacy Playwright TypeScript 脚本的 subprocess 执行兼容层。
 - `src/e2e_agent/core/`：被多个 Agent 复用的确定性业务逻辑。
 - `config/`：模型路由、state-deps 治理、Gate 运营、Playwright、断言模板等配置。
 - `schemas/`：17 个 JSON Schema Draft-07 契约文件。
@@ -72,7 +72,7 @@ Windows 环境如果没有 `make`，直接执行 `Makefile` 中对应的 Python 
 
 ## Skill Package 规则
 
-- 每个 Skill 从 `src/e2e_agent/skills/<name>/MANIFEST.yaml` 发现。
+- 每个 Skill 从 `src/e2e_agent/legacy/skills/<name>/MANIFEST.yaml` 发现。
 - 修改 Skill 契约时，同步 `MANIFEST.yaml`、entry script、input schema、output schema 和测试。
 - RULE-REG-10：`SKILL.md` 中禁止硬编码模型名；模型路由统一走 `config/model-routing.yaml`。
 - 当 Skill entry 不可用时，可以保留 `src/e2e_agent/core/` 的确定性 fallback；但现有 Agent 已经以 Skill Package 路径为主的地方，不要绕开 Loader 直接调用脚本。

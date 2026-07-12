@@ -32,7 +32,7 @@ def test_w3_mock_pilot_artifacts_do_not_contain_placeholder_question_marks():
 
 @pytest.mark.asyncio
 async def test_regression_paths_schema_accepts_page_key_governance_output(tmp_path, monkeypatch):
-    from e2e_agent.agents import path_extract_agent
+    from e2e_agent.legacy.agents import path_extract_agent
 
     monkeypatch.setattr(path_extract_agent, "_ROOT_DIR", tmp_path)
 

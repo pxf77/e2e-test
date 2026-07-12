@@ -63,8 +63,8 @@ install-playwright:
 	$(PYTHON) -m playwright install chromium
 
 smoke:
-	$(PYTHON) -c "from e2e_agent.graph.graph import build_graph; g = build_graph(':memory:'); print('graph OK')"
-	$(PYTHON) -c "from e2e_agent.skills.loader import SkillPackageLoader; print('skills:', SkillPackageLoader().list_skills())"
+	$(PYTHON) -c "from e2e_agent.legacy.graph.graph import build_graph; g = build_graph(':memory:'); print('graph OK')"
+	$(PYTHON) -c "from e2e_agent.legacy.skills.loader import SkillPackageLoader; print('skills:', SkillPackageLoader().list_skills())"
 	$(PYTHON) -c "from e2e_agent.llm.wrapper import LLMWrapper; LLMWrapper(); print('llm wrapper OK')"
 	$(PYTHON) -c "from e2e_agent.domains import DomainPackLoader; print('domains:', DomainPackLoader().list_domain_ids())"
 

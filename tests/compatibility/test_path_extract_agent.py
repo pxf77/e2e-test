@@ -5,7 +5,7 @@ import pytest
 
 @pytest.mark.asyncio
 async def test_path_extract_node_emits_governance_summary_and_page_keys(tmp_path, monkeypatch):
-    from e2e_agent.agents import path_extract_agent
+    from e2e_agent.legacy.agents import path_extract_agent
 
     monkeypatch.setattr(path_extract_agent, "_ROOT_DIR", tmp_path)
 
@@ -51,7 +51,7 @@ async def test_path_extract_node_emits_governance_summary_and_page_keys(tmp_path
 
 @pytest.mark.asyncio
 async def test_path_extract_node_uses_business_intent_planned_pages(tmp_path, monkeypatch):
-    from e2e_agent.agents import path_extract_agent
+    from e2e_agent.legacy.agents import path_extract_agent
 
     monkeypatch.setattr(path_extract_agent, "_ROOT_DIR", tmp_path)
 
@@ -116,7 +116,7 @@ async def test_path_extract_node_uses_business_intent_planned_pages(tmp_path, mo
 
 @pytest.mark.asyncio
 async def test_path_extract_policy_and_surrender_include_order_chain(tmp_path, monkeypatch):
-    from e2e_agent.agents import path_extract_agent
+    from e2e_agent.legacy.agents import path_extract_agent
 
     monkeypatch.setattr(path_extract_agent, "_ROOT_DIR", tmp_path)
 
@@ -183,7 +183,7 @@ async def test_path_extract_policy_and_surrender_include_order_chain(tmp_path, m
 
 @pytest.mark.asyncio
 async def test_path_extract_dedupes_equivalent_business_paths(tmp_path, monkeypatch):
-    from e2e_agent.agents import path_extract_agent
+    from e2e_agent.legacy.agents import path_extract_agent
 
     monkeypatch.setattr(path_extract_agent, "_ROOT_DIR", tmp_path)
 
@@ -228,7 +228,7 @@ async def test_path_extract_dedupes_equivalent_business_paths(tmp_path, monkeypa
 
 @pytest.mark.asyncio
 async def test_path_extract_node_resolves_artifact_dir_from_product_source_dir(tmp_path, monkeypatch):
-    from e2e_agent.agents import path_extract_agent
+    from e2e_agent.legacy.agents import path_extract_agent
 
     monkeypatch.setattr(path_extract_agent, "_ROOT_DIR", tmp_path)
 
@@ -273,7 +273,7 @@ async def test_path_extract_node_resolves_artifact_dir_from_product_source_dir(t
 
 @pytest.mark.asyncio
 async def test_path_extract_node_returns_error_on_unexpected_exception(monkeypatch):
-    from e2e_agent.agents import path_extract_agent
+    from e2e_agent.legacy.agents import path_extract_agent
 
     class ExplodingLoader:
         def load_skill(self, _: str) -> object:

@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from e2e_agent.agents.agent2_path_extract import node as path_extract_node_module
+from e2e_agent.legacy.agents.agent2_path_extract import node as path_extract_node_module
 from e2e_agent.core.assertion_templates import load_assertion_template_catalog
-from e2e_agent.skills.loader import SkillPackageLoader
+from e2e_agent.legacy.skills.loader import SkillPackageLoader
 
 ROOT = Path(__file__).resolve().parents[2]
 

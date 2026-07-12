@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 from e2e_agent.core.knowledge_base import KnowledgeLoader
-from e2e_agent.skills.loader import SkillPackageLoader
+from e2e_agent.legacy.skills.loader import SkillPackageLoader
 
 
 def test_knowledge_loader_ignores_missing_knowledge(tmp_path: Path):

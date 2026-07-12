@@ -9,7 +9,7 @@ import pytest
 
 
 def test_load_llm_wrapper_skips_when_no_provider_credentials(monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     for key in (
         "ANTHROPIC_API_KEY",
@@ -24,7 +24,7 @@ def test_load_llm_wrapper_skips_when_no_provider_credentials(monkeypatch):
 
 
 def test_detect_failure_category_treats_entry_request_failure_as_env_issue():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     assert exec_agent._detect_failure_category("Entry page did not match planned node; body_excerpt=请求失败") == "env_issue"
     assert exec_agent._detect_failure_category("locator timeout; body_excerpt=请求超时") == "env_issue"
@@ -37,7 +37,7 @@ def test_detect_failure_category_treats_entry_request_failure_as_env_issue():
 
 
 def test_detect_failure_category_treats_browser_launch_permission_as_env_issue():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     assert (
         exec_agent._detect_failure_category(
@@ -50,7 +50,7 @@ def test_detect_failure_category_treats_browser_launch_permission_as_env_issue()
 
 
 def test_detect_failure_category_treats_h5_bootstrap_null_state_as_env_issue():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     assert (
         exec_agent._detect_failure_category(
@@ -62,7 +62,7 @@ def test_detect_failure_category_treats_h5_bootstrap_null_state_as_env_issue():
 
 
 def test_visible_runner_script_supports_business_questionnaire_strategy():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -73,7 +73,7 @@ def test_visible_runner_script_supports_business_questionnaire_strategy():
 
 
 def test_visible_runner_script_supports_adapt_questionnaire_dom():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -90,7 +90,7 @@ def test_visible_runner_script_supports_adapt_questionnaire_dom():
 
 
 def test_visible_runner_maps_sms_request_alias_and_auth_page_node():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -103,7 +103,7 @@ def test_visible_runner_maps_sms_request_alias_and_auth_page_node():
 
 
 def test_visible_runner_script_uses_business_questionnaire_rule():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -125,7 +125,7 @@ def test_visible_runner_script_uses_business_questionnaire_rule():
 
 
 def test_visible_runner_script_auto_answers_followup_questionnaire_when_action_absent():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -141,7 +141,7 @@ def test_visible_runner_script_auto_answers_followup_questionnaire_when_action_a
 
 
 def test_visible_runner_waits_for_suitability_questionnaire_controls_before_answering():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     auto_block = script[
@@ -161,7 +161,7 @@ def test_visible_runner_waits_for_suitability_questionnaire_controls_before_answ
 
 
 def test_visible_runner_normalizes_stale_suitability_advance_on_h5_insure_form():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     loop_start = script.index("for (let index = 0; index < actions.length; index += 1)")
@@ -176,7 +176,7 @@ def test_visible_runner_normalizes_stale_suitability_advance_on_h5_insure_form()
 
 
 def test_visible_runner_auto_advances_suitability_questionnaire_before_next_click():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     normal_action_block = script[
@@ -205,7 +205,7 @@ def test_visible_runner_auto_advances_suitability_questionnaire_before_next_clic
 
 
 def test_visible_runner_generic_questionnaire_does_not_toggle_selected_choices():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     answer_block = script[
@@ -222,7 +222,7 @@ def test_visible_runner_generic_questionnaire_does_not_toggle_selected_choices()
 
 
 def test_visible_runner_clicks_bottom_suitability_questionnaire_submit():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     auto_block = script[
@@ -239,7 +239,7 @@ def test_visible_runner_clicks_bottom_suitability_questionnaire_submit():
 
 
 def test_visible_runner_suitability_submit_uses_h5_touch_react_click():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     submit_block = script[
@@ -256,7 +256,7 @@ def test_visible_runner_suitability_submit_uses_h5_touch_react_click():
 
 
 def test_visible_runner_suitability_submit_api_fallback_after_ui_noop():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     auto_start = script.index("async function autoAnswerQuestionnaireIfPresent(page, action, step, agent3AnswerActions = [])")
@@ -283,7 +283,7 @@ def test_visible_runner_suitability_submit_api_fallback_after_ui_noop():
 
 
 def test_visible_runner_resyncs_suitability_inline_inputs_before_submit():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     auto_block = script[
@@ -306,7 +306,7 @@ def test_visible_runner_resyncs_suitability_inline_inputs_before_submit():
 
 
 def test_visible_runner_records_applied_agent3_suitability_answers_before_replay():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     loop_start = script.index("for (let index = 0; index < actions.length; index += 1)")
@@ -319,7 +319,7 @@ def test_visible_runner_records_applied_agent3_suitability_answers_before_replay
 
 
 def test_visible_runner_submit_recovery_uses_forward_suitability_answers():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     recovery_block = script[
@@ -340,7 +340,7 @@ def test_visible_runner_submit_recovery_uses_forward_suitability_answers():
 
 
 def test_visible_runner_skips_stale_synthetic_actions_on_suitability_page():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     loop_start = script.index("for (let index = 0; index < actions.length; index += 1)")
@@ -352,7 +352,7 @@ def test_visible_runner_skips_stale_synthetic_actions_on_suitability_page():
 
 
 def test_visible_runner_accepts_auth_page_for_stale_health_notice_expectation():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -364,7 +364,7 @@ def test_visible_runner_accepts_auth_page_for_stale_health_notice_expectation():
 
 
 def test_visible_runner_accepts_reached_target_url_over_stale_node_expectation():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -374,7 +374,7 @@ def test_visible_runner_accepts_reached_target_url_over_stale_node_expectation()
 
 
 def test_visible_runner_treats_pay_url_as_payment_progress():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -385,7 +385,7 @@ def test_visible_runner_treats_pay_url_as_payment_progress():
 
 
 def test_visible_runner_verifies_agent3_suitability_checkbox_after_dom_click():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -398,7 +398,7 @@ def test_visible_runner_verifies_agent3_suitability_checkbox_after_dom_click():
 
 
 def test_visible_runner_agent3_suitability_choice_uses_touch_react_click():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     block_start = script.index("async function applyAgent3SuitabilityAnswer")
@@ -414,7 +414,7 @@ def test_visible_runner_agent3_suitability_choice_uses_touch_react_click():
 
 
 def test_visible_runner_agent3_suitability_choice_resyncs_with_trusted_click():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     block_start = script.index("async function applyAgent3SuitabilityAnswer")
@@ -429,7 +429,7 @@ def test_visible_runner_agent3_suitability_choice_resyncs_with_trusted_click():
 
 
 def test_visible_runner_handles_suitability_result_before_stale_synthetic_bank_actions():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     loop_start = script.index("for (let index = 0; index < actions.length; index += 1)")
@@ -446,7 +446,7 @@ def test_visible_runner_handles_suitability_result_before_stale_synthetic_bank_a
 
 
 def test_visible_runner_does_not_match_later_nodes_on_suitability_mismatch_result():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -455,7 +455,7 @@ def test_visible_runner_does_not_match_later_nodes_on_suitability_mismatch_resul
 
 
 def test_visible_runner_repairs_suitability_mismatch_by_reevaluating_period_answers():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     loop_start = script.index("for (let index = 0; index < actions.length; index += 1)")
@@ -470,7 +470,7 @@ def test_visible_runner_repairs_suitability_mismatch_by_reevaluating_period_answ
 
 
 def test_visible_runner_resumes_current_node_after_suitability_result_continue():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     loop_start = script.index("for (let index = 0; index < actions.length; index += 1)")
@@ -481,7 +481,7 @@ def test_visible_runner_resumes_current_node_after_suitability_result_continue()
 
 
 def test_visible_runner_repairs_suitability_result_immediately_after_questionnaire_submit():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     normal_action_block = script[
@@ -497,7 +497,7 @@ def test_visible_runner_repairs_suitability_result_immediately_after_questionnai
 
 
 def test_visible_runner_matches_only_suitability_node_on_adapt_pages():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -506,7 +506,7 @@ def test_visible_runner_matches_only_suitability_node_on_adapt_pages():
 
 
 def test_visible_runner_script_accepts_questionnaire_warning_modal():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -517,7 +517,7 @@ def test_visible_runner_script_accepts_questionnaire_warning_modal():
 
 
 def test_visible_runner_clicks_agree_all_dialog_with_dom_fallback():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -528,7 +528,7 @@ def test_visible_runner_clicks_agree_all_dialog_with_dom_fallback():
 
 
 def test_visible_runner_clicks_buy_now_by_visible_text_and_requires_progress():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -539,7 +539,7 @@ def test_visible_runner_clicks_buy_now_by_visible_text_and_requires_progress():
 
 
 def test_visible_runner_replays_agent3_premium_quote_entry_flow():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     buy_now_block = script[
@@ -560,7 +560,7 @@ def test_visible_runner_replays_agent3_premium_quote_entry_flow():
 
 
 def test_visible_runner_replays_agent3_buy_now_locator_before_text_guessing():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     buy_now_block = script[
@@ -577,7 +577,7 @@ def test_visible_runner_replays_agent3_buy_now_locator_before_text_guessing():
 
 
 def test_visible_runner_uses_mobile_context_for_h5_payloads():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -588,7 +588,7 @@ def test_visible_runner_uses_mobile_context_for_h5_payloads():
 
 
 def test_visible_runner_dispatches_agent3_click_strategy_without_normal_downgrade():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -600,7 +600,7 @@ def test_visible_runner_dispatches_agent3_click_strategy_without_normal_downgrad
 
 
 def test_visible_runner_health_notice_uses_real_click_and_progress_assertion():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     health_branch = script[
@@ -630,7 +630,7 @@ def test_visible_runner_health_notice_uses_real_click_and_progress_assertion():
 
 
 def test_visible_runner_syncs_policy_start_date_before_submit():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     submit_block = script[
@@ -652,7 +652,7 @@ def test_visible_runner_syncs_policy_start_date_before_submit():
 
 
 def test_visible_runner_submit_uses_mouse_and_dom_fallback_after_touch_tap():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     submit_function = script[
@@ -681,7 +681,7 @@ def test_visible_runner_submit_uses_mouse_and_dom_fallback_after_touch_tap():
 
 
 def test_visible_runner_preserves_h5_product_footer_strategy_before_agent3_locator_replay():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     buy_now_block = script[
@@ -699,7 +699,7 @@ def test_visible_runner_preserves_h5_product_footer_strategy_before_agent3_locat
 
 
 def test_visible_runner_scores_bottom_buy_now_before_broad_text_fallback():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     footer_block = script[
@@ -723,7 +723,7 @@ def test_visible_runner_scores_bottom_buy_now_before_broad_text_fallback():
 
 
 def test_visible_runner_buy_now_progress_does_not_accept_product_detail_body_copy():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     progress_block = script[
@@ -737,7 +737,7 @@ def test_visible_runner_buy_now_progress_does_not_accept_product_detail_body_cop
 
 
 def test_visible_runner_product_confirm_panel_runs_before_continuation_dialog():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     settle_block = script[
@@ -752,7 +752,7 @@ def test_visible_runner_product_confirm_panel_runs_before_continuation_dialog():
 
 
 def test_visible_runner_preserves_h5_submit_strategy_after_form_repair():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     submit_block = script[
@@ -771,7 +771,7 @@ def test_visible_runner_preserves_h5_submit_strategy_after_form_repair():
 
 
 def test_visible_runner_force_syncs_h5_input_values_before_submit():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     submit_block = script[
@@ -789,7 +789,7 @@ def test_visible_runner_force_syncs_h5_input_values_before_submit():
 
 
 def test_visible_runner_syncs_h5_insure_model_state_like_agent3_before_submit():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     submit_block = script[
@@ -856,7 +856,7 @@ def test_visible_runner_syncs_h5_insure_model_state_like_agent3_before_submit():
 
 
 def test_visible_runner_keeps_self_insured_details_collapsed_like_successful_agent3_runs():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     submit_block = script[
@@ -873,7 +873,7 @@ def test_visible_runner_keeps_self_insured_details_collapsed_like_successful_age
 
 
 def test_visible_runner_selects_bank_picker_before_submit():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     submit_block = script[
@@ -924,7 +924,7 @@ def test_visible_runner_selects_bank_picker_before_submit():
 
 
 def test_visible_runner_prefers_bottom_fixed_submit_button():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -935,7 +935,7 @@ def test_visible_runner_prefers_bottom_fixed_submit_button():
 
 
 def test_visible_runner_treats_agent3_h5_submit_click_as_submit_action():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     submit_block = script[
@@ -951,7 +951,7 @@ def test_visible_runner_treats_agent3_h5_submit_click_as_submit_action():
 
 
 def test_visible_runner_dismisses_bank_recognition_toast_as_blocking_overlay():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     overlay_function = script[
@@ -964,7 +964,7 @@ def test_visible_runner_dismisses_bank_recognition_toast_as_blocking_overlay():
 
 
 def test_visible_runner_treats_js_minimal_data_as_synthetic_action():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     loop_block = script[
@@ -991,7 +991,7 @@ def test_visible_runner_treats_js_minimal_data_as_synthetic_action():
 
 
 def test_visible_runner_coalesces_h5_form_synthetic_data_before_submit():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     loop_block = script[
@@ -1012,7 +1012,7 @@ def test_visible_runner_coalesces_h5_form_synthetic_data_before_submit():
 
 
 def test_visible_runner_records_terminal_boundary_action_before_replay_continues():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     loop_block = script[
@@ -1034,7 +1034,7 @@ def test_visible_runner_records_terminal_boundary_action_before_replay_continues
 
 
 def test_visible_runner_clicks_task_modal_from_synthetic_data_flow():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     loop_block = script[
@@ -1053,7 +1053,7 @@ def test_visible_runner_clicks_task_modal_from_synthetic_data_flow():
 
 
 def test_visible_runner_reselects_bank_without_refilling_account_on_recognition_failure():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     bank_flow_block = script[
@@ -1084,7 +1084,7 @@ def test_visible_runner_reselects_bank_without_refilling_account_on_recognition_
 
 
 def test_visible_runner_replays_agent3_insure_form_url_before_synthetic_data():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     start = script.index("if (isSyntheticMinimalDataAction(action))")
@@ -1102,7 +1102,7 @@ def test_visible_runner_replays_agent3_insure_form_url_before_synthetic_data():
 
 
 def test_visible_runner_treats_buy_now_navigation_during_click_as_success():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -1112,7 +1112,7 @@ def test_visible_runner_treats_buy_now_navigation_during_click_as_success():
 
 
 def test_visible_runner_does_not_reload_live_product_detail_for_embedded_request_failure():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     transient_block = script[
@@ -1126,7 +1126,7 @@ def test_visible_runner_does_not_reload_live_product_detail_for_embedded_request
 
 
 def test_visible_runner_replays_next_agent3_entry_url_when_buy_now_does_not_advance():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     buy_now_function = script[
@@ -1146,7 +1146,7 @@ def test_visible_runner_replays_next_agent3_entry_url_when_buy_now_does_not_adva
 
 
 def test_visible_runner_replays_next_agent3_insure_url_from_broken_health_notice_page():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     health_function = script[
@@ -1167,7 +1167,7 @@ def test_visible_runner_replays_next_agent3_insure_url_from_broken_health_notice
 
 
 def test_visible_runner_recovers_bank_account_submit_blocker_and_task_modal():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     submit_block = script[
@@ -1195,7 +1195,7 @@ def test_visible_runner_recovers_bank_account_submit_blocker_and_task_modal():
 
 
 def test_visible_runner_routes_submit_suitability_blocker_before_progress_assertion():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     submit_block = script[
@@ -1220,7 +1220,7 @@ def test_visible_runner_routes_submit_suitability_blocker_before_progress_assert
 
 
 def test_visible_runner_submits_browser_api_before_suitability_recovery():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     submit_block = script[
@@ -1244,7 +1244,7 @@ def test_visible_runner_submits_browser_api_before_suitability_recovery():
 
 
 def test_visible_runner_uses_browser_api_submit_after_ui_submit_noop():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     submit_block = script[
@@ -1275,7 +1275,7 @@ def test_visible_runner_uses_browser_api_submit_after_ui_submit_noop():
 
 
 def test_visible_runner_does_not_treat_task_handoff_submit_as_order_boundary_without_downstream_evidence():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     boundary_block = script[
@@ -1291,7 +1291,7 @@ def test_visible_runner_does_not_treat_task_handoff_submit_as_order_boundary_wit
 
 
 def test_visible_runner_counts_recovered_suitability_submit_api_as_order_boundary():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     boundary_block = script[
@@ -1304,7 +1304,7 @@ def test_visible_runner_counts_recovered_suitability_submit_api_as_order_boundar
 
 
 def test_visible_runner_probes_current_suitability_task_after_silent_submit():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -1315,7 +1315,7 @@ def test_visible_runner_probes_current_suitability_task_after_silent_submit():
 
 
 def test_visible_runner_does_not_probe_suitability_without_submit_evidence():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     probe_block = script[
@@ -1330,7 +1330,7 @@ def test_visible_runner_does_not_probe_suitability_without_submit_evidence():
 
 
 def test_visible_runner_logs_h5_submit_network_and_diagnostics():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     logging_start = script.index("function setupNetworkLogging(page)")
@@ -1356,7 +1356,7 @@ def test_visible_runner_logs_h5_submit_network_and_diagnostics():
 
 
 def test_visible_runner_direct_submit_aligns_bank_module_with_native_submit_shape():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     submit_api = script[
@@ -1383,7 +1383,7 @@ def test_visible_runner_direct_submit_aligns_bank_module_with_native_submit_shap
 
 
 def test_visible_runner_replays_agent3_submit_api_actions_without_css_locator():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     loop_body = script[
@@ -1401,7 +1401,7 @@ def test_visible_runner_replays_agent3_submit_api_actions_without_css_locator():
 
 
 def test_visible_runner_closes_attachment_document_tabs():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     agreement_block = script[
@@ -1417,7 +1417,7 @@ def test_visible_runner_closes_attachment_document_tabs():
 
 
 def test_visible_runner_restores_main_page_when_attachment_replaces_current_page():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     agreement_block = script[
@@ -1432,7 +1432,7 @@ def test_visible_runner_restores_main_page_when_attachment_replaces_current_page
 
 
 def test_visible_runner_logs_insure_model_summary_before_submit():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     form_state_block = script[
@@ -1447,7 +1447,7 @@ def test_visible_runner_logs_insure_model_summary_before_submit():
 
 
 def test_visible_runner_buy_now_text_fallback_accepts_spaced_insure_button():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     buy_now_block = script[
@@ -1462,7 +1462,7 @@ def test_visible_runner_buy_now_text_fallback_accepts_spaced_insure_button():
 
 
 def test_agent4_attaches_agent3_action_trace_by_path():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     scenarios = [
         {
@@ -1503,7 +1503,7 @@ def test_agent4_attaches_agent3_action_trace_by_path():
 
 
 def test_agent4_marks_path_replay_required_when_agent3_path_has_no_actions():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     enriched = exec_agent._attach_agent3_replay_actions(
         [{"scenario_id": "SCN-001", "path_id": "PATH-001"}],
@@ -1515,7 +1515,7 @@ def test_agent4_marks_path_replay_required_when_agent3_path_has_no_actions():
 
 
 def test_agent4_filters_agent3_diagnostic_trace_items_from_replay():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     enriched = exec_agent._attach_agent3_replay_actions(
         [{"scenario_id": "SCN-001", "path_id": "PATH-001"}],
@@ -1545,7 +1545,7 @@ def test_agent4_filters_agent3_diagnostic_trace_items_from_replay():
 
 
 def test_agent4_prunes_agent3_failed_buy_now_attempt_when_later_attempt_progresses():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     enriched = exec_agent._attach_agent3_replay_actions(
         [{"scenario_id": "SCN-001", "path_id": "PATH-001"}],
@@ -1579,7 +1579,7 @@ def test_agent4_prunes_agent3_failed_buy_now_attempt_when_later_attempt_progress
 
 
 def test_agent4_preserves_agent3_premium_quote_before_buy_now_replay():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     enriched = exec_agent._attach_agent3_replay_actions(
         [{"scenario_id": "SCN-001", "path_id": "PATH-001"}],
@@ -1614,7 +1614,7 @@ def test_agent4_preserves_agent3_premium_quote_before_buy_now_replay():
 
 
 def test_agent4_infers_agent3_replay_action_key_from_click_strategy():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     buy_now = exec_agent._copy_agent3_replay_action(
         {
@@ -1648,7 +1648,7 @@ def test_agent4_infers_agent3_replay_action_key_from_click_strategy():
 
 
 def test_agent4_expands_agent3_action_trace_artifact_shape_for_replay():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     enriched = exec_agent._attach_agent3_replay_actions(
         [{"scenario_id": "SCN-001", "path_id": "PATH-001"}],
@@ -1690,7 +1690,7 @@ def test_agent4_expands_agent3_action_trace_artifact_shape_for_replay():
 
 @pytest.mark.asyncio
 async def test_normalise_execution_result_blocks_when_visible_replay_required_but_missing(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     monkeypatch.setenv("AGENT4_VISIBLE_BROWSER", "1")
 
@@ -1717,7 +1717,7 @@ async def test_normalise_execution_result_blocks_when_visible_replay_required_bu
 
 @pytest.mark.asyncio
 async def test_normalise_execution_result_uses_visible_runner_by_default(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     monkeypatch.delenv("AGENT4_VISIBLE_BROWSER", raising=False)
 
@@ -1774,7 +1774,7 @@ async def test_normalise_execution_result_uses_visible_runner_by_default(tmp_pat
 
 @pytest.mark.asyncio
 async def test_normalise_execution_result_runs_agent3_formal_spec_without_visible_script(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     spec_path = tmp_path / "agent3" / "ts-gen" / "h5" / "scenarios" / "01-path-001.spec.ts"
     spec_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1841,7 +1841,7 @@ async def test_normalise_execution_result_runs_agent3_formal_spec_without_visibl
 async def test_normalise_execution_result_accepts_formal_order_generation_boundary_target(
     tmp_path, monkeypatch
 ):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     spec_path = tmp_path / "agent3" / "ts-gen" / "h5" / "scenarios" / "01-path-001.spec.ts"
     spec_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1909,7 +1909,7 @@ async def test_normalise_execution_result_accepts_formal_order_generation_bounda
 async def test_normalise_execution_result_accepts_visible_suitability_handoff_boundary(
     tmp_path, monkeypatch
 ):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     monkeypatch.setenv("AGENT4_VISIBLE_BROWSER", "1")
 
@@ -1979,7 +1979,7 @@ async def test_normalise_execution_result_accepts_visible_suitability_handoff_bo
 async def test_normalise_execution_result_collects_huize_payment_closed_loop_evidence(
     tmp_path, monkeypatch
 ):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     spec_path = tmp_path / "agent3" / "ts-gen" / "h5" / "scenarios" / "01-path-001.spec.ts"
     spec_path.parent.mkdir(parents=True, exist_ok=True)
@@ -2098,7 +2098,7 @@ async def test_normalise_execution_result_collects_huize_payment_closed_loop_evi
 async def test_normalise_execution_result_fails_when_required_huize_issue_status_missing(
     tmp_path, monkeypatch
 ):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     spec_path = tmp_path / "agent3" / "ts-gen" / "h5" / "scenarios" / "01-path-001.spec.ts"
     spec_path.parent.mkdir(parents=True, exist_ok=True)
@@ -2159,7 +2159,7 @@ async def test_normalise_execution_result_fails_when_required_huize_issue_status
 
 @pytest.mark.asyncio
 async def test_normalise_execution_result_scales_formal_timeout_for_multi_case_specs(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     spec_path = tmp_path / "agent3" / "ts-gen" / "h5" / "scenarios" / "01-path-001.spec.ts"
     spec_path.parent.mkdir(parents=True, exist_ok=True)
@@ -2223,7 +2223,7 @@ async def test_normalise_execution_result_scales_formal_timeout_for_multi_case_s
 
 @pytest.mark.asyncio
 async def test_normalise_execution_result_force_visible_respects_agent3_blocks(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     spec_path = tmp_path / "agent3" / "ts-gen" / "h5" / "scenarios" / "01-path-001.spec.ts"
     spec_path.parent.mkdir(parents=True, exist_ok=True)
@@ -2275,7 +2275,7 @@ async def test_normalise_execution_result_force_visible_respects_agent3_blocks(t
 async def test_normalise_execution_result_falls_back_to_adaptive_agent4_when_formal_path_control_fails(
     tmp_path, monkeypatch
 ):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     spec_path = tmp_path / "agent3" / "ts-gen" / "h5" / "scenarios" / "01-path-001.spec.ts"
     spec_path.parent.mkdir(parents=True, exist_ok=True)
@@ -2367,7 +2367,7 @@ async def test_normalise_execution_result_falls_back_to_adaptive_agent4_when_for
 async def test_normalise_execution_result_does_not_adaptive_fallback_for_formal_env_issue(
     tmp_path, monkeypatch
 ):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     spec_path = tmp_path / "agent3" / "ts-gen" / "h5" / "scenarios" / "01-path-001.spec.ts"
     spec_path.parent.mkdir(parents=True, exist_ok=True)
@@ -2435,7 +2435,7 @@ async def test_normalise_execution_result_does_not_adaptive_fallback_for_formal_
 
 @pytest.mark.asyncio
 async def test_normalise_execution_result_classifies_formal_error_context_502_as_env_issue(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     spec_path = tmp_path / "scenario.spec.ts"
     spec_path.write_text("// @generated-by mpt-ins-ts-gen\n", encoding="utf-8")
@@ -2496,7 +2496,7 @@ async def test_normalise_execution_result_classifies_formal_error_context_502_as
 
 
 def test_agent4_uses_agent3_replay_actions_in_visible_payload(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     def fake_run(command, cwd, capture_output, text, encoding, errors, timeout):
         payload = json.loads(Path(command[2]).read_text(encoding="utf-8"))
@@ -2553,7 +2553,7 @@ def test_agent4_uses_agent3_replay_actions_in_visible_payload(tmp_path, monkeypa
 
 
 def test_agent4_visible_payload_carries_agent3_successful_insurance_date(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     def fake_run(command, cwd, capture_output, text, encoding, errors, timeout):
         payload = json.loads(Path(command[2]).read_text(encoding="utf-8"))
@@ -2618,7 +2618,7 @@ def test_agent4_visible_payload_carries_agent3_successful_insurance_date(tmp_pat
 
 
 def test_agent4_normalizes_real_actions_in_visible_payload(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     def fake_run(command, cwd, capture_output, text, encoding, errors, timeout):
         payload = json.loads(Path(command[2]).read_text(encoding="utf-8"))
@@ -2670,7 +2670,7 @@ def test_agent4_normalizes_real_actions_in_visible_payload(tmp_path, monkeypatch
 
 
 def test_agent4_visible_exec_dir_prefers_run_dir_for_formal_artifacts(tmp_path):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     run_dir = tmp_path / "products" / "demo-product.assets" / "runs" / "run-001"
 
@@ -2689,7 +2689,7 @@ def test_agent4_visible_exec_dir_prefers_run_dir_for_formal_artifacts(tmp_path):
 
 
 def test_agent4_formal_exec_dir_uses_product_artifact_dir_without_run_dir(tmp_path):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     artifact_dir = tmp_path / "products" / "demo-product" / "demo.assets"
 
@@ -2706,7 +2706,7 @@ def test_agent4_formal_exec_dir_uses_product_artifact_dir_without_run_dir(tmp_pa
 
 
 def test_visible_runner_script_uses_flexible_text_clickable_locator():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -2717,7 +2717,7 @@ def test_visible_runner_script_uses_flexible_text_clickable_locator():
 
 
 def test_visible_runner_defaults_to_chrome_not_edge():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -2726,7 +2726,7 @@ def test_visible_runner_defaults_to_chrome_not_edge():
 
 
 def test_agent4_skill_timeout_scales_with_case_count(monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     monkeypatch.delenv("AGENT4_SKILL_TIMEOUT_S", raising=False)
 
@@ -2739,7 +2739,7 @@ def test_agent4_skill_timeout_scales_with_case_count(monkeypatch):
 
 
 def test_agent4_builds_assertion_results_from_real_execution_results():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     assertion_results = exec_agent._assertion_results_from_execution_results(
         [
@@ -2782,7 +2782,7 @@ def test_agent4_builds_assertion_results_from_real_execution_results():
 
 
 def test_agent4_assertion_results_preserve_fact_lineage_from_execution_results():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     lineage = {
         "version": "fact-lineage-v1",
@@ -2816,7 +2816,7 @@ def test_agent4_assertion_results_preserve_fact_lineage_from_execution_results()
 
 
 def test_agent4_does_not_treat_identity_task_handoff_as_downstream_assertion_pass():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     def handoff_result(case_id: str) -> dict:
         return {
@@ -2869,7 +2869,7 @@ def test_agent4_does_not_treat_identity_task_handoff_as_downstream_assertion_pas
 
 
 def test_visible_runner_uses_submit_order_text_aliases():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -2879,7 +2879,7 @@ def test_visible_runner_uses_submit_order_text_aliases():
 
 
 def test_visible_runner_script_answers_health_notice_as_no_issue():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     health_block = script[
@@ -2897,7 +2897,7 @@ def test_visible_runner_script_answers_health_notice_as_no_issue():
 
 
 def test_visible_runner_health_notice_clicks_exact_no_issue_control_not_parent_container():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     health_block = script[
@@ -2914,7 +2914,7 @@ def test_visible_runner_health_notice_clicks_exact_no_issue_control_not_parent_c
 
 
 def test_visible_runner_health_notice_does_not_use_questionnaire_fallback():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     health_block = script[
@@ -2927,7 +2927,7 @@ def test_visible_runner_health_notice_does_not_use_questionnaire_fallback():
 
 
 def test_visible_runner_health_notice_refuses_issue_option_fallback():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -2938,7 +2938,7 @@ def test_visible_runner_health_notice_refuses_issue_option_fallback():
 
 
 def test_visible_runner_auto_followup_uses_health_notice_strategy():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -2947,7 +2947,7 @@ def test_visible_runner_auto_followup_uses_health_notice_strategy():
 
 
 def test_visible_runner_auto_followup_prioritizes_health_notice_over_questionnaire_dom():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     auto_block = script[
@@ -2962,7 +2962,7 @@ def test_visible_runner_auto_followup_prioritizes_health_notice_over_questionnai
 
 
 def test_visible_runner_script_skips_absent_optional_path_actions():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -2972,7 +2972,7 @@ def test_visible_runner_script_skips_absent_optional_path_actions():
 
 
 def test_visible_runner_script_skips_absent_optional_questionnaire_actions():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     questionnaire_block = script[
@@ -2986,7 +2986,7 @@ def test_visible_runner_script_skips_absent_optional_questionnaire_actions():
 
 
 def test_visible_runner_script_skips_absent_optional_auto_wait_actions():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     auto_wait_block = script[
@@ -3000,7 +3000,7 @@ def test_visible_runner_script_skips_absent_optional_auto_wait_actions():
 
 
 def test_visible_runner_only_probes_mock_data_on_insure_form_nodes():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -3014,7 +3014,7 @@ def test_visible_runner_only_probes_mock_data_on_insure_form_nodes():
 
 
 def test_visible_runner_fills_only_runnable_mock_fields_once_per_node():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -3028,7 +3028,7 @@ def test_visible_runner_fills_only_runnable_mock_fields_once_per_node():
 
 
 def test_visible_runner_fills_optional_insure_form_fields_when_required_contract_is_empty():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -3040,7 +3040,7 @@ def test_visible_runner_fills_optional_insure_form_fields_when_required_contract
 
 
 def test_visible_runner_preserves_default_insure_form_fields():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -3055,7 +3055,7 @@ def test_visible_runner_preserves_default_insure_form_fields():
 
 
 def test_visible_runner_dedupes_field_contracts_before_filling():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -3066,7 +3066,7 @@ def test_visible_runner_dedupes_field_contracts_before_filling():
 
 
 def test_visible_runner_has_specialized_insure_form_widget_strategies():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -3081,7 +3081,7 @@ def test_visible_runner_has_specialized_insure_form_widget_strategies():
 
 
 def test_visible_runner_uses_hz_named_widget_helpers_for_insure_form_controls():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -3094,7 +3094,7 @@ def test_visible_runner_uses_hz_named_widget_helpers_for_insure_form_controls():
 
 
 def test_visible_runner_uses_child_occupation_path_for_insured_jobtext20():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -3107,7 +3107,7 @@ def test_visible_runner_uses_child_occupation_path_for_insured_jobtext20():
 
 
 def test_visible_runner_verifies_cascade_control_changed_before_counting_success():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     cascade_block = script[
@@ -3124,7 +3124,7 @@ def test_visible_runner_verifies_cascade_control_changed_before_counting_success
 
 
 def test_visible_runner_uses_direct_h5_submit_preflight_without_full_page_repair_scroll():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     submit_block = script[
@@ -3140,7 +3140,7 @@ def test_visible_runner_uses_direct_h5_submit_preflight_without_full_page_repair
 
 
 def test_visible_runner_waits_for_insure_form_ready_before_submit_preflight():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     submit_block = script[
@@ -3155,7 +3155,7 @@ def test_visible_runner_waits_for_insure_form_ready_before_submit_preflight():
 
 
 def test_visible_runner_clicks_first_visible_dropdown_option_not_hidden_first_match():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -3166,7 +3166,7 @@ def test_visible_runner_clicks_first_visible_dropdown_option_not_hidden_first_ma
 
 
 def test_visible_runner_dropdown_fallback_skips_placeholder_options():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -3175,7 +3175,7 @@ def test_visible_runner_dropdown_fallback_skips_placeholder_options():
 
 
 def test_visible_runner_recovers_transient_page_errors_before_form_probe():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -3185,7 +3185,7 @@ def test_visible_runner_recovers_transient_page_errors_before_form_probe():
 
 
 def test_visible_runner_does_not_toggle_agreement_after_global_check():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     agreement_block = script[
@@ -3198,7 +3198,7 @@ def test_visible_runner_does_not_toggle_agreement_after_global_check():
 
 
 def test_visible_runner_agreement_strategy_uses_parent_check_items_and_global_confirm():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     check_block = script[
@@ -3214,7 +3214,7 @@ def test_visible_runner_agreement_strategy_uses_parent_check_items_and_global_co
 
 
 def test_visible_runner_reads_protocol_tabs_before_agreement_confirm():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     confirm_block = script[
@@ -3231,7 +3231,7 @@ def test_visible_runner_reads_protocol_tabs_before_agreement_confirm():
 
 
 def test_visible_runner_agreement_dialog_locator_includes_ant_mobile_modal():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     confirm_block = script[
@@ -3249,7 +3249,7 @@ def test_visible_runner_agreement_dialog_locator_includes_ant_mobile_modal():
 
 
 def test_visible_runner_agreement_meta_does_not_wait_for_missing_locator():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     meta_block = script[
@@ -3263,7 +3263,7 @@ def test_visible_runner_agreement_meta_does_not_wait_for_missing_locator():
 
 
 def test_visible_runner_rechecks_agreements_after_dialog_confirmation():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     repair_block = script[
@@ -3277,7 +3277,7 @@ def test_visible_runner_rechecks_agreements_after_dialog_confirmation():
 
 
 def test_visible_runner_closes_protocol_dialog_when_no_confirm_button():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     confirm_block = script[
@@ -3292,7 +3292,7 @@ def test_visible_runner_closes_protocol_dialog_when_no_confirm_button():
 
 
 def test_visible_runner_clicks_protocol_checkbox_control_and_force_confirms():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     check_block = script[
@@ -3308,7 +3308,7 @@ def test_visible_runner_clicks_protocol_checkbox_control_and_force_confirms():
 
 
 def test_visible_runner_force_confirms_framework_agreement_state():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     force_block = script[
@@ -3324,7 +3324,7 @@ def test_visible_runner_force_confirms_framework_agreement_state():
 
 
 def test_visible_runner_clicks_each_agreement_square_before_dialog_handling():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     click_block = script[
@@ -3340,7 +3340,7 @@ def test_visible_runner_clicks_each_agreement_square_before_dialog_handling():
 
 
 def test_visible_runner_processes_multiple_agreement_squares_without_text_link_reads():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     check_block = script[
@@ -3354,7 +3354,7 @@ def test_visible_runner_processes_multiple_agreement_squares_without_text_link_r
 
 
 def test_visible_runner_uses_real_wheel_scroll_for_agreement_dialog_reading():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
     scroll_block = script[
@@ -3371,7 +3371,7 @@ def test_visible_runner_uses_real_wheel_scroll_for_agreement_dialog_reading():
 
 
 def test_visible_runner_does_not_use_generic_field_key_alias_tokens():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -3382,7 +3382,7 @@ def test_visible_runner_does_not_use_generic_field_key_alias_tokens():
 
 
 def test_visible_runner_consumes_agent3_resolution_contract():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -3399,7 +3399,7 @@ def test_visible_runner_consumes_agent3_resolution_contract():
 
 
 def test_visible_runner_target_probes_fields_without_static_selector():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -3412,7 +3412,7 @@ def test_visible_runner_target_probes_fields_without_static_selector():
 
 
 def test_visible_runner_handles_auto_wait_action_without_locator_click():
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     script = exec_agent._visible_runner_script()
 
@@ -3426,7 +3426,7 @@ def test_visible_runner_handles_auto_wait_action_without_locator_click():
 async def test_exec_healing_node_writes_schema_valid_test_report_artifacts(tmp_path, monkeypatch):
     from jsonschema import Draft7Validator
 
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     class NoEntryLoader:
         def load_skill(self, _: str) -> object:
@@ -3461,7 +3461,7 @@ async def test_exec_healing_node_writes_schema_valid_test_report_artifacts(tmp_p
 
 @pytest.mark.asyncio
 async def test_exec_healing_node_carries_governance_summary_into_report(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     monkeypatch.setattr(exec_agent, "_ROOT_DIR", tmp_path)
 
@@ -3495,7 +3495,7 @@ async def test_exec_healing_node_carries_governance_summary_into_report(tmp_path
 
 @pytest.mark.asyncio
 async def test_exec_healing_node_does_not_return_error_for_info_only_fallback_warning(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     class NoEntryLoader:
         def load_skill(self, _: str) -> object:
@@ -3543,7 +3543,7 @@ async def test_exec_healing_node_does_not_return_error_for_info_only_fallback_wa
 
 @pytest.mark.asyncio
 async def test_exec_healing_node_attaches_side_effect_probe_results(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     class NoEntryLoader:
         def load_skill(self, _: str) -> object:
@@ -3592,7 +3592,7 @@ async def test_exec_healing_node_attaches_side_effect_probe_results(tmp_path, mo
 
 @pytest.mark.asyncio
 async def test_exec_healing_node_uses_local_side_effect_probe_transport(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     class NoEntryLoader:
         def load_skill(self, _: str) -> object:
@@ -3638,7 +3638,7 @@ async def test_exec_healing_node_uses_local_side_effect_probe_transport(tmp_path
 
 @pytest.mark.asyncio
 async def test_exec_healing_node_writes_quarantine_report(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     class NoEntryLoader:
         def load_skill(self, _: str) -> object:
@@ -3693,7 +3693,7 @@ async def test_exec_healing_node_writes_quarantine_report(tmp_path, monkeypatch)
 
 @pytest.mark.asyncio
 async def test_exec_healing_node_ignores_invalid_side_effect_probe_transport_maps(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     class NoEntryLoader:
         def load_skill(self, _: str) -> object:
@@ -3729,7 +3729,7 @@ async def test_exec_healing_node_ignores_invalid_side_effect_probe_transport_map
 
 @pytest.mark.asyncio
 async def test_normalise_execution_result_separates_execution_and_coverage(tmp_path):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     scenario = {
         "scenario_id": "SCN-001",
@@ -3763,7 +3763,7 @@ async def test_normalise_execution_result_separates_execution_and_coverage(tmp_p
 
 @pytest.mark.asyncio
 async def test_normalise_execution_result_blocks_invalid_agent3_script(tmp_path):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     spec_path = tmp_path / "scenario.spec.ts"
     spec_path.write_text("// invalid script candidate\n", encoding="utf-8")
@@ -3798,7 +3798,7 @@ async def test_normalise_execution_result_blocks_invalid_agent3_script(tmp_path)
 
 @pytest.mark.asyncio
 async def test_normalise_execution_result_uses_visible_chromium_runner(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     def fake_run(command, cwd, capture_output, text, encoding, errors, timeout):
         payload_path = Path(command[2])
@@ -3882,7 +3882,7 @@ async def test_normalise_execution_result_uses_visible_chromium_runner(tmp_path,
 
 @pytest.mark.asyncio
 async def test_normalise_execution_result_preserves_sms_boundary_on_visible_timeout(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     def fake_run(command, cwd, capture_output, text, encoding, errors, timeout):
         payload_path = Path(command[2])
@@ -3952,7 +3952,7 @@ async def test_normalise_execution_result_preserves_sms_boundary_on_visible_time
 
 @pytest.mark.asyncio
 async def test_normalise_execution_result_fails_visible_runner_without_target_evidence(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     def fake_run(command, cwd, capture_output, text, encoding, errors, timeout):
         result_path = tmp_path / "products" / "demo-product" / "agent4" / "exec" / "visible-runs" / "run-002" / "SCN-002" / "result.json"
@@ -4009,7 +4009,7 @@ async def test_normalise_execution_result_fails_visible_runner_without_target_ev
 
 @pytest.mark.asyncio
 async def test_normalise_execution_result_attaches_visible_runner_screenshots(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     def fake_run(command, cwd, capture_output, text, encoding, errors, timeout):
         result_path = tmp_path / "products" / "demo-product" / "agent4" / "exec" / "visible-runs" / "run-003" / "SCN-003" / "result.json"
@@ -4072,7 +4072,7 @@ async def test_normalise_execution_result_attaches_visible_runner_screenshots(tm
 
 @pytest.mark.asyncio
 async def test_normalise_execution_result_fails_single_action_that_does_not_reach_target(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     def fake_run(command, cwd, capture_output, text, encoding, errors, timeout):
         result_path = tmp_path / "products" / "demo-product" / "agent4" / "exec" / "visible-runs" / "run-004" / "SCN-004" / "result.json"
@@ -4133,7 +4133,7 @@ async def test_normalise_execution_result_fails_single_action_that_does_not_reac
 async def test_normalise_execution_result_uses_python_fallback_for_static_first_generated_spec(
     tmp_path, monkeypatch
 ):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     spec_path = tmp_path / "scenario.spec.ts"
     spec_path.write_text("// @generated-by agent3.static-first\n", encoding="utf-8")
@@ -4180,7 +4180,7 @@ async def test_normalise_execution_result_uses_python_fallback_for_static_first_
 
 @pytest.mark.asyncio
 async def test_exec_healing_node_runs_specs_from_artifact_root_dir(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     product_id = "artifact-root-product"
     relative_spec = (
@@ -4258,7 +4258,7 @@ async def test_exec_healing_node_runs_specs_from_artifact_root_dir(tmp_path, mon
 
 @pytest.mark.asyncio
 async def test_exec_healing_node_keeps_scenario_spec_when_only_chain_manifest_exists(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     product_id = "demo-product"
     old_spec = tmp_path / "products" / product_id / "agent3" / "ts-gen" / "pc" / "scenarios" / "old.spec.ts"
@@ -4354,7 +4354,7 @@ async def test_exec_healing_node_keeps_scenario_spec_when_only_chain_manifest_ex
 
 @pytest.mark.asyncio
 async def test_exec_healing_node_uses_agent3_tc_execution_plan_formal_scenario_spec(tmp_path, monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     product_id = "demo-product"
     old_spec = tmp_path / "products" / product_id / "agent3" / "ts-gen" / "pc" / "scenarios" / "old.spec.ts"
@@ -4466,7 +4466,7 @@ async def test_exec_healing_node_uses_agent3_tc_execution_plan_formal_scenario_s
 async def test_exec_healing_node_prefers_current_run_agent3_spec_over_stale_canonical_copy(
     tmp_path, monkeypatch
 ):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     product_id = "demo-product"
     stale_root = tmp_path / "products" / product_id / "ts-gen"
@@ -4567,7 +4567,7 @@ async def test_exec_healing_node_prefers_current_run_agent3_spec_over_stale_cano
 
 @pytest.mark.asyncio
 async def test_mpt_reg_exec_entry_keeps_scenario_spec_when_only_chain_manifest_exists(tmp_path, monkeypatch):
-    script_path = Path("src/e2e_agent/skills/mpt-reg-exec/scripts/run_exec.py").resolve()
+    script_path = Path("src/e2e_agent/legacy/skills/mpt-reg-exec/scripts/run_exec.py").resolve()
     spec = importlib.util.spec_from_file_location("mpt_reg_exec_run_exec_test", script_path)
     assert spec and spec.loader
     module = importlib.util.module_from_spec(spec)
@@ -4647,7 +4647,7 @@ async def test_mpt_reg_exec_entry_keeps_scenario_spec_when_only_chain_manifest_e
 
 @pytest.mark.asyncio
 async def test_exec_healing_node_returns_error_on_unexpected_exception(monkeypatch):
-    from e2e_agent.agents import exec_agent
+    from e2e_agent.legacy.agents import exec_agent
 
     class ExplodingLoader:
         def load_skill(self, _: str) -> object:

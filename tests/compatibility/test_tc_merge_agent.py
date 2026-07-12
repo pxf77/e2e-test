@@ -5,7 +5,7 @@ import pytest
 
 @pytest.mark.asyncio
 async def test_tc_merge_node_runs_three_stage_chain_and_emits_merge_trace(tmp_path, monkeypatch):
-    from e2e_agent.agents import tc_merge_agent
+    from e2e_agent.legacy.agents import tc_merge_agent
 
     monkeypatch.setattr(tc_merge_agent, "_ROOT_DIR", tmp_path)
 
@@ -98,7 +98,7 @@ async def test_tc_merge_node_runs_three_stage_chain_and_emits_merge_trace(tmp_pa
 
 @pytest.mark.asyncio
 async def test_tc_merge_node_materialises_under_product_asset_dir(tmp_path, monkeypatch):
-    from e2e_agent.agents import tc_merge_agent
+    from e2e_agent.legacy.agents import tc_merge_agent
 
     monkeypatch.setattr(tc_merge_agent, "_ROOT_DIR", tmp_path)
 
@@ -136,7 +136,7 @@ async def test_tc_merge_node_materialises_under_product_asset_dir(tmp_path, monk
 
 @pytest.mark.asyncio
 async def test_tc_merge_node_resolves_artifact_dir_from_product_source_dir(tmp_path, monkeypatch):
-    from e2e_agent.agents import tc_merge_agent
+    from e2e_agent.legacy.agents import tc_merge_agent
 
     monkeypatch.setattr(tc_merge_agent, "_ROOT_DIR", tmp_path)
 
@@ -172,7 +172,7 @@ async def test_tc_merge_node_resolves_artifact_dir_from_product_source_dir(tmp_p
 
 @pytest.mark.asyncio
 async def test_tc_merge_node_returns_error_on_unexpected_exception(monkeypatch):
-    from e2e_agent.agents import tc_merge_agent
+    from e2e_agent.legacy.agents import tc_merge_agent
 
     class ExplodingLoader:
         def load_skill(self, _: str) -> object:

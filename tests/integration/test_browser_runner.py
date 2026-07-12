@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from e2e_agent.browser.runner import PlaywrightTSRunner
+from e2e_agent.legacy.browser.runner import PlaywrightTSRunner
 
 
 def test_parse_json_reporter_accepts_pretty_json(tmp_path):
@@ -81,7 +81,7 @@ def test_run_formal_spec_uses_project_config_and_report_dir(tmp_path, monkeypatc
 
     monkeypatch.setattr(runner, "_resolve_playwright_command", lambda: ["playwright"])
     monkeypatch.setattr(runner, "_command_cwd", lambda: tmp_path)
-    monkeypatch.setattr("e2e_agent.browser.runner.subprocess.run", fake_run)
+    monkeypatch.setattr("e2e_agent.legacy.browser.runner.subprocess.run", fake_run)
 
     result = runner.run_formal_spec(
         str(spec_path),
@@ -126,7 +126,7 @@ def test_run_formal_spec_defaults_policy_start_date_to_next_day(tmp_path, monkey
     monkeypatch.delenv("AGENT4_POLICY_START_OFFSET_DAYS", raising=False)
     monkeypatch.setenv("AGENT4_DISABLE_MOCK_USER", "1")
     monkeypatch.setattr(runner, "_resolve_playwright_command", lambda: ["playwright"])
-    monkeypatch.setattr("e2e_agent.browser.runner.subprocess.run", fake_run)
+    monkeypatch.setattr("e2e_agent.legacy.browser.runner.subprocess.run", fake_run)
 
     runner.run_formal_spec(str(spec_path), report_dir=tmp_path / "tc-exec")
 
@@ -148,7 +148,7 @@ def test_run_formal_spec_preserves_explicit_policy_start_date_override(tmp_path,
     monkeypatch.setenv("AGENT4_POLICY_START_DATE", "2026-06-09")
     monkeypatch.delenv("AGENT4_POLICY_START_OFFSET_DAYS", raising=False)
     monkeypatch.setattr(runner, "_resolve_playwright_command", lambda: ["playwright"])
-    monkeypatch.setattr("e2e_agent.browser.runner.subprocess.run", fake_run)
+    monkeypatch.setattr("e2e_agent.legacy.browser.runner.subprocess.run", fake_run)
 
     runner.run_formal_spec(str(spec_path), report_dir=tmp_path / "tc-exec")
 
@@ -194,8 +194,8 @@ def test_run_formal_spec_reads_execution_requirements_for_policy_date_and_passpo
     monkeypatch.setenv("AGENT4_MOCK_USER_SCRIPT", str(mock_user_script))
     monkeypatch.delenv("AGENT4_MOCK_DATA_OVERRIDES", raising=False)
     monkeypatch.setattr(runner, "_resolve_playwright_command", lambda: ["playwright"])
-    monkeypatch.setattr("e2e_agent.browser.runner.shutil.which", lambda name: "node" if name == "node" else None)
-    monkeypatch.setattr("e2e_agent.browser.runner.subprocess.run", fake_run)
+    monkeypatch.setattr("e2e_agent.legacy.browser.runner.shutil.which", lambda name: "node" if name == "node" else None)
+    monkeypatch.setattr("e2e_agent.legacy.browser.runner.subprocess.run", fake_run)
 
     result = runner.run_formal_spec(str(spec_path), report_dir=tmp_path / "tc-exec")
 
@@ -228,7 +228,7 @@ def test_run_formal_spec_fails_preflight_when_required_mock_user_overrides_are_u
     monkeypatch.delenv("AGENT4_MOCK_DATA_OVERRIDES", raising=False)
     monkeypatch.setenv("AGENT4_DISABLE_MOCK_USER", "1")
     monkeypatch.setattr(runner, "_resolve_playwright_command", lambda: ["playwright"])
-    monkeypatch.setattr("e2e_agent.browser.runner.subprocess.run", fail_if_playwright_runs)
+    monkeypatch.setattr("e2e_agent.legacy.browser.runner.subprocess.run", fail_if_playwright_runs)
 
     result = runner.run_formal_spec(str(spec_path), report_dir=tmp_path / "tc-exec")
 
@@ -286,8 +286,8 @@ def test_run_formal_spec_generates_mock_user_overrides_when_script_configured(tm
     monkeypatch.setenv("AGENT4_MOCK_USER_SCRIPT", str(mock_user_script))
     monkeypatch.delenv("AGENT4_MOCK_DATA_OVERRIDES", raising=False)
     monkeypatch.setattr(runner, "_resolve_playwright_command", lambda: ["playwright"])
-    monkeypatch.setattr("e2e_agent.browser.runner.shutil.which", lambda name: "node" if name == "node" else None)
-    monkeypatch.setattr("e2e_agent.browser.runner.subprocess.run", fake_run)
+    monkeypatch.setattr("e2e_agent.legacy.browser.runner.shutil.which", lambda name: "node" if name == "node" else None)
+    monkeypatch.setattr("e2e_agent.legacy.browser.runner.subprocess.run", fake_run)
 
     runner.run_formal_spec(str(spec_path), report_dir=tmp_path / "tc-exec")
 
@@ -350,8 +350,8 @@ def test_run_formal_spec_maps_real_chinese_mock_user_payload_and_passport_spec(t
     monkeypatch.setenv("AGENT4_MOCK_USER_SCRIPT", str(mock_user_script))
     monkeypatch.delenv("AGENT4_MOCK_DATA_OVERRIDES", raising=False)
     monkeypatch.setattr(runner, "_resolve_playwright_command", lambda: ["playwright"])
-    monkeypatch.setattr("e2e_agent.browser.runner.shutil.which", lambda name: "node" if name == "node" else None)
-    monkeypatch.setattr("e2e_agent.browser.runner.subprocess.run", fake_run)
+    monkeypatch.setattr("e2e_agent.legacy.browser.runner.shutil.which", lambda name: "node" if name == "node" else None)
+    monkeypatch.setattr("e2e_agent.legacy.browser.runner.subprocess.run", fake_run)
 
     runner.run_formal_spec(str(spec_path), report_dir=tmp_path / "tc-exec")
 
@@ -402,7 +402,7 @@ def test_run_formal_spec_preserves_existing_mock_data_overrides(tmp_path, monkey
     monkeypatch.setenv("AGENT4_MOCK_USER_SCRIPT", str(mock_user_script))
     monkeypatch.setenv("AGENT4_MOCK_DATA_OVERRIDES", explicit_overrides)
     monkeypatch.setattr(runner, "_resolve_playwright_command", lambda: ["playwright"])
-    monkeypatch.setattr("e2e_agent.browser.runner.subprocess.run", fake_run)
+    monkeypatch.setattr("e2e_agent.legacy.browser.runner.subprocess.run", fake_run)
 
     runner.run_formal_spec(str(spec_path), report_dir=tmp_path / "tc-exec")
 
@@ -448,8 +448,8 @@ def test_run_formal_spec_uses_repo_mock_user_script_by_default(tmp_path, monkeyp
     monkeypatch.delenv("AGENT4_MOCK_USER_SCRIPT", raising=False)
     monkeypatch.delenv("AGENT4_MOCK_DATA_OVERRIDES", raising=False)
     monkeypatch.setattr(runner, "_resolve_playwright_command", lambda: ["playwright"])
-    monkeypatch.setattr("e2e_agent.browser.runner.shutil.which", lambda name: "node" if name == "node" else None)
-    monkeypatch.setattr("e2e_agent.browser.runner.subprocess.run", fake_run)
+    monkeypatch.setattr("e2e_agent.legacy.browser.runner.shutil.which", lambda name: "node" if name == "node" else None)
+    monkeypatch.setattr("e2e_agent.legacy.browser.runner.subprocess.run", fake_run)
 
     runner.run_formal_spec(str(spec_path), report_dir=tmp_path / "tc-exec")
 
@@ -485,8 +485,8 @@ def test_run_formal_spec_does_not_probe_workspace_siblings_for_mock_user(tmp_pat
     monkeypatch.delenv("AGENT4_MOCK_USER_SCRIPT", raising=False)
     monkeypatch.delenv("AGENT4_MOCK_DATA_OVERRIDES", raising=False)
     monkeypatch.setattr(runner, "_resolve_playwright_command", lambda: ["playwright"])
-    monkeypatch.setattr("e2e_agent.browser.runner.shutil.which", lambda name: "node" if name == "node" else None)
-    monkeypatch.setattr("e2e_agent.browser.runner.subprocess.run", fake_run)
+    monkeypatch.setattr("e2e_agent.legacy.browser.runner.shutil.which", lambda name: "node" if name == "node" else None)
+    monkeypatch.setattr("e2e_agent.legacy.browser.runner.subprocess.run", fake_run)
 
     runner.run_formal_spec(str(spec_path), report_dir=tmp_path / "tc-exec")
 
@@ -508,7 +508,7 @@ def test_run_formal_spec_isolates_output_by_spec_stem(tmp_path, monkeypatch):
         return SimpleNamespace(returncode=0, stdout="1 passed", stderr="")
 
     monkeypatch.setattr(runner, "_resolve_playwright_command", lambda: ["playwright"])
-    monkeypatch.setattr("e2e_agent.browser.runner.subprocess.run", fake_run)
+    monkeypatch.setattr("e2e_agent.legacy.browser.runner.subprocess.run", fake_run)
 
     first = runner.run_formal_spec(str(first_spec), report_dir=report_dir)
     second = runner.run_formal_spec(str(second_spec), report_dir=report_dir)
@@ -534,7 +534,7 @@ def test_run_formal_spec_recovers_passed_last_run_after_timeout(tmp_path, monkey
         raise subprocess.TimeoutExpired(cmd=cmd, timeout=timeout, output="1 passed", stderr="")
 
     monkeypatch.setattr(runner, "_resolve_playwright_command", lambda: ["playwright"])
-    monkeypatch.setattr("e2e_agent.browser.runner.subprocess.run", fake_run)
+    monkeypatch.setattr("e2e_agent.legacy.browser.runner.subprocess.run", fake_run)
 
     result = runner.run_formal_spec(str(spec_path), report_dir=report_dir, timeout_seconds=1)
 
@@ -562,7 +562,7 @@ def test_run_formal_spec_does_not_recover_from_stale_last_run(tmp_path, monkeypa
         raise subprocess.TimeoutExpired(cmd=cmd, timeout=timeout, output="", stderr="")
 
     monkeypatch.setattr(runner, "_resolve_playwright_command", lambda: ["playwright"])
-    monkeypatch.setattr("e2e_agent.browser.runner.subprocess.run", fake_run)
+    monkeypatch.setattr("e2e_agent.legacy.browser.runner.subprocess.run", fake_run)
 
     result = runner.run_formal_spec(str(spec_path), report_dir=report_dir, timeout_seconds=1)
 
@@ -613,7 +613,7 @@ def test_local_playwright_command_is_absolute(tmp_path):
 
 @pytest.mark.asyncio
 async def test_browser_session_creates_storage_state_parent(tmp_path):
-    from e2e_agent.browser.session import BrowserSession
+    from e2e_agent.legacy.browser.session import BrowserSession
 
     storage_state_path = tmp_path / "reg" / "runtime" / "h5-storage-state.json"
 
