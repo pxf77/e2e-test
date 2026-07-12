@@ -1,0 +1,24 @@
+name: repository-inventory
+
+on:
+  pull_request:
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build inventory
+        run: |
+          git rev-parse HEAD > head-sha.txt
+          git rev-parse HEAD^{tree} > root-tree-sha.txt
+          git ls-tree -r HEAD > git-tree.txt
+          git ls-files 'tests/**' > test-files.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: repository-inventory
+          path: |
+            head-sha.txt
+            root-tree-sha.txt
+            git-tree.txt
+            test-files.txt
