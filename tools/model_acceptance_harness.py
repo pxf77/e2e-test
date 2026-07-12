@@ -1,58 +1,14 @@
+"""Compatibility wrapper for ``tools.diagnostics.model_acceptance``."""
 from __future__ import annotations
 
-import argparse
-import json
-import sys
 from pathlib import Path
+import sys
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
-ROOT_DIR = next(parent for parent in Path(__file__).resolve().parents if (parent / "pyproject.toml").exists())
-SRC_ROOT = ROOT_DIR / "src"
-if str(SRC_ROOT) not in sys.path:
-    sys.path.insert(0, str(SRC_ROOT))
-
-from e2e_agent.core.model_acceptance import build_fallback_acceptance_evidence, build_model_acceptance_report
-
-
-def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Build an offline model acceptance report.")
-    parser.add_argument("--run-id", required=True)
-    parser.add_argument("--product-id", required=True)
-    parser.add_argument("--candidates", required=True)
-    parser.add_argument("--fallback-attempts")
-    parser.add_argument("--output", required=True)
-    return parser.parse_args(argv)
-
-
-def main(argv: list[str] | None = None) -> int:
-    args = parse_args(argv)
-    candidates_path = Path(args.candidates)
-    output_path = Path(args.output)
-    candidates = json.loads(candidates_path.read_text(encoding="utf-8"))
-    if not isinstance(candidates, list):
-        raise ValueError("Candidates payload must be a JSON array")
-    fallback_evidence = None
-    if args.fallback_attempts:
-        fallback_path = Path(args.fallback_attempts)
-        fallback_attempts = json.loads(fallback_path.read_text(encoding="utf-8"))
-        if not isinstance(fallback_attempts, list):
-            raise ValueError("Fallback attempts payload must be a JSON array")
-        fallback_evidence = build_fallback_acceptance_evidence(
-            run_id=args.run_id,
-            product_id=args.product_id,
-            route_key="all",
-            attempts=[item for item in fallback_attempts if isinstance(item, dict)],
-        )
-    report = build_model_acceptance_report(
-        run_id=args.run_id,
-        product_id=args.product_id,
-        candidates=[item for item in candidates if isinstance(item, dict)],
-        fallback_evidence=fallback_evidence,
-    )
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({"output": str(output_path), "summary": report["summary"]}, ensure_ascii=False))
-    return 0
+from tools.diagnostics.model_acceptance import main, parse_args  # noqa: E402,F401
 
 
 if __name__ == "__main__":
