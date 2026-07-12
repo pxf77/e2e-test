@@ -8,11 +8,8 @@ dependencies = [
     "langgraph-checkpoint-sqlite>=1.0",
     "litellm>=1.83.11",
     "playwright>=1.50",
-    "pydantic>=2.0",
     "pyyaml>=6.0",
     "jsonschema>=4.20",
-    "click>=8.0",
-    "aiofiles>=23.0",
 ]
 
 [project.optional-dependencies]
