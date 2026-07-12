@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -38,6 +39,14 @@ Use `e2e-agent <command> --help` for command-specific options.
 """
 
 
+def _resolve_repo_paths(values: list[str] | None) -> list[Path]:
+    result: list[Path] = []
+    for value in values or []:
+        path = Path(value)
+        result.append(path if path.is_absolute() else _REPO_ROOT / path)
+    return result
+
+
 def _build_v2_run_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="e2e-agent run")
     parser.add_argument("--app", required=True)
@@ -45,6 +54,12 @@ def _build_v2_run_parser() -> argparse.ArgumentParser:
     parser.add_argument("--env", default="local")
     parser.add_argument("--run-id", default=None)
     parser.add_argument("--inputs-json", default=None)
+    parser.add_argument(
+        "--plugin-dir",
+        action="append",
+        default=[],
+        help="Additional plugin discovery directory; may be repeated.",
+    )
     return parser
 
 
@@ -60,7 +75,12 @@ def _build_gate_parser() -> argparse.ArgumentParser:
     for command in ("approve", "reject"):
         command_parser = subparsers.add_parser(command)
         command_parser.add_argument("run_id")
-        command_parser.add_argument("--gate", dest="gate_name", choices=["r1", "r2", "r3", "r4"], default=None)
+        command_parser.add_argument(
+            "--gate",
+            dest="gate_name",
+            choices=["r1", "r2", "r3", "r4"],
+            default=None,
+        )
         command_parser.add_argument("--operator", default="manual")
         command_parser.add_argument("--note", default=f"{command}d via CLI")
         command_parser.add_argument("--checkpoint-dir", default=None)
@@ -81,8 +101,8 @@ def _runtime_summary(result: dict[str, Any]) -> dict[str, Any]:
     gates = result.get("gates") or {}
     pending_gates = [
         gate_id
-        for gate_id, gate in gates.items()
-        if str((gate or {}).get("status") or "") == "pending"
+        for gate_id, gate_state in gates.items()
+        if str((gate_state or {}).get("status") or "") == "pending"
     ]
     artifacts = result.get("artifacts") or {}
     report = artifacts.get("test_report") or {}
@@ -93,7 +113,9 @@ def _runtime_summary(result: dict[str, Any]) -> dict[str, Any]:
         "domain_id": result.get("domain_id"),
         "workflow_id": result.get("workflow_id"),
         "env": result.get("env"),
-        "status": manifest.get("status") or report.get("status") or ("pending" if pending_gates else "completed"),
+        "status": manifest.get("status")
+        or report.get("status")
+        or ("pending" if pending_gates else "completed"),
         "pending_gates": pending_gates,
         "artifact_names": sorted(artifacts),
         "artifact_count": len(manifest.get("artifacts") or []),
@@ -109,7 +131,7 @@ def _runtime_exit_code(summary: dict[str, Any]) -> int:
 
 def run_v2(argv: list[str]) -> int:
     args = _build_v2_run_parser().parse_args(argv)
-    runtime = WorkflowRuntime()
+    runtime = WorkflowRuntime(plugin_roots=_resolve_repo_paths(args.plugin_dir))
     result = asyncio.run(
         runtime.run(
             app_path=Path(args.app),
@@ -139,24 +161,25 @@ def _v2_gate(args: argparse.Namespace) -> int:
         path, payload = load_gate_checkpoint(args.run_id, directory)
         state = payload.get("state") or {}
         gate_id = str(payload.get("pending_gate") or "")
-        gate = (state.get("gates") or {}).get(gate_id) or {}
-        response = {
-            "version": "v2",
-            "run_id": args.run_id,
-            "checkpoint": str(path),
-            "checkpoint_status": payload.get("status"),
-            "pending_gate": gate_id,
-            "gate": gate,
-            "decision": payload.get("decision"),
-            "updated_at": payload.get("updated_at"),
-        }
+        gate_state = (state.get("gates") or {}).get(gate_id) or {}
         if args.gate_command == "summary":
             response = {
                 "version": "v2",
                 "run_id": args.run_id,
                 "pending_gate": gate_id,
                 "checkpoint_status": payload.get("status"),
-                "gate_status": gate.get("status"),
+                "gate_status": gate_state.get("status"),
+            }
+        else:
+            response = {
+                "version": "v2",
+                "run_id": args.run_id,
+                "checkpoint": str(path),
+                "checkpoint_status": payload.get("status"),
+                "pending_gate": gate_id,
+                "gate": gate_state,
+                "decision": payload.get("decision"),
+                "updated_at": payload.get("updated_at"),
             }
         print(json.dumps(response, ensure_ascii=False, indent=2))
         return 0
@@ -191,7 +214,10 @@ def _v2_gate(args: argparse.Namespace) -> int:
 
 def _v1_gate(args: argparse.Namespace) -> int:
     if args.checkpoint_dir:
-        raise ValueError("--checkpoint-dir is supported for v2 gates; set E2E_AGENT_GATE_CHECKPOINT_DIR for v1")
+        raise ValueError(
+            "--checkpoint-dir is supported for v2 gates; "
+            "set E2E_AGENT_GATE_CHECKPOINT_DIR for v1"
+        )
     if args.gate_command == "status":
         print(json.dumps(legacy_cli.gate_status(args.run_id), ensure_ascii=False, indent=2))
         return 0
@@ -219,9 +245,7 @@ def gate(argv: list[str], *, force_v2: bool = False) -> int:
 
 
 def _plugin_manager(paths: list[str] | None = None) -> PluginManager:
-    roots = [Path(path) for path in paths or []]
-    if not roots:
-        roots = [_REPO_ROOT / "plugins"]
+    roots = _resolve_repo_paths(paths) if paths else [_REPO_ROOT / "plugins"]
     return PluginManager(roots)
 
 
@@ -263,14 +287,20 @@ def list_runners(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog="e2e-agent runners")
     parser.add_argument("--json", action="store_true", dest="as_json")
     args = parser.parse_args(argv)
-    payload = []
+    payload: list[dict[str, Any]] = []
     runners_root = _REPO_ROOT / "runners"
     if runners_root.exists():
         from e2e_agent.config.yaml_loader import load_yaml_file
 
         for path in sorted(runners_root.glob("*.yaml")):
             manifest = load_yaml_file(path)
-            payload.append({"id": manifest.get("id"), "version": manifest.get("version"), "path": str(path)})
+            payload.append(
+                {
+                    "id": manifest.get("id"),
+                    "version": manifest.get("version"),
+                    "path": str(path),
+                }
+            )
     if args.as_json:
         print(json.dumps(payload, ensure_ascii=False, indent=2))
     else:
@@ -283,26 +313,68 @@ def plugin_create(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog="e2e-agent plugin create")
     parser.add_argument("plugin_id")
     parser.add_argument("--runtime", choices=["python", "node"], default="python")
-    parser.add_argument("--output-dir", default="plugins")
+    parser.add_argument(
+        "--root",
+        "--output-dir",
+        dest="output_dir",
+        default="plugins",
+        help="Directory that will contain the generated plugin package.",
+    )
     args = parser.parse_args(argv)
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", str(args.plugin_id)):
+        raise ValueError("plugin id must match [a-z0-9][a-z0-9-]*")
     target = Path(args.output_dir) / args.plugin_id
     if target.exists():
         raise FileExistsError(f"Plugin directory already exists: {target}")
     target.mkdir(parents=True)
     entry = "plugin.py" if args.runtime == "python" else "plugin.js"
-    manifest = f'''id: {args.plugin_id}\nversion: "0.1.0"\nkind: node\ndescription: "{args.plugin_id} plugin"\nruntime:\n  type: {args.runtime}\n  entry: {entry}\ncontracts:\n  input: []\n  output: []\n'''
+    manifest = f'''id: {args.plugin_id}
+version: "0.1.0"
+kind: node
+description: "{args.plugin_id} plugin"
+runtime:
+  type: {args.runtime}
+  entry: {entry}
+contracts:
+  input: []
+  output: []
+'''
     (target / "plugin.yaml").write_text(manifest, encoding="utf-8")
     if args.runtime == "python":
-        body = '''from __future__ import annotations\n\nimport json\nimport sys\n\n\ndef main() -> int:\n    payload = json.load(sys.stdin)\n    json.dump({"status": "success", "outputs": {}, "metrics": {"received": bool(payload)}}, sys.stdout)\n    return 0\n\n\nif __name__ == "__main__":\n    raise SystemExit(main())\n'''
+        body = '''from __future__ import annotations
+
+import json
+import sys
+
+
+def main() -> int:
+    payload = json.load(sys.stdin)
+    json.dump({"status": "success", "outputs": {}, "metrics": {"received": bool(payload)}}, sys.stdout)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+'''
     else:
-        body = '''let input = "";\nprocess.stdin.on("data", chunk => input += chunk);\nprocess.stdin.on("end", () => {\n  const payload = input ? JSON.parse(input) : {};\n  process.stdout.write(JSON.stringify({status: "success", outputs: {}, metrics: {received: !!payload}}));\n});\n'''
+        body = '''let input = "";
+process.stdin.on("data", chunk => input += chunk);
+process.stdin.on("end", () => {
+  const payload = input ? JSON.parse(input) : {};
+  process.stdout.write(JSON.stringify({status: "success", outputs: {}, metrics: {received: !!payload}}));
+});
+'''
     (target / entry).write_text(body, encoding="utf-8")
     print(str(target))
     return 0
 
 
 def acceptance() -> int:
-    completed = subprocess.run([sys.executable, str(_REPO_ROOT / "tools" / "acceptance_matrix.py")], cwd=_REPO_ROOT, check=False)
+    completed = subprocess.run(
+        [sys.executable, str(_REPO_ROOT / "tools" / "acceptance_matrix.py")],
+        cwd=_REPO_ROOT,
+        check=False,
+    )
     return int(completed.returncode)
 
 
@@ -330,6 +402,8 @@ def main(argv: list[str] | None = None) -> int:
         if actual == ["acceptance"]:
             return acceptance()
         return legacy_cli.main(actual)
+    except SystemExit as exc:
+        return int(exc.code or 0)
     except Exception as exc:
         print(str(exc), file=sys.stderr)
         return 1
