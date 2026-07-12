@@ -3,19 +3,35 @@ name: schema-inventory
 on:
   pull_request:
 
+permissions:
+  contents: write
+
 jobs:
   inventory:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: |
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Apply v1 schema migration
+        run: python tools/migrate_schemas_v1_once.py
+      - name: Commit migration
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add schemas src tests tools docs AGENTS.md README.md
+            git commit -m "refactor(schema): move legacy contracts to schemas/v1"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
+      - name: Build inventory
+        run: |
           git ls-files 'schemas/**' > schema-files.txt
           git grep -n -E 'schemas/|SCHEMAS_DIR|schema\.json' -- '*.py' '*.md' '*.yaml' '*.yml' '*.json' '*.toml' > schema-references.txt || true
-          git archive --format=tar.gz -o source-snapshot.tar.gz HEAD
       - uses: actions/upload-artifact@v4
         with:
           name: schema-inventory
           path: |
             schema-files.txt
             schema-references.txt
-            source-snapshot.tar.gz
