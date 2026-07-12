@@ -23,6 +23,7 @@ STATIC_COMMANDS = [
     [sys.executable, "tools/validate_dependencies.py"],
     [sys.executable, "tools/validate_tests.py"],
     [sys.executable, "tools/validate_schemas.py"],
+    [sys.executable, "tools/validate_legacy.py"],
     [sys.executable, "tools/validate_domains.py"],
     [sys.executable, "tools/validate_workflows.py"],
     [sys.executable, "tools/validate_runners.py"],
