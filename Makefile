@@ -1,4 +1,4 @@
-.PHONY: install install-uv test validate-repository validate-schemas validate-domains validate-workflows validate-runners validate-plugins boundary-check ci-check acceptance clean
+.PHONY: install install-uv test validate-repository validate-docs validate-schemas validate-domains validate-workflows validate-runners validate-plugins boundary-check ci-check acceptance clean
 
 PYTHON ?= python
 
@@ -13,6 +13,9 @@ test:
 
 validate-repository:
 	$(PYTHON) tools/validate_repository.py
+
+validate-docs:
+	$(PYTHON) tools/validate_docs.py
 
 validate-schemas:
 	$(PYTHON) tools/validate_schemas.py
@@ -34,6 +37,7 @@ boundary-check:
 
 ci-check:
 	$(PYTHON) tools/validate_repository.py
+	$(PYTHON) tools/validate_docs.py
 	$(PYTHON) tools/ci_rule_check.py
 	$(PYTHON) tools/check_domain_boundaries.py
 
