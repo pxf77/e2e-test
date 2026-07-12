@@ -16,6 +16,7 @@
 - Playwright compatibility diagnostics use explicit repository/report arguments and no longer embed a machine-specific source path.
 - `CLAUDE.md` delegates to canonical `AGENTS.md` and current architecture references instead of duplicating stale instructions.
 - CI validates direct dependency ownership, npm/uv locks, wheel construction and isolated console-script installation.
+- Tests are categorized under `unit/`, `integration/`, `compatibility/` and `acceptance/`, with a CI layout validator preventing root-level test modules and stale relative paths.
 
 ### Removed
 

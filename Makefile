@@ -1,4 +1,4 @@
-.PHONY: install install-uv test validate-repository validate-docs validate-dependencies validate-schemas validate-domains validate-workflows validate-runners validate-plugins boundary-check ci-check acceptance package-smoke clean
+.PHONY: install install-uv test validate-repository validate-docs validate-dependencies validate-tests validate-schemas validate-domains validate-workflows validate-runners validate-plugins boundary-check ci-check acceptance package-smoke clean
 
 PYTHON ?= python
 
@@ -19,6 +19,9 @@ validate-docs:
 
 validate-dependencies:
 	$(PYTHON) tools/validate_dependencies.py
+
+validate-tests:
+	$(PYTHON) tools/validate_tests.py
 
 validate-schemas:
 	$(PYTHON) tools/validate_schemas.py
@@ -42,6 +45,7 @@ ci-check:
 	$(PYTHON) tools/validate_repository.py
 	$(PYTHON) tools/validate_docs.py
 	$(PYTHON) tools/validate_dependencies.py
+	$(PYTHON) tools/validate_tests.py
 	$(PYTHON) tools/ci_rule_check.py
 	$(PYTHON) tools/check_domain_boundaries.py
 
