@@ -1,0 +1,21 @@
+name: schema-inventory
+
+on:
+  pull_request:
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git ls-files 'schemas/**' > schema-files.txt
+          git grep -n -E 'schemas/|SCHEMAS_DIR|schema\.json' -- '*.py' '*.md' '*.yaml' '*.yml' '*.json' '*.toml' > schema-references.txt || true
+          git archive --format=tar.gz -o source-snapshot.tar.gz HEAD
+      - uses: actions/upload-artifact@v4
+        with:
+          name: schema-inventory
+          path: |
+            schema-files.txt
+            schema-references.txt
+            source-snapshot.tar.gz
