@@ -3,11 +3,28 @@ name: repository-inventory
 on:
   pull_request:
 
+permissions:
+  contents: write
+
 jobs:
   inventory:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Apply categorized test layout
+        run: python tools/reorganize_tests_once.py
+      - name: Commit categorized tests
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          if ! git diff --quiet -- tests; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add tests
+            git commit -m "test(structure): categorize unit integration compatibility acceptance"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
       - name: Build inventory
         run: |
           git rev-parse HEAD > head-sha.txt
