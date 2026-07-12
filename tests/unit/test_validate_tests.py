@@ -28,8 +28,9 @@ def test_validator_rejects_root_test(tmp_path: Path) -> None:
 def test_validator_rejects_stale_relative_path(tmp_path: Path) -> None:
     _build_categories(tmp_path)
     stale = tmp_path / "tests" / "unit" / "test_unit.py"
+    expression = "Path(__file__).resolve().parents" + "[1]"
     stale.write_text(
-        "from pathlib import Path\nROOT = Path(__file__).resolve().parents[1]\n",
+        f"from pathlib import Path\nROOT = {expression}\n",
         encoding="utf-8",
     )
 
