@@ -14,12 +14,7 @@ jobs:
           git rev-parse HEAD^{tree} > root-tree-sha.txt
           git ls-tree -r HEAD > git-tree.txt
           git ls-files 'tests/**' > test-files.txt
-          tar \
-            --exclude=.git \
-            --exclude=.local \
-            --exclude='*.assets' \
-            --exclude=source-snapshot.tar.gz \
-            -czf source-snapshot.tar.gz .
+          git archive --format=tar.gz -o source-snapshot.tar.gz HEAD
       - uses: actions/upload-artifact@v4
         with:
           name: repository-inventory
