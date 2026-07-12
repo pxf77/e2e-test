@@ -5,37 +5,22 @@ on:
   push:
     branches: [main]
 
-permissions:
-  contents: write
-
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - name: Install package
         run: python -m pip install -e ".[dev]"
-      - name: Refresh lock evidence
+      - name: Validate lock files
         run: |
           python -m pip install uv
-          uv lock
+          uv lock --check
           npm ci --ignore-scripts
           npx playwright --version
-      - name: Commit refreshed uv lock
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
-        run: |
-          if ! git diff --quiet -- uv.lock; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add uv.lock
-            git commit -m "build(lock): refresh uv dependency lock"
-            git push origin HEAD:${{ github.head_ref }}
-          fi
       - name: Validate repository hygiene
         run: python tools/validate_repository.py
       - name: Validate documentation
@@ -74,5 +59,4 @@ jobs:
           path: |
             pytest.log
             acceptance.json
-            uv.lock
           if-no-files-found: warn
