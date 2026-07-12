@@ -6,13 +6,12 @@
 
 - **Core/Domain 分层**：保险、电商、SaaS 等语义位于 `domains/`，Core 不硬编码行业流程。
 - **Workflow First**：`workflows/*.yaml` 编译为 LangGraph，支持条件边、人工 Gate 和跨进程恢复。
-- **Contract First**：`schemas/v2` 约束 App、Domain、Workflow、Runner、Plugin、Artifact 和报告。
+- **Contract First**：`schemas/v1` 保存 Legacy 契约，`schemas/v2` 约束 App、Domain、Workflow、Runner、Plugin、Artifact 和报告。
 - **Runner 可扩展**：内置 Playwright、HTTP API 和 Appium command adapter。
 - **Assertion/Data Pack**：领域断言模板与静态、CSV、合成、API、DB、账号和 Secret 数据源。
 - **Plugin SDK**：Python/Node 子进程协议，执行前后校验 Contract。
 - **可审计**：节点产物、Runner 证据、JSON/HTML/JUnit 报告进入 Artifact Manifest。
 - **模型无关**：LLM 调用统一经过 `LLMWrapper` 和 `config/model-routing.yaml`。
-- **兼容旧流程**：1.x 保留 `product-input.json`、旧 Graph、四 Agent 和 Skill Package。
 
 ## 快速开始
 
@@ -89,9 +88,10 @@ runners/                      # Runner Manifest
 plugins/                      # 生产 Plugin Package，可为空
 examples/plugins/             # 需显式加载的教学插件
 examples/workflows/           # 配套示例工作流
-schemas/v2/                   # 通用契约
+schemas/v1/                   # Legacy Agent / Skill 契约
+schemas/v2/                   # 通用框架契约
 src/e2e_agent/
-  adapters/legacy/            # 1.x Legacy 兼容适配
+  adapters/legacy/            # Legacy 兼容适配
   assertions/                 # Assertion Engine
   artifacts/                  # Artifact Manifest
   commands/                   # 正式 CLI 入口
@@ -105,8 +105,8 @@ src/e2e_agent/
   runners/                    # Playwright / API / Mobile
   workflow/                   # DSL 编译、运行、Gate、节点注册
 docs/                         # architecture / guides / reference / sdk / releases
-tests/golden/                 # 稳定输出基线
-tools/                        # 校验和验收工具
+tests/                        # unit / integration / compatibility / acceptance
+tools/                        # validate / diagnostics / legacy / acceptance
 ```
 
 ## App Pack
@@ -184,6 +184,9 @@ Artifact Manifest 记录 contract、producer、node、path、SHA-256、类型和
 
 ```bash
 python tools/validate_repository.py
+python tools/validate_docs.py
+python tools/validate_dependencies.py
+python tools/validate_tests.py
 python tools/validate_schemas.py
 python tools/validate_domains.py
 python tools/validate_workflows.py
@@ -197,17 +200,20 @@ python tools/acceptance_matrix.py
 
 ## Legacy 兼容
 
+Legacy product-input 和四 Agent 流程当前仍可通过兼容入口执行：
+
 ```bash
 e2e-agent run --product-input products/test-product/eman/product-input.json
 ```
 
-统一 `e2e-agent gate` 会根据 checkpoint 自动识别 v1/v2。`gate-v2` 在 1.x 中仅作为弃用别名。
+统一 `e2e-agent gate` 会根据 checkpoint 自动识别 v1/v2。
 
 ## 文档
 
 完整导航见 [docs/index.md](docs/index.md)：
 
 - [总体架构](docs/architecture/overview.md)
+- [Contract Versioning](docs/architecture/contracts.md)
 - [Domain Pack](docs/architecture/domain-packs.md)
 - [Workflow DSL 与 Runtime](docs/architecture/workflow-runtime.md)
 - [CLI Reference](docs/reference/cli.md)
