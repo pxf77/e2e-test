@@ -68,7 +68,7 @@ def test_agent3_storage_patch_keys_are_product_agnostic():
 
 
 def test_agent3_live_exploration_can_be_disabled_with_env(monkeypatch):
-    from e2e_agent.agents import explore_agent
+    from e2e_agent.legacy.agents import explore_agent
 
     monkeypatch.delenv("AGENT3_DISABLE_LIVE", raising=False)
     assert explore_agent._live_exploration_disabled() is False
@@ -127,7 +127,7 @@ def test_agent3_action_trace_artifact_records_full_path_action_chain():
 
 
 def test_agent3_loads_product_element_set_before_builtin(tmp_path):
-    from e2e_agent.agents.agent3_explore.element_set import load_element_set_for_product
+    from e2e_agent.legacy.agents.agent3_explore.element_set import load_element_set_for_product
 
     product_dir = tmp_path / "products" / "demo-product" / "automation"
     product_dir.mkdir(parents=True)
@@ -157,7 +157,7 @@ def test_agent3_loads_product_element_set_before_builtin(tmp_path):
 
 
 def test_agent3_falls_back_to_builtin_element_set_when_product_file_missing(tmp_path):
-    from e2e_agent.agents.agent3_explore.element_set import STATIC_ELEMENT_SET_PATH, load_element_set_for_product
+    from e2e_agent.legacy.agents.agent3_explore.element_set import STATIC_ELEMENT_SET_PATH, load_element_set_for_product
 
     loaded = load_element_set_for_product(tmp_path, "missing-product")
 
@@ -168,7 +168,7 @@ def test_agent3_falls_back_to_builtin_element_set_when_product_file_missing(tmp_
 
 
 def test_agent3_merges_builtin_models_when_product_element_set_is_partial(tmp_path):
-    from e2e_agent.agents.agent3_explore.element_set import load_element_set_for_product
+    from e2e_agent.legacy.agents.agent3_explore.element_set import load_element_set_for_product
 
     product_dir = tmp_path / "products" / "demo-product" / "automation"
     product_dir.mkdir(parents=True)
@@ -200,7 +200,7 @@ def test_agent3_merges_builtin_models_when_product_element_set_is_partial(tmp_pa
 
 
 def test_agent3_loads_product_element_set_from_source_dir(tmp_path):
-    from e2e_agent.agents.agent3_explore.element_set import load_element_set_for_product
+    from e2e_agent.legacy.agents.agent3_explore.element_set import load_element_set_for_product
 
     product_source_dir = tmp_path / "products" / "demo-product" / "eman"
     product_dir = product_source_dir / "automation"
@@ -234,7 +234,7 @@ def test_agent3_loads_product_element_set_from_source_dir(tmp_path):
 
 
 def test_explore_node_uses_product_element_set_before_builtin(monkeypatch, tmp_path):
-    from e2e_agent.agents import explore_agent
+    from e2e_agent.legacy.agents import explore_agent
 
     monkeypatch.setattr(explore_agent, "_ROOT_DIR", tmp_path)
     monkeypatch.setattr(explore_agent, "_playwright_python_available", lambda: True)
@@ -325,7 +325,7 @@ def test_explore_node_uses_product_element_set_before_builtin(monkeypatch, tmp_p
 
 
 def test_explore_node_runs_live_explore_before_ts_gen(monkeypatch, tmp_path):
-    from e2e_agent.agents import explore_agent
+    from e2e_agent.legacy.agents import explore_agent
 
     monkeypatch.setattr(explore_agent, "_ROOT_DIR", tmp_path)
     monkeypatch.setattr(explore_agent, "_playwright_python_available", lambda: True)
@@ -441,7 +441,7 @@ def test_explore_node_runs_live_explore_before_ts_gen(monkeypatch, tmp_path):
 
 
 def test_explore_governance_maps_pay_success_to_policy_result_without_warning():
-    from e2e_agent.agents.agent3_explore.node import _annotate_page_registry_with_governance
+    from e2e_agent.legacy.agents.agent3_explore.node import _annotate_page_registry_with_governance
 
     page_registry = {
         "pages": [
@@ -477,7 +477,7 @@ def test_explore_governance_maps_pay_success_to_policy_result_without_warning():
 
 
 def test_explore_result_keeps_successful_self_healing_warnings_out_of_error():
-    from e2e_agent.agents.agent3_explore.node import _agent3_error_from_warnings
+    from e2e_agent.legacy.agents.agent3_explore.node import _agent3_error_from_warnings
 
     error = _agent3_error_from_warnings(
         [
@@ -503,7 +503,7 @@ def test_explore_result_keeps_successful_self_healing_warnings_out_of_error():
 
 
 def test_explore_node_materialises_element_set_from_live_registry(monkeypatch, tmp_path):
-    from e2e_agent.agents import explore_agent
+    from e2e_agent.legacy.agents import explore_agent
 
     monkeypatch.setattr(explore_agent, "_ROOT_DIR", tmp_path)
     monkeypatch.setattr(explore_agent, "_playwright_python_available", lambda: True)
@@ -612,7 +612,7 @@ def test_materialise_live_explore_outputs_uses_product_artifact_dir(tmp_path):
 
 
 def test_explore_node_static_first_skips_live_exploration(monkeypatch, tmp_path):
-    from e2e_agent.agents import explore_agent
+    from e2e_agent.legacy.agents import explore_agent
 
     monkeypatch.setattr(explore_agent, "_ROOT_DIR", tmp_path)
     monkeypatch.setattr(explore_agent, "_playwright_python_available", lambda: True)
@@ -727,7 +727,7 @@ def test_validate_script_bundle_skips_when_project_node_runtime_is_missing(tmp_p
 
 
 def test_explore_node_static_first_keeps_covered_paths_when_other_paths_miss_models(monkeypatch, tmp_path):
-    from e2e_agent.agents import explore_agent
+    from e2e_agent.legacy.agents import explore_agent
 
     monkeypatch.setattr(explore_agent, "_ROOT_DIR", tmp_path)
     monkeypatch.setattr(explore_agent, "_playwright_python_available", lambda: True)
@@ -816,7 +816,7 @@ def test_explore_node_static_first_keeps_covered_paths_when_other_paths_miss_mod
 
 
 def test_explore_node_static_first_keeps_targeted_probe_contract_without_full_live_probe(monkeypatch, tmp_path):
-    from e2e_agent.agents import explore_agent
+    from e2e_agent.legacy.agents import explore_agent
 
     monkeypatch.setattr(explore_agent, "_ROOT_DIR", tmp_path)
     monkeypatch.setattr(explore_agent, "_playwright_python_available", lambda: True)
@@ -908,7 +908,7 @@ def test_explore_node_static_first_keeps_targeted_probe_contract_without_full_li
 
 
 def test_explore_node_preserves_static_contract_for_long_path_without_live_fallback(monkeypatch, tmp_path):
-    from e2e_agent.agents import explore_agent
+    from e2e_agent.legacy.agents import explore_agent
 
     monkeypatch.setattr(explore_agent, "_ROOT_DIR", tmp_path)
     monkeypatch.setattr(explore_agent, "_playwright_python_available", lambda: True)
@@ -973,8 +973,8 @@ def test_explore_node_preserves_static_contract_for_long_path_without_live_fallb
 
 
 def test_static_contract_uses_submit_after_suitability_questionnaire():
-    from e2e_agent.agents.agent3_explore.element_set import load_static_element_set
-    from e2e_agent.agents.agent3_explore.static_contract import build_static_explore_artifacts
+    from e2e_agent.legacy.agents.agent3_explore.element_set import load_static_element_set
+    from e2e_agent.legacy.agents.agent3_explore.static_contract import build_static_explore_artifacts
 
     artifacts = build_static_explore_artifacts(
         product_id="test-product",
@@ -1015,8 +1015,8 @@ def test_static_contract_uses_submit_after_suitability_questionnaire():
 
 
 def test_static_contract_clicks_premium_agree_button_before_questionnaire_answer():
-    from e2e_agent.agents.agent3_explore.element_set import load_static_element_set
-    from e2e_agent.agents.agent3_explore.static_contract import build_static_explore_artifacts
+    from e2e_agent.legacy.agents.agent3_explore.element_set import load_static_element_set
+    from e2e_agent.legacy.agents.agent3_explore.static_contract import build_static_explore_artifacts
 
     artifacts = build_static_explore_artifacts(
         product_id="test-product",
@@ -1062,8 +1062,8 @@ def test_static_contract_clicks_premium_agree_button_before_questionnaire_answer
 
 
 def test_static_contract_generates_auto_wait_for_underwriting_callback_transition():
-    from e2e_agent.agents.agent3_explore.element_set import load_static_element_set
-    from e2e_agent.agents.agent3_explore.static_contract import build_static_explore_artifacts
+    from e2e_agent.legacy.agents.agent3_explore.element_set import load_static_element_set
+    from e2e_agent.legacy.agents.agent3_explore.static_contract import build_static_explore_artifacts
 
     artifacts = build_static_explore_artifacts(
         product_id="test-product",
@@ -1108,8 +1108,8 @@ def test_static_contract_generates_auto_wait_for_underwriting_callback_transitio
 
 
 def test_static_contract_marks_max_path_optional_nodes_and_answers_health_notice():
-    from e2e_agent.agents.agent3_explore.element_set import load_static_element_set
-    from e2e_agent.agents.agent3_explore.static_contract import build_static_explore_artifacts
+    from e2e_agent.legacy.agents.agent3_explore.element_set import load_static_element_set
+    from e2e_agent.legacy.agents.agent3_explore.static_contract import build_static_explore_artifacts
 
     artifacts = build_static_explore_artifacts(
         product_id="test-product",
@@ -1171,7 +1171,7 @@ def test_static_contract_marks_max_path_optional_nodes_and_answers_health_notice
 
 
 def test_static_contract_outputs_agent4_readiness_artifacts():
-    from e2e_agent.agents.agent3_explore.static_contract import build_static_explore_artifacts
+    from e2e_agent.legacy.agents.agent3_explore.static_contract import build_static_explore_artifacts
 
     element_set = {
         "quick_lookup": {
@@ -1340,7 +1340,7 @@ def test_static_contract_outputs_agent4_readiness_artifacts():
 
 
 def test_static_contract_outputs_targeted_probe_plan_for_unverified_required_fields():
-    from e2e_agent.agents.agent3_explore.static_contract import build_static_explore_artifacts
+    from e2e_agent.legacy.agents.agent3_explore.static_contract import build_static_explore_artifacts
 
     element_set = {
         "quick_lookup": {"by_node": {"NODE-insure-form": "#/page_models/insure-form"}},
@@ -1423,7 +1423,7 @@ def test_static_contract_outputs_targeted_probe_plan_for_unverified_required_fie
 
 
 def test_static_contract_outputs_targeted_probe_plan_for_missing_page_models():
-    from e2e_agent.agents.agent3_explore.static_contract import build_static_explore_artifacts
+    from e2e_agent.legacy.agents.agent3_explore.static_contract import build_static_explore_artifacts
 
     element_set = {
         "quick_lookup": {
@@ -1506,7 +1506,7 @@ def test_static_contract_outputs_targeted_probe_plan_for_missing_page_models():
 
 
 def test_static_contract_attaches_knowledge_evidence_to_missing_page_model():
-    from e2e_agent.agents.agent3_explore.static_contract import build_static_explore_artifacts
+    from e2e_agent.legacy.agents.agent3_explore.static_contract import build_static_explore_artifacts
 
     artifacts = build_static_explore_artifacts(
         product_id="demo-product",
@@ -1573,7 +1573,7 @@ def test_static_contract_attaches_knowledge_evidence_to_missing_page_model():
 
 
 def test_static_contract_outputs_targeted_probe_plan_for_non_clickable_required_actions():
-    from e2e_agent.agents.agent3_explore.static_contract import build_static_explore_artifacts
+    from e2e_agent.legacy.agents.agent3_explore.static_contract import build_static_explore_artifacts
 
     element_set = {
         "quick_lookup": {
@@ -1647,8 +1647,8 @@ def test_static_contract_outputs_targeted_probe_plan_for_non_clickable_required_
 
 
 def test_static_contract_promotes_builtin_insure_form_core_fields_for_agent4():
-    from e2e_agent.agents.agent3_explore.element_set import load_static_element_set
-    from e2e_agent.agents.agent3_explore.static_contract import build_static_explore_artifacts
+    from e2e_agent.legacy.agents.agent3_explore.element_set import load_static_element_set
+    from e2e_agent.legacy.agents.agent3_explore.static_contract import build_static_explore_artifacts
 
     artifacts = build_static_explore_artifacts(
         product_id="test-product",
@@ -1694,7 +1694,7 @@ def test_static_contract_promotes_builtin_insure_form_core_fields_for_agent4():
 
 
 def test_url_pattern_matches_route_fragment_inside_absolute_url():
-    from e2e_agent.agents.agent3_explore.node import _url_pattern_matches
+    from e2e_agent.legacy.agents.agent3_explore.node import _url_pattern_matches
 
     assert _url_pattern_matches(
         "https://commerce.example.test/apps/cps/demo-channel/product/detail?prodId=123626&planId=126944",
@@ -5495,7 +5495,7 @@ def test_exploration_contract_keeps_unreached_payment_as_coverage_gap():
 
 
 def test_fallback_explore_artifacts_blocks_all_regression_paths():
-    from e2e_agent.agents import explore_agent
+    from e2e_agent.legacy.agents import explore_agent
 
     artifacts = explore_agent._fallback_explore_artifacts(
         {
@@ -5529,7 +5529,7 @@ def test_fallback_explore_artifacts_blocks_all_regression_paths():
 
 @pytest.mark.asyncio
 async def test_explore_node_returns_error_on_unexpected_exception(monkeypatch):
-    from e2e_agent.agents import explore_agent
+    from e2e_agent.legacy.agents import explore_agent
 
     def explode_prepare_runtime_context(**_: object) -> dict:
         raise RuntimeError("runtime exploded")

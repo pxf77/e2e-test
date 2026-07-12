@@ -13,7 +13,7 @@ from typing import Any
 from urllib.parse import parse_qs, unquote, urlencode, urljoin, urlparse, urlunparse
 
 from e2e_agent.artifacts.paths import agent_artifact_dir
-from e2e_agent.browser.session import BrowserSession
+from e2e_agent.legacy.browser.session import BrowserSession
 from e2e_agent.core.dom_signature import write_dom_signature_bundles
 from e2e_agent.core.policy_info_generator import generate_policy_mock_data
 from e2e_agent.core.script_generation import platform_from_entry_url

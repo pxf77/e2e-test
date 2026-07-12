@@ -4,10 +4,10 @@ from pathlib import Path
 from typing import Any, Awaitable, Callable
 from urllib.parse import urljoin
 
-from e2e_agent.agents.agent1_tc_merge.node import tc_merge_node
-from e2e_agent.agents.agent2_path_extract.node import path_extract_node
-from e2e_agent.agents.agent3_explore.node import explore_node
-from e2e_agent.agents.agent4_exec.node import exec_healing_node
+from e2e_agent.legacy.agents.agent1_tc_merge.node import tc_merge_node
+from e2e_agent.legacy.agents.agent2_path_extract.node import path_extract_node
+from e2e_agent.legacy.agents.agent3_explore.node import explore_node
+from e2e_agent.legacy.agents.agent4_exec.node import exec_healing_node
 from e2e_agent.workflow.registry import NodeRegistry, NodeResult
 from e2e_agent.workflow.state import WorkflowRuntimeState
 

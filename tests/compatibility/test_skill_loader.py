@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from e2e_agent.skills.loader import SkillManifest, SkillPackageLoader
+from e2e_agent.legacy.skills.loader import SkillManifest, SkillPackageLoader
 
 
 def _write_minimal_xlsx(path: Path, rows: list[list[str]]) -> None:
@@ -268,7 +268,7 @@ def test_list_skills_production_dir():
     # Only run if the production directory exists
     prod_dir = Path(__file__).parent.parent.parent / "src" / "e2e_agent" / "skills"
     if not prod_dir.exists():
-        pytest.skip("src/e2e_agent/skills/ not found")
+        pytest.skip("src/e2e_agent/legacy/skills/ not found")
 
     loader = SkillPackageLoader()
     skills = loader.list_skills()

@@ -295,7 +295,7 @@ def test_static_product_package_attaches_knowledge_evidence_to_missing_page_prob
 
 
 def test_explore_static_first_contract_loads_knowledge_hints_from_product_root(monkeypatch, tmp_path) -> None:
-    from e2e_agent.agents import explore_agent
+    from e2e_agent.legacy.agents import explore_agent
 
     _write_static_package(tmp_path)
     state = _state()
@@ -347,7 +347,7 @@ def test_explore_static_first_contract_loads_knowledge_hints_from_product_root(m
 
 
 def test_explore_static_first_contract_uses_source_dir_knowledge_alias(monkeypatch, tmp_path) -> None:
-    from e2e_agent.agents import explore_agent
+    from e2e_agent.legacy.agents import explore_agent
 
     product_source_dir = tmp_path / "products" / "demo-product" / "eman"
     _write_static_package(tmp_path, product_id="demo-product/eman")
@@ -554,7 +554,7 @@ def test_static_product_package_accepts_utf8_bom_json(tmp_path) -> None:
 
 
 def test_live_agent3_mode_ignores_static_product_package(tmp_path) -> None:
-    from e2e_agent.agents import explore_agent
+    from e2e_agent.legacy.agents import explore_agent
 
     _write_static_package(tmp_path)
 
@@ -570,7 +570,7 @@ def test_live_agent3_mode_ignores_static_product_package(tmp_path) -> None:
 
 @pytest.mark.asyncio
 async def test_explore_node_static_first_uses_package_without_live_browser(tmp_path, monkeypatch) -> None:
-    from e2e_agent.agents import explore_agent
+    from e2e_agent.legacy.agents import explore_agent
 
     _write_static_package(tmp_path)
 
@@ -598,7 +598,7 @@ async def test_explore_node_falls_back_to_live_when_static_package_incomplete_an
     tmp_path,
     monkeypatch,
 ) -> None:
-    from e2e_agent.agents import explore_agent
+    from e2e_agent.legacy.agents import explore_agent
 
     _write_static_package(tmp_path)
     config_path = tmp_path / "products" / "demo-product" / "automation" / "product.config.json"
@@ -649,7 +649,7 @@ async def test_explore_node_falls_back_to_live_when_static_package_incomplete_an
 
 @pytest.mark.asyncio
 async def test_explore_node_reads_static_package_from_source_and_writes_assets(tmp_path, monkeypatch) -> None:
-    from e2e_agent.agents import explore_agent
+    from e2e_agent.legacy.agents import explore_agent
 
     product_source_dir = tmp_path / "products" / "demo-product" / "eman"
     product_artifact_dir = tmp_path / "products" / "demo-product" / "demo.assets"

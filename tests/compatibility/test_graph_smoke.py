@@ -8,14 +8,14 @@ import pytest
 
 def test_graph_compiles():
     """graph.compile() must succeed with in-memory checkpointer."""
-    from e2e_agent.graph.graph import build_graph
+    from e2e_agent.legacy.graph.graph import build_graph
     app = build_graph(":memory:")
     assert app is not None
 
 
 def test_graph_has_nodes():
     """Graph must contain all 8 expected nodes."""
-    from e2e_agent.graph.graph import build_graph
+    from e2e_agent.legacy.graph.graph import build_graph
     app = build_graph(":memory:")
     expected_nodes = {
         "tc_merge", "r1_gate",
@@ -30,7 +30,7 @@ def test_graph_has_nodes():
 @pytest.mark.asyncio
 async def test_graph_invoke_returns_pending_at_r1(tmp_path):
     """Invoking the graph with a minimal state should reach R1 Gate (pending)."""
-    from e2e_agent.graph.graph import build_graph
+    from e2e_agent.legacy.graph.graph import build_graph
 
     app = build_graph(":memory:")
     initial_state = {
@@ -68,7 +68,7 @@ async def test_graph_invoke_returns_pending_at_r1(tmp_path):
 @pytest.mark.asyncio
 async def test_graph_preserves_agent4_report_metadata_fields(tmp_path):
     """Agent4 report controls must survive StateGraph state filtering."""
-    from e2e_agent.graph.graph import build_graph
+    from e2e_agent.legacy.graph.graph import build_graph
 
     app = build_graph(":memory:")
     initial_state = {
@@ -108,7 +108,7 @@ async def test_graph_preserves_agent4_report_metadata_fields(tmp_path):
 
 def test_pending_gate_persists_checkpoint(tmp_path):
     """A pending gate should persist a checkpoint for human review."""
-    from e2e_agent.graph.gates import r1_gate_node
+    from e2e_agent.legacy.graph.gates import r1_gate_node
 
     state = {
         "run_id": "run-pending-001",
@@ -138,7 +138,7 @@ def test_pending_gate_persists_checkpoint(tmp_path):
 @pytest.mark.parametrize("status", ["approved", "rejected", "pending"])
 def test_gate_routers_support_three_statuses(route_name, state_key, status):
     """Each gate router must preserve approved/rejected/pending decisions."""
-    import e2e_agent.graph.gates as gates
+    import e2e_agent.legacy.graph.gates as gates
 
     route = getattr(gates, route_name)
 

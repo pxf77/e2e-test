@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from e2e_agent.artifacts import collect_files
-from e2e_agent.browser.runner import PlaywrightTSRunner
+from e2e_agent.legacy.browser.runner import PlaywrightTSRunner
 
 from ..base import ExecutionPlan, ExecutionResult
 

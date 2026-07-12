@@ -4,7 +4,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from e2e_agent.browser.session import BrowserSession
+from e2e_agent.legacy.browser.session import BrowserSession
 from e2e_agent.core.page_exploration import (
     _body_text_excerpt,
     _collect_actions,

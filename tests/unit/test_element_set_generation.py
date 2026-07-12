@@ -120,7 +120,7 @@ def test_build_element_set_bundle_from_page_registry():
 
 
 def test_agent3_static_element_set_asset_loads_from_agent_package():
-    from e2e_agent.agents.agent3_explore.element_set import load_static_element_set
+    from e2e_agent.legacy.agents.agent3_explore.element_set import load_static_element_set
 
     element_set = load_static_element_set()
 
@@ -130,8 +130,8 @@ def test_agent3_static_element_set_asset_loads_from_agent_package():
 
 
 def test_static_contract_builder_compiles_page_registry_without_browser():
-    from e2e_agent.agents.agent3_explore.element_set import load_static_element_set
-    from e2e_agent.agents.agent3_explore.static_contract import build_static_explore_artifacts
+    from e2e_agent.legacy.agents.agent3_explore.element_set import load_static_element_set
+    from e2e_agent.legacy.agents.agent3_explore.static_contract import build_static_explore_artifacts
 
     artifacts = build_static_explore_artifacts(
         product_id="demo-product",
@@ -166,8 +166,8 @@ def test_static_contract_builder_compiles_page_registry_without_browser():
 
 
 def test_static_contract_builder_compiles_ordered_main_chain_actions():
-    from e2e_agent.agents.agent3_explore.element_set import load_static_element_set
-    from e2e_agent.agents.agent3_explore.static_contract import build_static_explore_artifacts
+    from e2e_agent.legacy.agents.agent3_explore.element_set import load_static_element_set
+    from e2e_agent.legacy.agents.agent3_explore.static_contract import build_static_explore_artifacts
 
     artifacts = build_static_explore_artifacts(
         product_id="demo-product",
@@ -215,8 +215,8 @@ def test_static_contract_builder_compiles_ordered_main_chain_actions():
 
 
 def test_static_contract_builder_inserts_questionnaire_answer_before_continue():
-    from e2e_agent.agents.agent3_explore.element_set import load_static_element_set
-    from e2e_agent.agents.agent3_explore.static_contract import build_static_explore_artifacts
+    from e2e_agent.legacy.agents.agent3_explore.element_set import load_static_element_set
+    from e2e_agent.legacy.agents.agent3_explore.static_contract import build_static_explore_artifacts
 
     artifacts = build_static_explore_artifacts(
         product_id="demo-product",

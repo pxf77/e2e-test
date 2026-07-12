@@ -30,7 +30,7 @@ domains/<domain>/
 
 ## Skill、Runner 与 Gate
 
-- Skill 通过 `src/e2e_agent/skills/<skill>/MANIFEST.yaml` 自动发现。
+- Skill 通过 `src/e2e_agent/legacy/skills/<skill>/MANIFEST.yaml` 自动发现。
 - Runner 通过 `runners/*.yaml`、App Pack execution 配置和运行时 overrides 解析。
 - Gate 的 operator、note、决策和审计结果由 CLI 与 checkpoint 持久化。
 

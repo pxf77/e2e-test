@@ -212,7 +212,7 @@ def test_build_ts_gen_bundle_exposes_assertion_template_summary(tmp_path: Path) 
 
 
 def test_finalize_explore_result_carries_template_summary_into_page_registry(tmp_path: Path) -> None:
-    from e2e_agent.agents.agent3_explore.node import _finalize_explore_result
+    from e2e_agent.legacy.agents.agent3_explore.node import _finalize_explore_result
 
     result = _finalize_explore_result(
         state={

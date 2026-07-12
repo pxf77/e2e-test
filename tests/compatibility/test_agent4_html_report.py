@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 def test_agent4_html_report_includes_results_screenshots_and_api_errors(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent3-agent4-20260518-100000"
     merged_cases_path = tmp_path / "agent1" / "merged-cases.json"
@@ -204,7 +204,7 @@ def test_agent4_html_report_includes_results_screenshots_and_api_errors(tmp_path
 
 
 def test_agent4_html_report_includes_side_effect_probe_results(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent4-probe-run"
     run_dir.mkdir(parents=True)
@@ -279,7 +279,7 @@ def test_agent4_html_report_includes_side_effect_probe_results(tmp_path: Path):
 
 
 def test_agent4_html_report_includes_payment_closed_loop_operations(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent4-payment-run"
     run_dir.mkdir(parents=True)
@@ -347,7 +347,7 @@ def test_agent4_html_report_includes_payment_closed_loop_operations(tmp_path: Pa
 
 
 def test_agent4_html_report_scores_merged_cases_by_their_own_boundary(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent3-agent4-20260519-160000"
     merged_cases_path = tmp_path / "agent1" / "merged-cases.json"
@@ -478,7 +478,7 @@ def test_agent4_html_report_scores_merged_cases_by_their_own_boundary(tmp_path: 
 
 
 def test_agent4_html_report_does_not_hide_unexecuted_merged_cases(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent1-agent4-20260524-160000"
     merged_cases_path = tmp_path / "agent1" / "merged-cases.json"
@@ -537,7 +537,7 @@ def test_agent4_html_report_does_not_hide_unexecuted_merged_cases(tmp_path: Path
 
 
 def test_agent4_html_report_collects_playwright_test_result_screenshots(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent3-agent4-20260519-180000"
     shot_dir = run_dir / "agent4" / "tc-exec" / "test-results" / "01-path-001-SCN-001-PATH-001-chromium"
@@ -584,7 +584,7 @@ def test_agent4_html_report_collects_playwright_test_result_screenshots(tmp_path
 
 
 def test_agent4_html_report_collects_isolated_playwright_result_screenshots(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent3-agent4-20260519-180500"
     first_shot_dir = run_dir / "agent4" / "tc-exec" / "01-path-001" / "test-results" / "01-path-001-SCN-001-PATH-001-chromium"
@@ -622,7 +622,7 @@ def test_agent4_html_report_collects_isolated_playwright_result_screenshots(tmp_
 
 
 def test_agent4_html_report_keeps_artifact_links_relative_when_run_dir_is_relative(tmp_path: Path, monkeypatch):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     monkeypatch.chdir(tmp_path)
     run_dir = Path("runs/agent4-relative-run")
@@ -678,7 +678,7 @@ def test_agent4_html_report_keeps_artifact_links_relative_when_run_dir_is_relati
 
 
 def test_agent4_html_report_maps_business_screenshot_sidecar_to_target_node(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent3-agent4-20260519-181000"
     shot_dir = run_dir / "agent4" / "tc-exec" / "01-path-001" / "test-results" / "01-path-001-SCN-001-PATH-001-chromium"
@@ -754,7 +754,7 @@ def test_agent4_html_report_maps_business_screenshot_sidecar_to_target_node(tmp_
 
 
 def test_agent4_html_report_ignores_sidecar_target_outside_path_nodes(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent3-agent4-20260519-181050"
     shot_dir = run_dir / "agent4" / "tc-exec" / "01-path-001" / "test-results" / "01-path-001-SCN-001-PATH-001-chromium"
@@ -824,7 +824,7 @@ def test_agent4_html_report_ignores_sidecar_target_outside_path_nodes(tmp_path: 
 
 
 def test_agent4_html_report_backfills_matched_nodes_from_same_url_screenshot(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent3-agent4-20260519-181100"
     shot_dir = run_dir / "agent4" / "tc-exec" / "01-path-001" / "test-results" / "01-path-001-SCN-001-PATH-001-chromium"
@@ -903,7 +903,7 @@ def test_agent4_html_report_backfills_matched_nodes_from_same_url_screenshot(tmp
 
 
 def test_agent4_html_report_reuses_actual_page_screenshot_for_same_page_nodes(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent4-same-page-nodes"
     shot_dir = run_dir / "agent4" / "tc-exec" / "03-path-003" / "test-results" / "03-path-003-SCN-003-PATH-003-chromium"
@@ -979,7 +979,7 @@ def test_agent4_html_report_reuses_actual_page_screenshot_for_same_page_nodes(tm
 
 
 def test_agent4_html_report_hides_unobserved_static_health_notice_page(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent4-no-health-notice"
     run_dir.mkdir(parents=True)
@@ -1064,7 +1064,7 @@ def test_agent4_html_report_hides_unobserved_static_health_notice_page(tmp_path:
 
 
 def test_agent4_html_report_maps_policy_service_final_screenshot_to_result_page(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent4-service-final-result"
     shot_dir = run_dir / "agent4" / "tc-exec" / "03-path-003" / "test-results" / "03-path-003-SCN-003-PATH-003-chromium"
@@ -1152,7 +1152,7 @@ def test_agent4_html_report_maps_policy_service_final_screenshot_to_result_page(
 
 
 def test_agent4_html_report_does_not_use_payment_gateway_handoff_as_result_screenshot(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent4-gateway-handoff"
     shot_dir = run_dir / "agent4" / "tc-exec" / "01-path-001" / "test-results" / "01-path-001-SCN-001-PATH-001-chromium"
@@ -1216,7 +1216,7 @@ def test_agent4_html_report_does_not_use_payment_gateway_handoff_as_result_scree
 
 
 def test_agent4_html_report_does_not_backfill_result_from_payment_page(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent4-payment-page-result"
     shot_dir = run_dir / "agent4" / "tc-exec" / "01-path-001" / "test-results" / "01-path-001-SCN-001-PATH-001-chromium"
@@ -1281,7 +1281,7 @@ def test_agent4_html_report_does_not_backfill_result_from_payment_page(tmp_path:
 
 
 def test_agent4_html_report_infers_health_notice_from_insure_form_snapshot(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent3-agent4-20260519-170000"
     merged_cases_path = tmp_path / "agent1" / "merged-cases.json"
@@ -1334,7 +1334,7 @@ def test_agent4_html_report_infers_health_notice_from_insure_form_snapshot(tmp_p
 
 
 def test_agent4_html_report_passes_health_notice_when_node_progress_matched(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent3-agent4-20260520-161115"
     merged_cases_path = tmp_path / "agent1" / "merged-cases.json"
@@ -1392,7 +1392,7 @@ def test_agent4_html_report_passes_health_notice_when_node_progress_matched(tmp_
 
 
 def test_agent4_html_report_counts_order_generation_boundary_cases_as_passed(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent1-agent4-20260524-024249"
     merged_cases_path = tmp_path / "agent1" / "merged-cases.json"
@@ -1491,7 +1491,7 @@ def test_agent4_html_report_counts_order_generation_boundary_cases_as_passed(tmp
 
 
 def test_agent4_html_report_counts_policy_service_order_boundary_as_policy_passed(tmp_path: Path):
-    from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+    from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 
     run_dir = tmp_path / "runs" / "agent1-agent4-20260609-021338"
     merged_cases_path = tmp_path / "agent1" / "merged-cases.json"

@@ -19,8 +19,8 @@ import yaml
 from e2e_agent.contracts import ContractRegistry
 from e2e_agent.core.healing_apply import apply_healing_event
 from e2e_agent.domains import DomainPackLoader
-from e2e_agent.graph.gates import get_gate_checkpoint_path
-from e2e_agent.graph.graph import build_graph
+from e2e_agent.legacy.graph.gates import get_gate_checkpoint_path
+from e2e_agent.legacy.graph.graph import build_graph
 from e2e_agent.workflow import WorkflowCompiler, load_workflow
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]

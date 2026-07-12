@@ -17,11 +17,11 @@ SRC_ROOT = ROOT_DIR / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
-from e2e_agent.agents.agent1_tc_merge.node import tc_merge_node
-from e2e_agent.agents.agent2_path_extract.node import path_extract_node
-from e2e_agent.agents.agent3_explore.node import explore_node
-from e2e_agent.agents.agent4_exec.node import exec_healing_node
-from e2e_agent.agents.agent4_exec.report import generate_agent4_html_report
+from e2e_agent.legacy.agents.agent1_tc_merge.node import tc_merge_node
+from e2e_agent.legacy.agents.agent2_path_extract.node import path_extract_node
+from e2e_agent.legacy.agents.agent3_explore.node import explore_node
+from e2e_agent.legacy.agents.agent4_exec.node import exec_healing_node
+from e2e_agent.legacy.agents.agent4_exec.report import generate_agent4_html_report
 from e2e_agent.artifacts.paths import product_artifact_dir
 from e2e_agent.core.page_exploration import _resolve_id_card_image_paths
 from e2e_agent.core.policy_info_generator import generate_policy_mock_data

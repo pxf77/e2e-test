@@ -1,4 +1,4 @@
-.PHONY: install install-uv test validate-repository validate-docs validate-dependencies validate-tests validate-schemas validate-domains validate-workflows validate-runners validate-plugins boundary-check ci-check acceptance package-smoke clean
+.PHONY: install install-uv test validate-repository validate-docs validate-dependencies validate-tests validate-schemas validate-legacy validate-domains validate-workflows validate-runners validate-plugins boundary-check ci-check acceptance package-smoke clean
 
 PYTHON ?= python
 
@@ -26,6 +26,9 @@ validate-tests:
 validate-schemas:
 	$(PYTHON) tools/validate_schemas.py
 
+validate-legacy:
+	$(PYTHON) tools/validate_legacy.py
+
 validate-domains:
 	$(PYTHON) tools/validate_domains.py
 
@@ -46,6 +49,7 @@ ci-check:
 	$(PYTHON) tools/validate_docs.py
 	$(PYTHON) tools/validate_dependencies.py
 	$(PYTHON) tools/validate_tests.py
+	$(PYTHON) tools/validate_legacy.py
 	$(PYTHON) tools/ci_rule_check.py
 	$(PYTHON) tools/check_domain_boundaries.py
 
@@ -63,8 +67,8 @@ install-playwright:
 	$(PYTHON) -m playwright install chromium
 
 smoke:
-	$(PYTHON) -c "from e2e_agent.graph.graph import build_graph; g = build_graph(':memory:'); print('graph OK')"
-	$(PYTHON) -c "from e2e_agent.skills.loader import SkillPackageLoader; print('skills:', SkillPackageLoader().list_skills())"
+	$(PYTHON) -c "from e2e_agent.legacy.graph.graph import build_graph; g = build_graph(':memory:'); print('graph OK')"
+	$(PYTHON) -c "from e2e_agent.legacy.skills.loader import SkillPackageLoader; print('skills:', SkillPackageLoader().list_skills())"
 	$(PYTHON) -c "from e2e_agent.llm.wrapper import LLMWrapper; LLMWrapper(); print('llm wrapper OK')"
 	$(PYTHON) -c "from e2e_agent.domains import DomainPackLoader; print('domains:', DomainPackLoader().list_domain_ids())"
 

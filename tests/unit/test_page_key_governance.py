@@ -140,7 +140,7 @@ def test_page_key_cardinality_check_warns_above_threshold() -> None:
 
 
 def test_path_governance_ignores_control_nodes_for_route_warnings() -> None:
-    from e2e_agent.agents.path_extract_agent import _governance_for_path
+    from e2e_agent.legacy.agents.path_extract_agent import _governance_for_path
 
     warnings, page_keys, matched_patterns = _governance_for_path(
         [
@@ -158,7 +158,7 @@ def test_path_governance_ignores_control_nodes_for_route_warnings() -> None:
 
 
 def test_agent3_governance_maps_observed_adapt_and_auth_routes() -> None:
-    from e2e_agent.agents.agent3_explore.node import _annotate_page_registry_with_governance
+    from e2e_agent.legacy.agents.agent3_explore.node import _annotate_page_registry_with_governance
 
     page_registry = {
         "pages": [

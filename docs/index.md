@@ -4,6 +4,7 @@
 
 - [总体架构](architecture/overview.md)
 - [Contract Versioning](architecture/contracts.md)
+- [Legacy Runtime Isolation](architecture/legacy-isolation.md)
 - [Domain Pack](architecture/domain-packs.md)
 - [Workflow DSL 与 Runtime](architecture/workflow-runtime.md)
 

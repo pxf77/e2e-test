@@ -14,7 +14,7 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from e2e_agent.graph.graph import build_graph  # noqa: E402
+from e2e_agent.legacy.graph.graph import build_graph  # noqa: E402
 from e2e_agent.workflow import WorkflowRuntime  # noqa: E402
 
 STATIC_COMMANDS = [
@@ -23,6 +23,7 @@ STATIC_COMMANDS = [
     [sys.executable, "tools/validate_dependencies.py"],
     [sys.executable, "tools/validate_tests.py"],
     [sys.executable, "tools/validate_schemas.py"],
+    [sys.executable, "tools/validate_legacy.py"],
     [sys.executable, "tools/validate_domains.py"],
     [sys.executable, "tools/validate_workflows.py"],
     [sys.executable, "tools/validate_runners.py"],

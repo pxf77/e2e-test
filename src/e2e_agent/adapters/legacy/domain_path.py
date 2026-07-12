@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from copy import deepcopy
 from typing import Any, AsyncIterator
 
-from e2e_agent.agents.agent2_path_extract import node as agent2_node
+from e2e_agent.legacy.agents.agent2_path_extract import node as agent2_node
 from e2e_agent.core.domain_path_planner import legacy_page_specs, legacy_type_guesses
 
 
