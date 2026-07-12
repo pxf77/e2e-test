@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Changed
+
+- Legacy four-Agent and Skill Package contracts are physically isolated under `schemas/v1/`; current framework contracts remain under `schemas/v2/`.
+- Contract `$id` values identify their versioned repository path, and CI rejects unversioned root schemas.
+
+### Breaking
+
+- Filesystem consumers of legacy contracts must use `schemas/v1/<contract>.schema.json` instead of `schemas/<contract>.schema.json`.
+
 ## 1.1.0 - 2026-07-12
 
 ### Changed

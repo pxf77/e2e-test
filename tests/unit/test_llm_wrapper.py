@@ -52,7 +52,7 @@ def test_routes_use_gpt55_high_and_gemini31_fallback(wrapper: LLMWrapper, route_
 
 def test_model_routing_config_matches_schema():
     config = yaml.safe_load(CONFIG_PATH.read_text(encoding="utf-8"))
-    schema = yaml.safe_load((CONFIG_PATH.parent.parent / "schemas" / "model-routing.schema.json").read_text(encoding="utf-8"))
+    schema = yaml.safe_load((CONFIG_PATH.parent.parent / "schemas" / "v1" / "model-routing.schema.json").read_text(encoding="utf-8"))
     errors = sorted(Draft7Validator(schema).iter_errors(config), key=lambda err: err.path)
 
     assert errors == []

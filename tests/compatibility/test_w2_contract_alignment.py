@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def _schema(name: str) -> dict:
-    return json.loads((ROOT / "schemas" / name).read_text(encoding="utf-8"))
+    return json.loads((ROOT / "schemas" / "v1" / name).read_text(encoding="utf-8"))
 
 
 def test_settings_default_paths_resolve_repo_config():

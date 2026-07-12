@@ -1,0 +1,165 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pxf77.github.io/e2e-test/schemas/v1/page-registry.schema.json",
+  "title": "PageRegistry",
+  "description": "explore_agent 产出 — Agent3 真实探索页面注册表与路径契约",
+  "type": "object",
+  "required": ["pages"],
+  "additionalProperties": true,
+  "properties": {
+    "product": { "type": "string" },
+    "product_id": { "type": "string" },
+    "entry_url": { "type": "string" },
+    "pages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [],
+        "additionalProperties": true,
+        "properties": {
+          "page_id": { "type": "string" },
+          "page_key": { "type": "string" },
+          "page_name": { "type": "string" },
+          "function_file": { "type": "string" },
+          "url": { "type": "string" },
+          "url_pattern": { "type": "string" },
+          "title": { "type": "string" },
+          "dom_signature": { "type": "string" },
+          "body_text_excerpt": { "type": "string" },
+          "field_count": { "type": "integer", "minimum": 0 },
+          "action_count": { "type": "integer", "minimum": 0 },
+          "params": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "type"],
+              "properties": {
+                "name": { "type": "string" },
+                "type": { "type": "string" }
+              }
+            }
+          },
+          "requirements": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "navigation": {
+            "type": "object",
+            "properties": {
+              "from": { "type": "array", "items": { "type": "string" } },
+              "to": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "planned_page_catalog": {
+      "type": "array",
+      "description": "Agent2 规划页去重目录",
+      "items": { "type": "object", "additionalProperties": true }
+    },
+    "page_content_records": {
+      "type": "array",
+      "description": "真实 DOM 采集记录，供 page function 编译和 R3 审核",
+      "items": {
+        "type": "object",
+        "required": ["page_content_record_id"],
+        "additionalProperties": true,
+        "properties": {
+          "page_content_record_id": { "type": "string" },
+          "actual_url": { "type": ["string", "null"] },
+          "actual_page_key": { "type": ["string", "null"] },
+          "title": { "type": ["string", "null"] },
+          "dom_signature": { "type": ["string", "null"] },
+          "body_text_excerpt": { "type": ["string", "null"] },
+          "field_count": { "type": "integer", "minimum": 0 },
+          "action_count": { "type": "integer", "minimum": 0 },
+          "field_map": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+          "selector_map": { "type": "object", "additionalProperties": true },
+          "matched_planned_page_ids": { "type": "array", "items": { "type": "string" } },
+          "matched_node_ids": { "type": "array", "items": { "type": "string" } },
+          "source_path_ids": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "path_exploration_results": {
+      "type": "array",
+      "description": "逐路径探索结果，区分 explored / partial / blocked",
+      "items": {
+        "type": "object",
+        "required": ["path_id", "path_status", "target_node", "node_progress", "completion_rule"],
+        "additionalProperties": true,
+        "properties": {
+          "path_id": { "type": "string" },
+          "path_status": { "type": "string", "enum": ["explored", "partial", "blocked"] },
+          "target_node": { "type": ["string", "null"] },
+          "reached_node": { "type": ["string", "null"] },
+          "blocked_node": { "type": ["string", "null"] },
+          "blocked_reason": { "type": ["string", "null"] },
+          "terminal_boundary": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "source": { "type": "string" },
+              "boundary_node": { "type": ["string", "null"] },
+              "target_node": { "type": ["string", "null"] },
+              "classification": { "type": "string" },
+              "path_status": { "type": ["string", "null"] },
+              "blocked_reason": { "type": ["string", "null"] }
+            }
+          },
+          "resume_condition": { "type": ["string", "null"] },
+          "evidence_source": { "type": ["string", "null"] },
+          "node_progress": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["node_id", "status"],
+              "additionalProperties": true,
+              "properties": {
+                "node_id": { "type": "string" },
+                "status": { "type": "string", "enum": ["matched", "pending", "blocked", "skipped"] }
+              }
+            }
+          },
+          "completion_rule": {
+            "type": "object",
+            "required": ["required_nodes", "matched_nodes", "missing_nodes", "is_complete"],
+            "additionalProperties": true,
+            "properties": {
+              "target_node": { "type": ["string", "null"] },
+              "required_nodes": { "type": "array", "items": { "type": "string" } },
+              "matched_nodes": { "type": "array", "items": { "type": "string" } },
+              "missing_nodes": { "type": "array", "items": { "type": "string" } },
+              "is_complete": { "type": "boolean" }
+            }
+          },
+          "node_execution_trace": { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+        }
+      }
+    },
+    "exploration_contract": {
+      "type": "object",
+      "description": "Agent3 -> Agent4 路径级阻断契约",
+      "additionalProperties": true,
+      "properties": {
+        "version": { "type": "string" },
+        "policy": { "type": "string" },
+        "retry_limit": { "type": "integer", "minimum": 0 },
+        "phase1_contract": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "exploration_mode": { "type": "string" },
+            "leaf_contract_mode": { "type": "string" },
+            "reuse_policy": { "type": "string" },
+            "boundary_policy": { "type": "string" },
+            "evidence_policy": { "type": "string" }
+          }
+        },
+        "completed_paths": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+        "blocked_paths": { "type": "array", "items": { "type": "object", "additionalProperties": true } }
+      }
+    }
+  }
+}

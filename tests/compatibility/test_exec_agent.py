@@ -3446,7 +3446,7 @@ async def test_exec_healing_node_writes_schema_valid_test_report_artifacts(tmp_p
     )
 
     schema = json.loads(
-        (Path(__file__).resolve().parents[2] / "schemas" / "test-report.schema.json").read_text(encoding="utf-8")
+        (Path(__file__).resolve().parents[2] / "schemas" / "v1" / "test-report.schema.json").read_text(encoding="utf-8")
     )
     for filename in ("test-report.json", "reports.json"):
         artifact = json.loads((tmp_path / "products" / "demo-product" / "agent4" / filename).read_text(encoding="utf-8"))

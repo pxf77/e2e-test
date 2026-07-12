@@ -114,7 +114,7 @@ def test_healing_events_schema_accepts_applied_audit_fields(tmp_path: Path) -> N
     from jsonschema import Draft7Validator
 
     schema = json.loads(
-        (Path(__file__).resolve().parents[2] / "schemas" / "healing-events.schema.json").read_text(
+        (Path(__file__).resolve().parents[2] / "schemas" / "v1" / "healing-events.schema.json").read_text(
             encoding="utf-8"
         )
     )

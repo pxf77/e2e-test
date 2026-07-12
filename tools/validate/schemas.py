@@ -1,4 +1,4 @@
-"""Validate all JSON Schema files under schemas/ recursively."""
+"""Validate versioned JSON Schema files under ``schemas/v1`` and ``schemas/v2``."""
 from __future__ import annotations
 
 import json
@@ -14,6 +14,23 @@ except ModuleNotFoundError:  # pragma: no cover
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMAS_DIR = ROOT / "schemas"
+VERSIONS = ("v1", "v2")
+
+
+def validate_layout(root: Path = ROOT) -> list[str]:
+    schemas = root / "schemas"
+    errors: list[str] = []
+    root_contracts = sorted(path.name for path in schemas.glob("*.schema.json"))
+    if root_contracts:
+        errors.append(f"unversioned root schemas remain: {root_contracts}")
+    for version in VERSIONS:
+        directory = schemas / version
+        if not directory.exists():
+            errors.append(f"missing schema version directory: schemas/{version}")
+            continue
+        if not list(directory.glob("*.schema.json")):
+            errors.append(f"schema version directory is empty: schemas/{version}")
+    return errors
 
 
 def validate_schema_file(path: Path) -> list[str]:
@@ -37,6 +54,12 @@ def validate_schema_file(path: Path) -> list[str]:
     ):
         if field not in schema:
             errors.append(message)
+
+    schema_id = str(schema.get("$id") or "")
+    relative = path.relative_to(SCHEMAS_DIR).as_posix()
+    version = relative.split("/", 1)[0]
+    if version in VERSIONS and f"/schemas/{version}/" not in schema_id:
+        errors.append(f"$id does not identify schemas/{version}: {schema_id}")
     return errors
 
 
@@ -48,14 +71,15 @@ def main() -> int:
     if not SCHEMAS_DIR.exists():
         print(f"ERROR: schemas/ directory not found at {SCHEMAS_DIR}", file=sys.stderr)
         return 1
+    layout_errors = validate_layout()
+    if layout_errors:
+        for error in layout_errors:
+            print(f"FAIL: {error}", file=sys.stderr)
+        return 1
     if Draft7Validator is None:
         print("WARN: jsonschema is not installed; running JSON syntax + metadata checks only.")
 
     schema_files = iter_schema_files()
-    if not schema_files:
-        print("ERROR: No *.schema.json files found under schemas/", file=sys.stderr)
-        return 1
-
     passed = 0
     failed = 0
     for path in schema_files:
