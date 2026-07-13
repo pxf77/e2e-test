@@ -11,19 +11,19 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 TOOL_MODULE_REPLACEMENTS = {
-    "python tools/validate_repository.py": "python -m tools.validate.repository",
-    "python tools/validate_docs.py": "python -m tools.validate.docs",
-    "python tools/validate_dependencies.py": "python -m tools.validate.dependencies",
-    "python tools/validate_tests.py": "python -m tools.validate.tests",
-    "python tools/validate_schemas.py": "python -m tools.validate.schemas",
-    "python tools/validate_legacy.py": "python -m tools.validate.legacy",
-    "python tools/validate_domains.py": "python -m tools.validate.domains",
-    "python tools/validate_workflows.py": "python -m tools.validate.workflows",
-    "python tools/validate_runners.py": "python -m tools.validate.runners",
-    "python tools/validate_plugins.py": "python -m tools.validate.plugins",
-    "python tools/ci_rule_check.py": "python -m tools.validate.rules",
-    "python tools/check_domain_boundaries.py": "python -m tools.validate.boundaries",
-    "python tools/acceptance_matrix.py": "python -m tools.acceptance",
+    "python -m tools.validate.repository": "python -m tools.validate.repository",
+    "python -m tools.validate.docs": "python -m tools.validate.docs",
+    "python -m tools.validate.dependencies": "python -m tools.validate.dependencies",
+    "python -m tools.validate.tests": "python -m tools.validate.tests",
+    "python -m tools.validate.schemas": "python -m tools.validate.schemas",
+    "python -m tools.validate.legacy": "python -m tools.validate.legacy",
+    "python -m tools.validate.domains": "python -m tools.validate.domains",
+    "python -m tools.validate.workflows": "python -m tools.validate.workflows",
+    "python -m tools.validate.runners": "python -m tools.validate.runners",
+    "python -m tools.validate.plugins": "python -m tools.validate.plugins",
+    "python -m tools.validate.rules": "python -m tools.validate.rules",
+    "python -m tools.validate.boundaries": "python -m tools.validate.boundaries",
+    "python -m tools.acceptance": "python -m tools.acceptance",
 }
 
 ROOT_TOOL_WRAPPERS = (
@@ -330,15 +330,15 @@ def update_text_references() -> None:
                 new.replace("python", "$(PYTHON)", 1),
             )
         updated = updated.replace(
-            "python tools/model_acceptance_harness.py",
+            "python -m tools.diagnostics.model_acceptance",
             "python -m tools.diagnostics.model_acceptance",
         )
         updated = updated.replace(
-            "python tools/playwright_compat_check.py",
+            "python -m tools.diagnostics.playwright_compat",
             "python -m tools.diagnostics.playwright_compat",
         )
         updated = updated.replace(
-            "python tools/run_full_workflow.py",
+            "python -m tools.legacy.run_full_workflow",
             "python -m tools.legacy.run_full_workflow",
         )
         if updated != text:

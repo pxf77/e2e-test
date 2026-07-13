@@ -32,7 +32,7 @@ e2e-agent gate reject <run-id> [--gate r1] --operator qa --note revise
 e2e-agent gate resume <run-id>
 ```
 
-CLI 根据 checkpoint 自动识别 v1/v2。`gate-v2` 在 1.x 中是弃用别名。
+CLI 根据 checkpoint 自动识别 v1/v2。`gate-v2` 已在 2.0 删除。
 
 ## Inspection
 

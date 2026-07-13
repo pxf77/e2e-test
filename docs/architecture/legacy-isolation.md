@@ -50,9 +50,9 @@ The former top-level Agent, Browser, Graph and Skill packages no longer exist; t
 ## Validation
 
 ```bash
-python tools/validate_legacy.py
+python -m tools.validate.legacy
 python -m pytest tests/compatibility -q
-python tools/acceptance_matrix.py
+python -m tools.acceptance
 ```
 
 CI rejects former top-level import and filesystem paths outside the validator's own pattern definitions.

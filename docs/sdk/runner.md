@@ -62,4 +62,4 @@ Mobile Runner 通过 `mobile_fixtures.command` 调用现有原生测试项目。
 3. 注册到 `build_default_node_registry`。
 4. 新增 `runners/<id>.yaml`。
 5. 增加 execution-result 与失败分类测试。
-6. 运行 `python tools/validate_runners.py`。
+6. 运行 `python -m tools.validate.runners`。

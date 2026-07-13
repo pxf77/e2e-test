@@ -51,12 +51,12 @@ e2e-agent gate reject <run-id> --operator qa --note revise
 e2e-agent gate resume <run-id>
 ```
 
-Runtime 会根据 checkpoint 自动识别 v1/v2；`gate-v2` 只作为 1.x 弃用别名保留。
+Runtime 会根据 checkpoint 自动识别 v1/v2；`gate-v2` 已在 2.0 删除。
 
 ## 校验
 
 ```bash
-python tools/validate_workflows.py
+python -m tools.validate.workflows
 e2e-agent workflows --json
 e2e-agent validate workflow workflows/p0-web-regression.yaml
 ```

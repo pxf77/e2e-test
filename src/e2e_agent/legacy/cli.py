@@ -23,7 +23,7 @@ from e2e_agent.legacy.graph.gates import get_gate_checkpoint_path
 from e2e_agent.legacy.graph.graph import build_graph
 from e2e_agent.workflow import WorkflowCompiler, load_workflow
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
+_REPO_ROOT = Path(__file__).resolve().parents[3]
 _MODEL_KEY_ENV_NAMES = ("OPENAI_API_KEY", "GEMINI_API_KEY", "DEEPSEEK_API_KEY")
 
 
@@ -312,7 +312,8 @@ def run_full_workflow(product_input: Path, extra_env: dict[str, str] | None = No
         env.update(extra_env)
     command = [
         sys.executable,
-        str(_REPO_ROOT / "tools" / "run_full_workflow.py"),
+        "-m",
+        "tools.legacy.run_full_workflow",
         "--product-input",
         str(resolved_input),
     ]

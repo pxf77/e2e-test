@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from e2e_agent.cli import main
+from e2e_agent.commands.main import main
 
 
 def test_cli_lists_domains(capsys) -> None:  # type: ignore[no-untyped-def]

@@ -9,6 +9,26 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 PACKAGE = ROOT / "src" / "e2e_agent"
 LEGACY_PACKAGES = ("agents", "browser", "graph", "skills")
+LEGACY_CLI = PACKAGE / "legacy" / "cli.py"
+REMOVED_CLI_PATHS = (PACKAGE / "cli.py", PACKAGE / "cli_entry.py")
+REMOVED_TOOL_WRAPPERS = (
+    "acceptance_matrix.py",
+    "check_domain_boundaries.py",
+    "ci_rule_check.py",
+    "model_acceptance_harness.py",
+    "playwright_compat_check.py",
+    "run_full_workflow.py",
+    "validate_dependencies.py",
+    "validate_docs.py",
+    "validate_domains.py",
+    "validate_legacy.py",
+    "validate_plugins.py",
+    "validate_repository.py",
+    "validate_runners.py",
+    "validate_schemas.py",
+    "validate_tests.py",
+    "validate_workflows.py",
+)
 STALE_PATTERNS = tuple(
     re.compile(pattern)
     for pattern in (
@@ -28,6 +48,17 @@ TEXT_SUFFIXES = {".py", ".md", ".yaml", ".yml", ".json", ".toml", ".ts", ".js", 
 def validate(root: Path = ROOT) -> list[str]:
     package = root / "src" / "e2e_agent"
     errors: list[str] = []
+    for path in REMOVED_CLI_PATHS:
+        candidate = root / path.relative_to(ROOT)
+        if candidate.exists():
+            errors.append(f"removed CLI wrapper still exists: {candidate.relative_to(root)}")
+    legacy_cli = root / LEGACY_CLI.relative_to(ROOT)
+    if not legacy_cli.exists():
+        errors.append(f"missing legacy CLI implementation: {legacy_cli.relative_to(root)}")
+    for name in REMOVED_TOOL_WRAPPERS:
+        wrapper = root / "tools" / name
+        if wrapper.exists():
+            errors.append(f"removed root tool wrapper still exists: {wrapper.relative_to(root)}")
     for name in LEGACY_PACKAGES:
         old = package / name
         current = package / "legacy" / name
@@ -62,6 +93,7 @@ def import_smoke() -> list[str]:
         "e2e_agent.legacy.browser.runner",
         "e2e_agent.legacy.graph.graph",
         "e2e_agent.legacy.skills.loader",
+        "e2e_agent.legacy.cli",
     ]
     failures: list[str] = []
     for name in modules:
@@ -78,7 +110,7 @@ def main() -> int:
         for error in errors:
             print(f"FAIL: {error}", file=sys.stderr)
         return 1
-    print("PASS: legacy agents, browser, graph and skills are isolated under e2e_agent.legacy.")
+    print("PASS: legacy runtime and CLI are isolated; 1.x root wrappers are absent.")
     return 0
 
 

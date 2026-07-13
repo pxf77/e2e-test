@@ -17,19 +17,19 @@ if str(SRC) not in sys.path:
 from e2e_agent.legacy.graph.graph import build_graph  # noqa: E402
 from e2e_agent.workflow import WorkflowRuntime  # noqa: E402
 
-STATIC_COMMANDS = [
-    [sys.executable, "tools/validate_repository.py"],
-    [sys.executable, "tools/validate_docs.py"],
-    [sys.executable, "tools/validate_dependencies.py"],
-    [sys.executable, "tools/validate_tests.py"],
-    [sys.executable, "tools/validate_schemas.py"],
-    [sys.executable, "tools/validate_legacy.py"],
-    [sys.executable, "tools/validate_domains.py"],
-    [sys.executable, "tools/validate_workflows.py"],
-    [sys.executable, "tools/validate_runners.py"],
-    [sys.executable, "tools/validate_plugins.py"],
-    [sys.executable, "tools/ci_rule_check.py"],
-    [sys.executable, "tools/check_domain_boundaries.py"],
+STATIC_MODULES = [
+    "tools.validate.repository",
+    "tools.validate.docs",
+    "tools.validate.dependencies",
+    "tools.validate.tests",
+    "tools.validate.schemas",
+    "tools.validate.legacy",
+    "tools.validate.domains",
+    "tools.validate.workflows",
+    "tools.validate.runners",
+    "tools.validate.plugins",
+    "tools.validate.rules",
+    "tools.validate.boundaries",
 ]
 APP_MATRIX = [
     ("generic-web", "apps/demo-generic-form/app.yaml"),
@@ -41,11 +41,12 @@ APP_MATRIX = [
 
 def _run_static_checks() -> list[dict[str, Any]]:
     results: list[dict[str, Any]] = []
-    for command in STATIC_COMMANDS:
+    for module in STATIC_MODULES:
+        command = [sys.executable, "-m", module]
         completed = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
         results.append(
             {
-                "name": Path(command[1]).stem,
+                "name": module.rsplit(".", 1)[-1],
                 "passed": completed.returncode == 0,
                 "returncode": completed.returncode,
                 "output": (completed.stdout + completed.stderr)[-1000:],

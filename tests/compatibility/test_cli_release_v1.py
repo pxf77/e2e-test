@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from e2e_agent.cli_entry import main
+from e2e_agent.commands.main import main
 
 
 def test_cli_lists_all_runner_manifests(capsys) -> None:  # type: ignore[no-untyped-def]
