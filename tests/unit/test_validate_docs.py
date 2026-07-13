@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from tools.validate_docs import local_target, validate
+from tools.validate.docs import local_target, validate
 
 
 def test_repository_documentation_links_are_valid() -> None:
