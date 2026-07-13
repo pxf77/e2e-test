@@ -81,7 +81,7 @@ def test_build_model_acceptance_report_records_route_and_cost() -> None:
 
 
 def test_model_acceptance_cli_writes_report(tmp_path: Path, capsys) -> None:
-    from tools import model_acceptance_harness
+    from tools.diagnostics import model_acceptance as model_acceptance_harness
 
     candidates_path = tmp_path / "candidates.json"
     candidates_path.write_text(
