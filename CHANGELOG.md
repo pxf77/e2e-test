@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.0 - 2026-07-13
 
 ### Changed
 
@@ -17,6 +17,12 @@
 - Removed `e2e_agent.cli` and `e2e_agent.cli_entry`; Python callers must use `e2e_agent.commands.main` or the explicit `e2e_agent.legacy.cli`.
 - Removed root-level tool wrappers such as `tools/validate_schemas.py` and `tools/acceptance_matrix.py`; use module commands such as `python -m tools.validate.schemas` and `python -m tools.acceptance`.
 - Removed the deprecated `e2e-agent gate-v2` alias; use `e2e-agent gate`.
+
+### Compatibility
+
+- `e2e-agent run --product-input` remains supported and dispatches explicitly into `e2e_agent.legacy.cli`.
+- Unified `e2e-agent gate` continues to detect and operate both Legacy and v2 checkpoints.
+- The insurance four-Agent runtime remains available beneath the explicit `e2e_agent.legacy` namespace.
 
 ## 1.1.0 - 2026-07-12
 

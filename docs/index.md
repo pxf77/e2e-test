@@ -28,5 +28,6 @@
 
 ## Releases
 
+- [2.0.0 — Legacy Isolation](releases/2.0.0.md)
 - [1.1.0 — Repository Simplification](releases/1.1.0.md)
 - [1.0.0](releases/1.0.0.md)
