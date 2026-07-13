@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from tools.validate_repository import find_violations
+from tools.validate.repository import find_violations
 
 
 def test_find_violations_rejects_generated_outputs() -> None:
