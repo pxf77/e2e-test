@@ -3,19 +3,35 @@ name: compat-inventory
 on:
   pull_request:
 
+permissions:
+  contents: write
+
 jobs:
   inventory:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          git ls-files 'tools/*.py' 'src/e2e_agent/cli.py' 'src/e2e_agent/cli_entry.py' 'tools/legacy/**' > compatibility-files.txt
-          git grep -n -E 'cli_entry|e2e_agent import cli|e2e_agent\.cli|gate-v2|tools/(validate_[^ /]+|acceptance_matrix|ci_rule_check|check_domain_boundaries|model_acceptance_harness|playwright_compat_check|run_full_workflow)\.py' -- '*.py' '*.md' '*.yaml' '*.yml' '*.toml' '*.ps1' > compatibility-references.txt || true
-          git archive --format=tar.gz -o source-snapshot.tar.gz HEAD
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Apply compatibility cleanup
+        run: python tools/migrate_remove_1x_wrappers_once.py
+      - name: Commit migration
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "refactor(compat): remove 1.x CLI and tool wrappers"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
+      - name: Build post-migration inventory
+        run: |
+          git ls-files 'tools/*.py' 'src/e2e_agent/cli.py' 'src/e2e_agent/cli_entry.py' 'src/e2e_agent/legacy/cli.py' 'tools/legacy/**' > compatibility-files.txt
+          git grep -n -E 'cli_entry|e2e_agent import cli|e2e_agent\.cli|tools/(validate_[^ /]+|acceptance_matrix|ci_rule_check|check_domain_boundaries|model_acceptance_harness|playwright_compat_check|run_full_workflow)\.py' -- '*.py' '*.md' '*.yaml' '*.yml' '*.toml' '*.ps1' > stale-references.txt || true
       - uses: actions/upload-artifact@v4
         with:
           name: compat-inventory
           path: |
             compatibility-files.txt
-            compatibility-references.txt
-            source-snapshot.tar.gz
+            stale-references.txt
