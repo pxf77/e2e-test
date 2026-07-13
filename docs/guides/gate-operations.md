@@ -16,7 +16,7 @@ e2e-agent gate reject <run-id> --operator qa --note "revise paths"
 e2e-agent gate resume <run-id>
 ```
 
-`gate-v2` 在 1.x 中仍可用，但只作为弃用别名。
+`gate-v2` 已在 2.0 删除，统一使用 `e2e-agent gate`。
 
 驳回时 Runtime 从 Workflow DSL 中查找 `on: rejected` 的目标节点并重新执行。修订完成后 Gate 会重新进入 `pending`，不会复用上次驳回状态形成死循环。
 

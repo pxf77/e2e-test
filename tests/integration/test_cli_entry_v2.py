@@ -4,7 +4,7 @@ import json
 import shutil
 from pathlib import Path
 
-from e2e_agent.cli_entry import main
+from e2e_agent.commands.main import main
 
 ROOT = Path(__file__).resolve().parents[2]
 

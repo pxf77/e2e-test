@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from e2e_agent import cli as legacy_cli
+from e2e_agent.legacy import cli as legacy_cli
 from e2e_agent.data import DataProviderRegistry
 from e2e_agent.plugins import PluginManager
 from e2e_agent.workflow import WorkflowRuntime
@@ -22,7 +22,6 @@ _ROOT_HELP = """usage: e2e-agent <command> [options]
 Commands:
   run               Run an App Pack workflow or legacy product-input workflow
   gate              Inspect, decide, or resume v1/v2 gates
-  gate-v2           Deprecated alias for `gate`
   doctor            Inspect local environment
   domains            List Domain Packs
   workflows          List Workflow definitions
@@ -238,9 +237,9 @@ def _v1_gate(args: argparse.Namespace) -> int:
     return 0
 
 
-def gate(argv: list[str], *, force_v2: bool = False) -> int:
+def gate(argv: list[str]) -> int:
     args = _build_gate_parser().parse_args(argv)
-    use_v2 = force_v2 or _is_v2_checkpoint(args.run_id, args.checkpoint_dir)
+    use_v2 = _is_v2_checkpoint(args.run_id, args.checkpoint_dir)
     return _v2_gate(args) if use_v2 else _v1_gate(args)
 
 
@@ -377,7 +376,7 @@ process.stdin.on("end", () => {
 
 def acceptance() -> int:
     completed = subprocess.run(
-        [sys.executable, str(_REPO_ROOT / "tools" / "acceptance_matrix.py")],
+        [sys.executable, "-m", "tools.acceptance"],
         cwd=_REPO_ROOT,
         check=False,
     )
@@ -394,9 +393,6 @@ def main(argv: list[str] | None = None) -> int:
             return run_v2(actual[1:])
         if actual[0] == "gate":
             return gate(actual[1:])
-        if actual[0] == "gate-v2":
-            print("Deprecated: use `e2e-agent gate ...`", file=sys.stderr)
-            return gate(actual[1:], force_v2=True)
         if actual[0] == "plugins":
             return list_plugins(actual[1:])
         if actual[0] == "data-providers":

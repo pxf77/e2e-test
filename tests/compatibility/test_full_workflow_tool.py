@@ -5,7 +5,7 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 
 
 def test_full_workflow_tool_replaces_demo_runner() -> None:
-    full_runner = ROOT_DIR / "tools" / "run_full_workflow.py"
+    full_runner = ROOT_DIR / "tools" / "legacy" / "run_full_workflow.py"
     demo_runner = ROOT_DIR / "tools" / "run_demo_workflow.py"
 
     assert full_runner.exists()
@@ -25,7 +25,7 @@ def test_full_workflow_tool_replaces_demo_runner() -> None:
 
 
 def test_prepare_agent4_scenarios_filters_only_completed_paths() -> None:
-    from tools.run_full_workflow import prepare_agent4_scenarios
+    from tools.legacy.run_full_workflow import prepare_agent4_scenarios
 
     state = {
         "merged_cases": [
@@ -68,7 +68,7 @@ def test_prepare_agent4_scenarios_filters_only_completed_paths() -> None:
 
 
 def test_prepare_agent4_scenarios_flags_blocked_required_cases() -> None:
-    from tools.run_full_workflow import prepare_agent4_scenarios
+    from tools.legacy.run_full_workflow import prepare_agent4_scenarios
 
     state = {
         "scenarios": [
@@ -95,7 +95,7 @@ def test_prepare_agent4_scenarios_flags_blocked_required_cases() -> None:
 
 
 def test_make_blocked_agent4_result_builds_quarantine_report() -> None:
-    from tools.run_full_workflow import make_blocked_agent4_result
+    from tools.legacy.run_full_workflow import make_blocked_agent4_result
 
     result = make_blocked_agent4_result(
         [
@@ -117,7 +117,7 @@ def test_make_blocked_agent4_result_builds_quarantine_report() -> None:
 
 
 def test_required_agent4_case_ids_defaults_to_p0_cases() -> None:
-    from tools.run_full_workflow import required_agent4_case_ids
+    from tools.legacy.run_full_workflow import required_agent4_case_ids
 
     state = {
         "merged_cases": [
@@ -130,7 +130,7 @@ def test_required_agent4_case_ids_defaults_to_p0_cases() -> None:
 
 
 def test_materialise_id_card_preview_assets_copies_front_and_back(monkeypatch, tmp_path) -> None:
-    import tools.run_full_workflow as runner
+    import tools.legacy.run_full_workflow as runner
 
     source_dir = tmp_path / "source"
     source_dir.mkdir()
@@ -150,7 +150,7 @@ def test_materialise_id_card_preview_assets_copies_front_and_back(monkeypatch, t
 
 
 def test_materialise_id_card_preview_assets_reuses_single_source_for_back(monkeypatch, tmp_path) -> None:
-    import tools.run_full_workflow as runner
+    import tools.legacy.run_full_workflow as runner
 
     source = tmp_path / "source.jpg"
     source.write_bytes(b"single-image")
@@ -166,7 +166,7 @@ def test_materialise_id_card_preview_assets_reuses_single_source_for_back(monkey
 
 
 def test_materialise_agent_outputs_writes_quarantine_report(tmp_path) -> None:
-    from tools.run_full_workflow import materialise_agent_outputs
+    from tools.legacy.run_full_workflow import materialise_agent_outputs
 
     product_dir = tmp_path / "product"
     materialise_agent_outputs(
@@ -185,7 +185,7 @@ def test_materialise_agent_outputs_writes_quarantine_report(tmp_path) -> None:
 
 
 def test_materialise_agent_outputs_skips_missing_quarantine_report(tmp_path) -> None:
-    from tools.run_full_workflow import materialise_agent_outputs
+    from tools.legacy.run_full_workflow import materialise_agent_outputs
 
     product_dir = tmp_path / "product"
     materialise_agent_outputs(product_dir, {})
@@ -194,7 +194,7 @@ def test_materialise_agent_outputs_skips_missing_quarantine_report(tmp_path) -> 
 
 
 def test_build_summary_includes_quarantine_counts(tmp_path) -> None:
-    from tools.run_full_workflow import build_summary
+    from tools.legacy.run_full_workflow import build_summary
 
     summary = build_summary(
         run_id="run-001",
@@ -233,7 +233,7 @@ def test_build_summary_includes_quarantine_counts(tmp_path) -> None:
 
 
 def test_read_json_accepts_utf8_bom(tmp_path) -> None:
-    from tools.run_full_workflow import read_json
+    from tools.legacy.run_full_workflow import read_json
 
     path = tmp_path / "product-input.json"
     path.write_bytes(b"\xef\xbb\xbf{\"product_id\":\"demo-product\"}")
@@ -242,7 +242,7 @@ def test_read_json_accepts_utf8_bom(tmp_path) -> None:
 
 
 def test_product_config_from_input_does_not_force_live_agent3_mode() -> None:
-    from tools.run_full_workflow import product_config_from_input
+    from tools.legacy.run_full_workflow import product_config_from_input
 
     assert product_config_from_input({"product_id": "demo-product"}) == {}
     assert product_config_from_input(
@@ -268,7 +268,7 @@ def test_product_config_from_input_does_not_force_live_agent3_mode() -> None:
 
 
 def test_read_source_product_config_accepts_utf8_bom(tmp_path) -> None:
-    from tools.run_full_workflow import read_source_product_config
+    from tools.legacy.run_full_workflow import read_source_product_config
 
     config_path = tmp_path / "automation" / "product.config.json"
     config_path.parent.mkdir(parents=True)
@@ -278,7 +278,7 @@ def test_read_source_product_config_accepts_utf8_bom(tmp_path) -> None:
 
 
 def test_resolve_product_dirs_splits_source_and_sibling_assets(tmp_path, monkeypatch) -> None:
-    import tools.run_full_workflow as runner
+    import tools.legacy.run_full_workflow as runner
 
     monkeypatch.setattr(runner, "ROOT_DIR", tmp_path)
 
@@ -294,7 +294,7 @@ def test_resolve_product_dirs_splits_source_and_sibling_assets(tmp_path, monkeyp
 
 
 def test_resolve_product_dirs_preserves_legacy_assets_input(tmp_path, monkeypatch) -> None:
-    import tools.run_full_workflow as runner
+    import tools.legacy.run_full_workflow as runner
 
     monkeypatch.setattr(runner, "ROOT_DIR", tmp_path)
 
@@ -310,7 +310,7 @@ def test_resolve_product_dirs_preserves_legacy_assets_input(tmp_path, monkeypatc
 
 
 def test_full_workflow_report_is_rendered_with_final_blocked_paths() -> None:
-    full_runner = ROOT_DIR / "tools" / "run_full_workflow.py"
+    full_runner = ROOT_DIR / "tools" / "legacy" / "run_full_workflow.py"
     source = full_runner.read_text(encoding="utf-8")
 
     assert 'agent4_result.get("html_report") or' not in source

@@ -47,5 +47,5 @@ The file name is the logical contract name. The directory is the contract major 
 ## Validation
 
 ```bash
-python tools/validate_schemas.py
+python -m tools.validate.schemas
 ```

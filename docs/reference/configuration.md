@@ -45,7 +45,7 @@ defaults < domain < app < environment < runtime overrides
 ## 校验
 
 ```bash
-python tools/validate_domains.py
-python tools/check_domain_boundaries.py
+python -m tools.validate.domains
+python -m tools.validate.boundaries
 python -m pytest tests/test_config_single_source.py -q
 ```

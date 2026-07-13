@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from e2e_agent.cli_entry import main
+from e2e_agent.commands.main import main
 
 
 def _write_checkpoint(root: Path) -> None:
@@ -30,7 +30,7 @@ def _write_checkpoint(root: Path) -> None:
 def test_gate_v2_status_and_approve(tmp_path: Path, capsys) -> None:  # type: ignore[no-untyped-def]
     _write_checkpoint(tmp_path)
 
-    assert main(["gate-v2", "status", "cli-gate-run", "--checkpoint-dir", str(tmp_path)]) == 0
+    assert main(["gate", "status", "cli-gate-run", "--checkpoint-dir", str(tmp_path)]) == 0
     status = json.loads(capsys.readouterr().out)
     assert status["pending_gate"] == "review"
     assert status["gate"]["status"] == "pending"
@@ -38,7 +38,7 @@ def test_gate_v2_status_and_approve(tmp_path: Path, capsys) -> None:  # type: ig
     assert (
         main(
             [
-                "gate-v2",
+                "gate",
                 "approve",
                 "cli-gate-run",
                 "--checkpoint-dir",

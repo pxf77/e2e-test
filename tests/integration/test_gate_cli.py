@@ -5,7 +5,7 @@ import os
 import subprocess
 from pathlib import Path
 
-import e2e_agent.cli as cli_module
+import e2e_agent.legacy.cli as cli_module
 
 
 def _write_checkpoint(tmp_path: Path, run_id: str) -> Path:
@@ -142,7 +142,8 @@ def test_run_command_delegates_to_full_workflow(monkeypatch, tmp_path: Path) -> 
     assert exit_code == 0
     assert calls[0]["command"] == [
         os.sys.executable,
-        str(tmp_path / "tools" / "run_full_workflow.py"),
+        "-m",
+        "tools.legacy.run_full_workflow",
         "--product-input",
         str(product_input),
     ]

@@ -14,7 +14,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install package
-        run: python -m pip install -e ".[dev]"
+        run: python -m pip install -e '.[dev]'
       - name: Validate lock files
         run: |
           python -m pip install uv
@@ -22,33 +22,33 @@ jobs:
           npm ci --ignore-scripts
           npx playwright --version
       - name: Validate repository hygiene
-        run: python tools/validate_repository.py
+        run: python -m tools.validate.repository
       - name: Validate documentation
-        run: python tools/validate_docs.py
+        run: python -m tools.validate.docs
       - name: Validate dependency ownership
-        run: python tools/validate_dependencies.py
+        run: python -m tools.validate.dependencies
       - name: Validate test layout
-        run: python tools/validate_tests.py
+        run: python -m tools.validate.tests
       - name: Validate schemas
-        run: python tools/validate_schemas.py
+        run: python -m tools.validate.schemas
       - name: Validate legacy isolation
-        run: python tools/validate_legacy.py
+        run: python -m tools.validate.legacy
       - name: Validate domain packs
-        run: python tools/validate_domains.py
+        run: python -m tools.validate.domains
       - name: Validate workflows
-        run: python tools/validate_workflows.py
+        run: python -m tools.validate.workflows
       - name: Validate runners and plugins
         run: |
-          python tools/validate_runners.py
-          python tools/validate_plugins.py
+          python -m tools.validate.runners
+          python -m tools.validate.plugins
       - name: Check model and domain boundaries
         run: |
-          python tools/ci_rule_check.py
-          python tools/check_domain_boundaries.py
+          python -m tools.validate.rules
+          python -m tools.validate.boundaries
       - name: Run tests
         run: python -m pytest tests/ -q --tb=short > pytest.log 2>&1
       - name: Run release acceptance matrix
-        run: python tools/acceptance_matrix.py > acceptance.json
+        run: python -m tools.acceptance > acceptance.json
       - name: Build and install wheel
         run: |
           python -m pip wheel . --no-deps -w dist

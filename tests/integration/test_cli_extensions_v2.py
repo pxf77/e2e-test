@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from e2e_agent.cli_entry import main
+from e2e_agent.commands.main import main
 
 
 def test_cli_default_plugin_list_excludes_examples(capsys) -> None:  # type: ignore[no-untyped-def]

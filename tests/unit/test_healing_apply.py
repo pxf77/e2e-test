@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import e2e_agent.cli as cli_module
+import e2e_agent.legacy.cli as cli_module
 
 
 def test_healing_apply_requires_evidence_file(tmp_path: Path) -> None:

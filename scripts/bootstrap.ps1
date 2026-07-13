@@ -129,14 +129,14 @@ New-Item -ItemType Directory -Force -Path ".local/e2e-agent/gate-checkpoints" | 
 New-Item -ItemType Directory -Force -Path ".local/e2e-agent/logs" | Out-Null
 
 Write-Step "Running environment doctor"
-Invoke-CheckedCommandArray -Command $PythonCommand -Arguments @("-m", "e2e_agent.cli", "doctor")
+Invoke-CheckedCommandArray -Command $PythonCommand -Arguments @("-m", "e2e_agent.commands.main", "doctor")
 
 Write-Host ""
 Write-Host "Bootstrap complete." -ForegroundColor Green
 Write-Host ""
 Write-Host "Next commands:"
 Write-Host "  .\.venv\Scripts\e2e-agent.exe products"
-Write-Host "  .\scripts\e2e-agent-run.ps1 -ProductInput products/travel-product/plan-a/product-input.json"
+Write-Host "  .\.venv\Scripts\e2e-agent.exe run --product-input products/travel-product/plan-a/product-input.json"
 Write-Host "  .\.venv\Scripts\e2e-agent.exe reports serve --port 8080"
 Write-Host ""
 Write-Host "If e2e-agent is already on PATH, the equivalent CLI commands are:"

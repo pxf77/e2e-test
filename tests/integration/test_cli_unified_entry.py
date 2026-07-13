@@ -4,8 +4,6 @@ import importlib
 import json
 from typing import Any
 
-from e2e_agent import cli_entry
-from e2e_agent.commands import main as exported_main
 
 command_module = importlib.import_module("e2e_agent.commands.main")
 command_main = command_module.main
@@ -21,10 +19,6 @@ def test_root_help_lists_canonical_commands(capsys: Any) -> None:
     assert "acceptance" in output
 
 
-def test_cli_entry_is_compatibility_wrapper() -> None:
-    assert cli_entry.main is exported_main
-
-
 def test_legacy_run_is_dispatched_to_legacy_cli(monkeypatch: Any) -> None:
     captured: list[str] = []
 
@@ -38,19 +32,9 @@ def test_legacy_run_is_dispatched_to_legacy_cli(monkeypatch: Any) -> None:
     assert captured == ["run", "--product-input", "legacy.json"]
 
 
-def test_gate_v2_alias_warns_and_uses_v2_dispatch(monkeypatch: Any, capsys: Any) -> None:
-    captured: dict[str, Any] = {}
-
-    def fake_v2_gate(args: Any) -> int:
-        captured["command"] = args.gate_command
-        captured["run_id"] = args.run_id
-        return 0
-
-    monkeypatch.setattr(command_module, "_v2_gate", fake_v2_gate)
-
-    assert command_main(["gate-v2", "status", "run-1"]) == 0
-    assert captured == {"command": "status", "run_id": "run-1"}
-    assert "Deprecated" in capsys.readouterr().err
+def test_gate_v2_alias_is_removed(capsys: Any) -> None:
+    assert command_main(["gate-v2", "status", "run-1"]) == 2
+    assert "gate-v2" in capsys.readouterr().err
 
 
 def test_unified_gate_dispatches_v1_status(monkeypatch: Any, capsys: Any) -> None:

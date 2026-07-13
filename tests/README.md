@@ -26,5 +26,5 @@ tests/
 Validate the layout with:
 
 ```bash
-python tools/validate_tests.py
+python -m tools.validate.tests
 ```

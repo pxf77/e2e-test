@@ -188,20 +188,20 @@ Artifact Manifest 记录 contract、producer、node、path、SHA-256、类型和
 ## 质量门禁
 
 ```bash
-python tools/validate_repository.py
-python tools/validate_docs.py
-python tools/validate_dependencies.py
-python tools/validate_tests.py
-python tools/validate_schemas.py
-python tools/validate_legacy.py
-python tools/validate_domains.py
-python tools/validate_workflows.py
-python tools/validate_runners.py
-python tools/validate_plugins.py
-python tools/ci_rule_check.py
-python tools/check_domain_boundaries.py
+python -m tools.validate.repository
+python -m tools.validate.docs
+python -m tools.validate.dependencies
+python -m tools.validate.tests
+python -m tools.validate.schemas
+python -m tools.validate.legacy
+python -m tools.validate.domains
+python -m tools.validate.workflows
+python -m tools.validate.runners
+python -m tools.validate.plugins
+python -m tools.validate.rules
+python -m tools.validate.boundaries
 python -m pytest tests/ -q
-python tools/acceptance_matrix.py
+python -m tools.acceptance
 ```
 
 ## Legacy 运行

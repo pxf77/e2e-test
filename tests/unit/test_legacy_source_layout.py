@@ -33,3 +33,13 @@ def test_validator_detects_old_package_and_reference(tmp_path: Path) -> None:
 
     assert any("old path" in error for error in errors)
     assert any("stale legacy reference" in error for error in errors)
+
+
+def test_1x_cli_and_tool_wrappers_are_absent() -> None:
+    package = ROOT / "src" / "e2e_agent"
+    assert not (package / "cli.py").exists()
+    assert not (package / "cli_entry.py").exists()
+    assert (package / "legacy" / "cli.py").exists()
+    assert not (ROOT / "tools" / "acceptance_matrix.py").exists()
+    assert not (ROOT / "tools" / "run_full_workflow.py").exists()
+    assert (ROOT / "tools" / "legacy" / "run_full_workflow.py").exists()
