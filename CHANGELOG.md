@@ -6,13 +6,17 @@
 
 - Legacy four-Agent and Skill Package contracts are physically isolated under `schemas/v1/`; current framework contracts remain under `schemas/v2/`.
 - Contract `$id` values identify their versioned repository path, and CI rejects unversioned root schemas.
-- Legacy Agent, Browser, Graph and Skill Package source code is physically isolated beneath `src/e2e_agent/legacy/`.
-- Current framework modules reach Legacy behavior only through explicit adapters, compatibility CLI dispatch, legacy Workflow registrations or compatibility tests.
+- Legacy Agent, Browser, Graph, Skill Package and CLI source code is physically isolated beneath `src/e2e_agent/legacy/`.
+- Current framework modules reach Legacy behavior only through explicit adapters, canonical CLI dispatch, legacy Workflow registrations or compatibility tests.
+- Repository tooling uses module entry points under `tools.validate`, `tools.diagnostics`, `tools.legacy` and `tools.acceptance`.
 
 ### Breaking
 
 - Filesystem consumers of legacy contracts must use `schemas/v1/<contract>.schema.json` instead of `schemas/<contract>.schema.json`.
 - Python consumers must import Legacy modules through `e2e_agent.legacy.<package>`; the former top-level Agent, Browser, Graph and Skill import paths are removed.
+- Removed `e2e_agent.cli` and `e2e_agent.cli_entry`; Python callers must use `e2e_agent.commands.main` or the explicit `e2e_agent.legacy.cli`.
+- Removed root-level tool wrappers such as `tools/validate_schemas.py` and `tools/acceptance_matrix.py`; use module commands such as `python -m tools.validate.schemas` and `python -m tools.acceptance`.
+- Removed the deprecated `e2e-agent gate-v2` alias; use `e2e-agent gate`.
 
 ## 1.1.0 - 2026-07-12
 
